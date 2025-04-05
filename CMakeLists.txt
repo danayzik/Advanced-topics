@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.10)
-project(TankGame)
+project(tank_game)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(TankGame
+add_executable(tank_game
         tank.cpp
+        map_loader.cpp
+        wall.cpp
         game_map.cpp
 )

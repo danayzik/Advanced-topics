@@ -1,10 +1,13 @@
 #pragma once
+#include <unordered_set>
 
-#include <list>
-using std::list;
+class GameEntity;
+
+using std::unordered_set;
+
 struct Cell {
-    list<GameEntity*> entityList;
+    unordered_set<GameEntity*> entitySet;
     inline bool isEmpty() const{
-        return entityList.empty();
+        return entitySet.empty();
     }
 };

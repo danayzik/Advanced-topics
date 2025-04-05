@@ -1,10 +1,17 @@
-#include "tank.h"
+#include "entities.h"
 #include "direction.h"
 
 
 void Tank::rotate(int rotationAmount) {
-    int newAngle = (static_cast<int>(dir) + rotationAmountr) % 360;
+    int newAngle = (static_cast<int>(currDirection) + rotationAmount) % 360;
     if (newAngle < 0) newAngle += 360;
+    currDirection = static_cast<Direction>(newAngle);
 
-    return static_cast<Direction>(newAngle);
+}
+Tank::Tank(int y, int x, Cell *cell) : GameEntity(y, x, cell){}
+
+
+bool Tank::collide() {
+    //Destroy tank
+    return true;
 }

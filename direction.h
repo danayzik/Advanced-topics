@@ -1,14 +1,14 @@
 #pragma once
 
-
+constexpr double PI = 3.14159265358979323846;
 enum Direction {
-    Up = 0,
-    UpRight = 45,
-    Right = 90,
-    DownRight = 135,
-    Down = 180,
-    DownLeft = 225,
-    Left = 270,
-    UpLeft = 315
+    Right     = 0,
+    DownRight = 45,
+    Down      = 90,
+    DownLeft  = 135,
+    Left      = 180,
+    UpLeft    = 225,
+    Up        = 270,
+    UpRight   = 315
 };
 
