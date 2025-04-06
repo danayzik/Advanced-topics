@@ -6,4 +6,5 @@ Check -><- collisions for shells and for tanks
 wall == 0 -> destroy wall
 Destroy tank when collide is called
 
+Make tanks for players const?
 Fix maploader handle errors

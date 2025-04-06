@@ -1,15 +1,17 @@
 #pragma once
-#include "tank.h"
+#include "entities.h"
+
 #include "actions.h"
 #include "game_map.h"
 
-
+class GameManager;
 class Player {
 private:
     Tank tank;
 
 public:
-    virtual Action requestAction(GameMap& gameMap) = 0;
+    virtual Action requestAction(const GameMap& gameMap) = 0;
+    friend GameManager;
 
 };
 

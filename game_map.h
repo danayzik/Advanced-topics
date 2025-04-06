@@ -4,11 +4,9 @@
 #include <vector>
 #include <string>
 #include <fstream>
-#include "game_entity.h"
 #include "cell.h"
 #include "direction.h"
-#include "shell.h"
-#include "tank.h"
+#include "entities.h"
 
 using std::unordered_set;
 using std::vector;
@@ -21,11 +19,12 @@ private:
     unordered_set<Shell*> shells;
     int rows;
     int cols;
+    std::pair<int, int> getNewPosition(const GameEntity* entity, Direction dir) const;
 
 
 public:
-    GameMap(const string& filePath);
-
+    explicit GameMap(const string& filePath);
+    bool tankCanMoveInDirection(const Tank* tank, Direction dir) const;
     void moveEntity(GameEntity* entity, Direction dir);
     void moveShellsAndCheckCollisions();
 };

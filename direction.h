@@ -1,6 +1,9 @@
 #pragma once
 
 constexpr double PI = 3.14159265358979323846;
+
+
+
 enum Direction {
     Right     = 0,
     DownRight = 45,
@@ -11,4 +14,9 @@ enum Direction {
     Up        = 270,
     UpRight   = 315
 };
+
+Direction getOppositeDirection(Direction dir) {
+    int opposite = (static_cast<int>(dir) + 180) % 360;
+    return static_cast<Direction>(opposite);
+}
 

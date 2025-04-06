@@ -16,17 +16,22 @@ GameMap::GameMap(const string& filePath) {
     tanks.insert(mapData.tank2);
 
 }
-
-
-void GameMap::moveEntity(GameEntity* entity, Direction dir){
-    Cell* currCell = entity->getCell();
+std::pair<int, int> GameMap::getNewPosition(const GameEntity* entity, Direction dir) const {
     int currX = entity->getX();
     int currY = entity->getY();
     double radians = dir * PI / 180.0;
     int dx = static_cast<int>(round(cos(radians)));
     int dy = static_cast<int>(round(sin(radians)));
-    int newX = (currX + dx+ cols) % cols;
+    int newX = (currX + dx + cols) % cols;
     int newY = (currY + dy + rows) % rows;
+    return {newY, newX};
+}
+
+void GameMap::moveEntity(GameEntity* entity, Direction dir){
+    Cell* currCell = entity->getCell();
+    int currX = entity->getX();
+    int currY = entity->getY();
+    auto [newY, newX] = getNewPosition(entity, dir);
     grid[newY][newX].entitySet.insert(entity);
     grid[currY][currX].entitySet.erase(entity);
     entity->setCoords(newX, newY);
@@ -56,6 +61,17 @@ void GameMap::moveShellsAndCheckCollisions(){
         shells.erase(shell);
         delete shell;
     }
+}
+
+bool GameMap::tankCanMoveInDirection(const Tank* tank, Direction dir) const {
+    auto [newY, newX] = getNewPosition(tank, dir);
+    const Cell& targetCell = grid[newY][newX];
+    for(GameEntity* entity: targetCell.entitySet){
+        if(entity->isWall())
+            return false;
+    }
+    return true;
+
 }
 
 

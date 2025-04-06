@@ -1,6 +1,7 @@
 #pragma once
 #include "cell.h"
 #include "direction.h"
+#include "actions.h"
 
 class GameEntity{
 protected:
@@ -32,6 +33,7 @@ public:
     }
     virtual bool collide() = 0;
     inline virtual bool isMine(){return false;}
+    inline virtual bool isWall(){return true;}
 };
 
 class Tank : public GameEntity{
@@ -43,19 +45,30 @@ private:
     bool canFire = true;
     int stepsSinceLastShot = 100; // Placeholder initial value
     bool preparingReverseMode = false;
+    int preparingReverseCounter;
+    Action nextStepAction = NoAction;
+    bool enteredReverse = false;
+
 
 public:
     Tank(int y, int x, Cell *cell);
-    inline enum Direction getDirection() { return currDirection; }
+    [[nodiscard]] inline enum Direction getDirection() const { return currDirection; }
     [[nodiscard]] inline int getShellCount() const{ return shellCount; }
     [[nodiscard]] inline bool isInReverse() const { return inReverseMode; }
     [[nodiscard]] inline bool isPreparingReverse() const{ return preparingReverseMode; }
     [[nodiscard]] inline bool getCanFire() const{ return canFire; }
+    [[nodiscard]] inline bool getEnteredReverse() const{ return enteredReverse; }
     void rotate(int rotationAmount);
     void fire();
     void putInReverse();
     void moveForward();
     bool collide() override;
+    Action consumeAction();
+    void setAction(Action action);
+    void cancelReverse();
+    void tickUpdate();
+
+
 };
 
 class Shell : public GameEntity{
@@ -75,6 +88,9 @@ private:
 public:
     Wall(int y, int x, Cell *cell);
     bool collide() override;
+    inline bool isWall() override{
+        return true;
+    }
 };
 
 class Mine : public GameEntity{

@@ -8,8 +8,18 @@ void Tank::rotate(int rotationAmount) {
     currDirection = static_cast<Direction>(newAngle);
 
 }
+
 Tank::Tank(int y, int x, Cell *cell) : GameEntity(y, x, cell){}
 
+Action Tank::consumeAction() {
+    Action action = nextStepAction;
+    nextStepAction = NoAction;
+    return action;
+}
+
+void Tank::setAction(Action action) {
+    nextStepAction = action;
+}
 
 bool Tank::collide() {
     //Destroy tank
