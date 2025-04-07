@@ -8,7 +8,18 @@ void Tank::rotate(int rotationAmount) {
     currDirection = static_cast<Direction>(newAngle);
 
 }
-
+void Tank::setMode(TankMode newMode){
+    mode = newMode;
+    if(newMode == PreparingReverse){
+        preparingReverseCounter = 2;//maybe 3?
+    }
+    if(newMode == ReverseMode){
+        enteredReverse = true;
+    }
+    else{
+        enteredReverse = false;
+    }
+}
 Tank::Tank(int y, int x, Cell *cell) : GameEntity(y, x, cell){}
 
 Action Tank::consumeAction() {

@@ -3,6 +3,12 @@
 #include "direction.h"
 #include "actions.h"
 
+enum TankMode {
+    NormalMode,
+    PreparingReverse,
+    ReverseMode
+};
+
 class GameEntity{
 protected:
     Cell* cell;
@@ -40,32 +46,29 @@ class Tank : public GameEntity{
 private:
     enum Direction currDirection = Up;
     int shellCount = 16;
-    bool inReverseMode = false;
     bool isAlive = true;
     bool canFire = true;
     int stepsSinceLastShot = 100; // Placeholder initial value
-    bool preparingReverseMode = false;
-    int preparingReverseCounter;
+    int preparingReverseCounter = -1;
     Action nextStepAction = NoAction;
     bool enteredReverse = false;
+    TankMode mode = NormalMode;
 
 
 public:
     Tank(int y, int x, Cell *cell);
     [[nodiscard]] inline enum Direction getDirection() const { return currDirection; }
     [[nodiscard]] inline int getShellCount() const{ return shellCount; }
-    [[nodiscard]] inline bool isInReverse() const { return inReverseMode; }
-    [[nodiscard]] inline bool isPreparingReverse() const{ return preparingReverseMode; }
     [[nodiscard]] inline bool getCanFire() const{ return canFire; }
     [[nodiscard]] inline bool getEnteredReverse() const{ return enteredReverse; }
     void rotate(int rotationAmount);
+    void setMode(TankMode newMode);
+    [[nodiscard]] inline TankMode getMode() const {return mode;}
     void fire();
-    void putInReverse();
     void moveForward();
     bool collide() override;
     Action consumeAction();
     void setAction(Action action);
-    void cancelReverse();
     void tickUpdate();
 
 
