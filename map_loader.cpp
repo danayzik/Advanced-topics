@@ -6,7 +6,7 @@
 using std::vector;
 using std::string;
 
-bool MapLoader::openFile(const std::string &filePath) {
+bool MapLoader::openFile(const string &filePath) {
     std::ifstream file(filePath);
     if (!file) {
         std::cerr << "Error opening file" << std::endl;
@@ -15,7 +15,7 @@ bool MapLoader::openFile(const std::string &filePath) {
     errorLog.open("input_errors.txt");
     return true;
 }
-bool MapLoader::readDimensions(const std::string &filePath) {
+bool MapLoader::readDimensions(const string &filePath) {
     std::ifstream file(filePath);
     int rows, cols;
     file >> rows >> cols;
@@ -31,7 +31,7 @@ bool MapLoader::readDimensions(const std::string &filePath) {
     return true;
 }
 
-void MapLoader::processMapData(const std::string &filePath) {
+void MapLoader::processMapData(const string &filePath) {
     std::ifstream file(filePath);
     string line;
     int tank1Count = 0;
@@ -46,7 +46,7 @@ void MapLoader::processMapData(const std::string &filePath) {
     }
 }
 
-void MapLoader::processRow(const std::string &line, int y, int &tank1Count, int &tank2Count) {
+void MapLoader::processRow(const string &line, int y, int &tank1Count, int &tank2Count) {
     for (int x = 0; x < mapData.cols; ++x) {
         if (x >= line.size()) {
             handleMissingCharacter(y, x);
@@ -101,7 +101,7 @@ void MapLoader::fillMissingRow(int y) {
     }
 }
 
-MapData MapLoader::loadMap(const std::string &filePath) {
+MapData MapLoader::loadMap(const string &filePath) {
     if (!openFile(filePath)) throw std::runtime_error("Failed to open map file: " + filePath);;
 
     if (!readDimensions(filePath)) throw std::runtime_error("Failed to read dimensions from map file: " + filePath);;

@@ -16,8 +16,20 @@ GameMap::GameMap(const string& filePath) {
     playerTwoTanks.insert(mapData.tank2);
 }
 
+GameResult GameMap::getGameResult() const {
+    bool oneEmpty = playerOneTanks.empty();
+    bool twoEmpty = playerTwoTanks.empty();
+    if(oneEmpty && twoEmpty)
+        return Draw;
+    if(oneEmpty)
+        return PlayerTwoWin;
+    if(twoEmpty)
+        return PlayerOneWin;
+    return NotOver;
+}
+
 void GameMap::resolveCollisions(const std::unordered_set<Cell*>& dirtyCells) {
-    std::unordered_set<GameEntity*> toDelete;
+    unordered_set<GameEntity*> toDelete;
     for (Cell* cell : dirtyCells) {
         std::vector<GameEntity*> entities(cell->entitySet.begin(), cell->entitySet.end());
         for (size_t i = 0; i < entities.size(); ++i) {
@@ -47,7 +59,7 @@ void GameMap::resolveCollisions(const std::unordered_set<Cell*>& dirtyCells) {
     }
 }
 
-bool GameMap::tanksAboutToCollide(const Tank* tank1,const Tank* tank2){
+bool GameMap::tanksAboutToCollide(Tank* tank1,Tank* tank2){
     Action action1 = tank1->peekAction();
     Action action2 = tank2->peekAction();
     if (action1 != MoveForward && action1 != MoveBackward) return false;
@@ -57,9 +69,36 @@ bool GameMap::tanksAboutToCollide(const Tank* tank1,const Tank* tank2){
     auto [newY1, newX1] = getNewPosition(tank1, direction1);
     auto [newY2, newX2] = getNewPosition(tank2, direction2);
     if ((newY1 == tank2->getY() && newX1 == tank2->getX()) && (newY2 == tank1->getY() && newX2 == tank1->getX())) {
+        playerOneTanks.erase(tank1);
+        playerTwoTanks.erase(tank2);
+        delete tank1;
+        delete tank2;
         return true;
     }
     return false;
+}
+
+void GameMap::shellsAboutToCollide() {
+    unordered_set<Shell*> toDelete;
+    for (Shell* shell1 : shells) {
+        for (Shell* shell2 : shells) {
+            if(shell1 != shell2){
+                Direction direction1 = shell1->getDirection();
+                Direction direction2 = shell2->getDirection();
+                auto [newY1, newX1] = getNewPosition(shell1, direction1);
+                auto [newY2, newX2] = getNewPosition(shell2, direction2);
+                if ((newY1 == shell2->getY() && newX1 == shell2->getX()) && (newY2 == shell1->getY() && newX2 == shell1->getX())) {
+                    toDelete.insert(shell1);
+                    toDelete.insert(shell2);
+                }
+            }
+
+        }
+    }
+    for (Shell* shell : toDelete) {
+        shells.erase(shell);
+        delete shell;
+    }
 }
 
 
@@ -86,9 +125,22 @@ void GameMap::moveEntity(GameEntity* entity, Direction dir){
 
 void GameMap::moveShells(){
     for (Shell* shell : shells) {
-        Direction dir = shell->getDirection();
-        moveEntity(shell, dir);
+        if(shell->isNewShell()){
+           shell->setAsOld();
+        }
+        else{
+            Direction dir = shell->getDirection();
+            moveEntity(shell, dir);
+        }
     }
+}
+
+void GameMap::createShell(Tank* tank) {
+    auto[y, x] = getNewPosition(tank, tank->getDirection());
+    Cell* cell = &grid[y][x];
+    auto* shell = new Shell(y, x, cell, tank->getDirection());
+    cell->entitySet.insert(shell);
+    shells.insert(shell);
 }
 
 

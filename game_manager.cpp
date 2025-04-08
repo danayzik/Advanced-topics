@@ -3,7 +3,11 @@
 #include "entities.h"
 
 
-GameManager::GameManager(Player &playerOne, Player &playerTwo, std::string mapFilePath) : playerOne(playerOne), playerTwo(playerTwo), gameMap(mapFilePath){}
+GameManager::GameManager(Player &playerOne, Player &playerTwo, std::string mapFilePath) : playerOne(playerOne), playerTwo(playerTwo), gameMap(mapFilePath){
+    auto [tank1, tank2] = gameMap.getPlayerTanks();
+    playerOne.setTank(tank1);
+    playerTwo.setTank(tank2);
+}
 
 
 bool GameManager::isLegaLAction(Action action, const Player& player) const{
@@ -96,38 +100,58 @@ void GameManager::actionStep(Player& player) {
             return;
         case Shoot:
             tank->fire();
-            gameMap.createShell(tank->getY(), tank->getX(), tank->getDirection());
+            gameMap.createShell(tank);
             return;
         default:
             return;
     }
 }
 
+bool GameManager::gameOverCheck(){
+    gameResult = gameMap.getGameResult();
+    if(gameResult != NotOver){
+        gameRunning = false;
+        return true;
+    }
+    return false;
+}
+
+void GameManager::tankStep() {
+    tanksTickUpdate();
+    getAndSetAction(playerOne);
+    getAndSetAction(playerTwo);
+    bool draw = gameMap.tanksAboutToCollide(playerOne.getTank(), playerTwo.getTank());
+    if(draw) {
+        gameResult = Draw;
+        gameRunning = false;
+        return;
+    }
+    actionStep(playerOne);
+    actionStep(playerTwo);
+    gameMap.checkCollisions();
+}
+
+void GameManager::shellStep() {
+    gameMap.shellsAboutToCollide();
+    gameMap.moveShells();
+    gameMap.checkCollisions();
+}
 
 void GameManager::gameLoop() {
     while(gameRunning){
-        tanksTickUpdate();
-        getAndSetAction(playerOne);
-        getAndSetAction(playerTwo);
-        //Check about to collide tanks
-        actionStep(playerOne);
-        actionStep(playerTwo);
-        gameMap.checkCollisions();
-
-        //Check about to collide shells
-        gameMap.moveShells();
-        gameMap.checkCollisions();
-
-        //Check about to collide shells
-        gameMap.moveShells();
-        gameMap.checkCollisions();
-
+        tankStep();
+        if(gameOverCheck())
+            break;
+        shellStep();
+        if(gameOverCheck())
+            break;
+        shellStep();
     }
-
-
 }
 
-void GameManager::run() {
+
+GameResult GameManager::run() {
     gameRunning = true;
     gameLoop();
+    return gameResult;
 }

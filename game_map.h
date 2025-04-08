@@ -12,6 +12,13 @@ using std::unordered_set;
 using std::vector;
 using std::string;
 
+enum GameResult{
+    PlayerOneWin,
+    PlayerTwoWin,
+    Draw,
+    NotOver
+};
+
 class GameMap {
 private:
     vector<vector<Cell>> grid;
@@ -24,14 +31,18 @@ private:
     void resolveCollisions(const unordered_set<Cell*>& dirtyCells);
 
 
+
 public:
     explicit GameMap(const string& filePath);
     bool tankCanMoveInDirection(const Tank* tank, Direction dir) const;
     void moveEntity(GameEntity* entity, Direction dir);
     void moveShells();
-    void createShell(int y, int x, Direction dir);
+    void createShell(Tank* tank);
     void checkCollisions();
-    bool tanksAboutToCollide(const Tank* tank1, const Tank* tank2);
+    bool tanksAboutToCollide(Tank* tank1, Tank* tank2);
     void shellsAboutToCollide();
+    GameResult getGameResult() const;
+    inline std::pair<Tank*, Tank*> getPlayerTanks(){
+        return {*playerOneTanks.begin(),*playerTwoTanks.begin()};}
 
 };

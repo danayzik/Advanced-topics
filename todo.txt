@@ -1,13 +1,23 @@
-Reading tanks from the map -> Give players a pointer
 
+ToDo:
+Player algo #priority
+
+
+Reading tanks from the map -> Give players a pointer
 Check errors and create error log properly
-Create game log
-Create visuals
-make CreateShell
+
+
 Think about 3 shell steps on first turn?
 Think about fire cooldown amount
 
+40 steps after using all shells
 
 Make tanks for players const?
-
+Think about destructors
+Think about potentially using stack objects and not pointers
 Fix maploader handle errors
+
+Bonus:
+
+Create game log
+Create visuals

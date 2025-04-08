@@ -43,7 +43,7 @@ public:
     [[nodiscard]] inline virtual bool isWall() const{return false;}
     [[nodiscard]] inline virtual bool isTank() const{return false;}
     [[nodiscard]] inline virtual bool isShell() const{return false;}
-    inline bool isAlive() const{return health>0;}
+    [[nodiscard]] inline bool isAlive() const{return health>0;}
     inline bool hit() {health--;return health>0;}
 };
 
@@ -78,12 +78,15 @@ public:
 
 class Shell : public GameEntity{
 private:
-    const enum Direction dir;
+    const Direction dir;
+    bool createdThisTurn = true;
 public:
     inline Shell(int y, int x, Cell *cell, Direction dir) : GameEntity(y, x ,cell), dir(dir){}
     [[nodiscard]] inline enum Direction getDirection() const{
         return dir;
     }
+    [[nodiscard]] inline bool isNewShell() const{return createdThisTurn;}
+    inline void setAsOld(){createdThisTurn = false;}
     [[nodiscard]] inline bool isShell() const override{return true;}
 };
 
