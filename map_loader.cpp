@@ -36,13 +36,12 @@ void MapLoader::processMapData(const std::string &filePath) {
     string line;
     int tank1Count = 0;
     int tank2Count = 0;
-
     int y = 0;
     while (std::getline(file, line)) {
         processRow(line, y, tank1Count, tank2Count);
         y++;
     }
-    for (int y = mapData.grid.size(); y < mapData.grid.size(); ++y) {
+    for (int i = y; i < mapData.rows; ++i) {
         fillMissingRow(y);
     }
 }
@@ -58,32 +57,38 @@ void MapLoader::processRow(const std::string &line, int y, int &tank1Count, int 
     }
 }
 
+//Check constructors
 void MapLoader::handleCell(char cell, int y, int x, int &tank1Count, int &tank2Count) {
     switch (cell) {
         case '#':
-            mapData.grid[y][x].entitySet.insert(new Wall());
+            mapData.grid[y][x].entitySet.insert(new Wall(y, x, &mapData.grid[y][x]));
             break;
         case '@':
-            mapData.grid[y][x].entitySet.insert(new Mine());
+            mapData.grid[y][x].entitySet.insert(new Mine(y, x, &mapData.grid[y][x]));
             break;
         case '1':
             if (tank1Count < 1) {
-                Tank* tank = new Tank(nullptr, 0, 0, nullptr, 0, 0);
-                mapData.grid[y][x].entitySet.insert(tank); // Give players the tank reference
-                mapData.tank1Pos = {y, x};
+                Tank* tank = new Tank(y, x, &mapData.grid[y][x]);
+                mapData.grid[y][x].entitySet.insert(tank);
+                mapData.tank1 = tank;
                 tank1Count++;
             }
+            break;
         case '2':
             if (tank2Count < 1) {
-                Tank* tank = new Tank(nullptr, 0, 0, nullptr, 0, 0);
+                Tank* tank = new Tank(y, x, &mapData.grid[y][x]);
                 mapData.grid[y][x].entitySet.insert(tank);
-                mapData.tank2Pos = {y, x};
+                mapData.tank2 = tank;
                 tank2Count++;
             }
             break;
         default:
-            break;
+            handleBadCharacter(y, x);
     }
+}
+
+void MapLoader::handleBadCharacter(int y, int x) {
+    errorLog << "Unexpected character at (" << y << ", " << x << "), filling as space.\n";
 }
 
 void MapLoader::handleMissingCharacter(int y, int x) {
@@ -91,21 +96,22 @@ void MapLoader::handleMissingCharacter(int y, int x) {
 }
 
 void MapLoader::fillMissingRow(int y) {
-    for (int x = 0; x < grid[0].size(); ++x) {
+    for (int x = 0; x < mapData.grid[0].size(); ++x) {
         errorLog << "Missing row " << y << ", filling with empty space.\n";
     }
 }
 
 MapData MapLoader::loadMap(const std::string &filePath) {
-    if (!openFile(filePath)) return;
+    if (!openFile(filePath)) throw std::runtime_error("Failed to open map file: " + filePath);;
 
-    if (!readDimensions(filePath)) return;
+    if (!readDimensions(filePath)) throw std::runtime_error("Failed to read dimensions from map file: " + filePath);;
 
     processMapData(filePath);
 
     if (errorLog.is_open()) {
         errorLog.close();
     }
+    return mapData;
 }
 
 

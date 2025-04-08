@@ -1,10 +1,13 @@
 Reading tanks from the map -> Give players a pointer
+
 Check errors and create error log properly
 Create game log
 Create visuals
-Check -><- collisions for shells and for tanks
-wall == 0 -> destroy wall
-Destroy tank when collide is called
+make CreateShell
+Think about 3 shell steps on first turn?
+Think about fire cooldown amount
+
 
 Make tanks for players const?
+
 Fix maploader handle errors

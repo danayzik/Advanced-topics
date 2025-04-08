@@ -6,18 +6,21 @@
 GameManager::GameManager(Player &playerOne, Player &playerTwo, std::string mapFilePath) : playerOne(playerOne), playerTwo(playerTwo), gameMap(mapFilePath){}
 
 
-bool GameManager::isLegaLAction(Action action, const Player& player) const{ //Think more
-    if(action != MoveForward && player.tank.isPreparingReverse()){
+bool GameManager::isLegaLAction(Action action, const Player& player) const{
+    Tank* tank = player.getTank();
+    TankMode mode = tank->getMode();
+    bool preparingReverse = mode == PreparingReverse;
+    if(action != MoveForward && preparingReverse){
         return false;
     }
     switch (action) {
         case MoveForward:
-            if(player.tank.isPreparingReverse()){
+            if(preparingReverse){
                 return true;
             }
-            return gameMap.tankCanMoveInDirection(&player.tank, player.tank.getDirection());
+            return gameMap.tankCanMoveInDirection(tank, tank->getDirection());
         case MoveBackward:
-            return gameMap.tankCanMoveInDirection(&player.tank, getOppositeDirection(player.tank.getDirection()));
+            return gameMap.tankCanMoveInDirection(tank, getOppositeDirection(tank->getDirection()));
         case RotateLeft45:
             return true;
         case RotateRight45:
@@ -27,7 +30,7 @@ bool GameManager::isLegaLAction(Action action, const Player& player) const{ //Th
         case RotateRight90:
             return true;
         case Shoot:
-            return player.tank.getCanFire();
+            return tank->canFire();
         case NoAction:
             return true;
         default:
@@ -36,68 +39,88 @@ bool GameManager::isLegaLAction(Action action, const Player& player) const{ //Th
 }
 
 void GameManager::tanksTickUpdate(){
-    playerOne.tank.tickUpdate();
-    playerTwo.tank.tickUpdate();
+    playerOne.getTank()->tickUpdate();
+    playerTwo.getTank()->tickUpdate();
 }
 
-bool GameManager::getAndSetAction(Player& player){
+
+bool GameManager::getAndSetAction(Player& player){ // Check
+    Tank* tank = player.getTank();
     Action action = player.requestAction(gameMap);
+    TankMode mode = tank->getMode();
     if(isLegaLAction(action, playerOne)){
-        bool inReverse = player.tank.isInReverse();
-        bool preparingReverse = player.tank.isPreparingReverse();
+        bool inReverse = mode == ReverseMode;
+        bool preparingReverse = mode == PreparingReverse;
+        bool justEnteredReverse = mode == JustEnteredReverse;
         bool normalMode = (!inReverse) || (!preparingReverse);
         if(action == MoveForward){
             if(inReverse){
-                player.tank.cancelReverse();
+                tank->setMode(NormalMode);
             }
-            if(preparingReverse){
-                player.tank.cancelReverse();
+            if(preparingReverse || justEnteredReverse){
+                tank->setMode(NormalMode);
                 return true;
             }
         }
         else{
-            if(player.tank.getEnteredReverse()){
-                player.tank.setAction(MoveBackward);
+            if(justEnteredReverse){
+                tank->setAction(MoveBackward);
                 return true;
             }
         }
         if(normalMode && action == MoveBackward){
-            player.tank.putInReverse();
+            tank->setMode(ReverseMode);
             return true;
         }
-        player.tank.setAction(action);
+        tank->setAction(action);
         return true;
     }
     return false;
 }
 
 void GameManager::actionStep(Player& player) {
-    Action action = player.tank.consumeAction();
+    Tank* tank = player.getTank();
+    Action action = tank->consumeAction();
     int rotation = rotateActionToAngle(action);
-    if(rotation != 0){
-        player.tank.rotate(rotation);
-    }
-    //Need to move tanks at the same time
-    if(action == MoveForward){
-        //Perform move
-    }
-    if(action == MoveBackward){
-        //Move
-    }
-    if(action == Shoot){
-        //Shoot
-    }
 
+    if(rotation != 0){
+        tank->rotate(rotation);
+        return;
+    }
+    switch (action) {
+        case MoveForward:
+            gameMap.moveEntity(tank, tank->getDirection());
+            return;
+        case MoveBackward:
+            gameMap.moveEntity(tank, getOppositeDirection(tank->getDirection()));
+            return;
+        case Shoot:
+            tank->fire();
+            gameMap.createShell(tank->getY(), tank->getX(), tank->getDirection());
+            return;
+        default:
+            return;
+    }
 }
+
 
 void GameManager::gameLoop() {
     while(gameRunning){
         tanksTickUpdate();
         getAndSetAction(playerOne);
         getAndSetAction(playerTwo);
+        //Check about to collide tanks
+        actionStep(playerOne);
+        actionStep(playerTwo);
+        gameMap.checkCollisions();
 
-        //MoveAll
-        //MoveShells
+        //Check about to collide shells
+        gameMap.moveShells();
+        gameMap.checkCollisions();
+
+        //Check about to collide shells
+        gameMap.moveShells();
+        gameMap.checkCollisions();
 
     }
 

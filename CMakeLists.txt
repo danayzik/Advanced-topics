@@ -6,6 +6,6 @@ set(CMAKE_CXX_STANDARD 17)
 add_executable(tank_game
         tank.cpp
         map_loader.cpp
-        wall.cpp
         game_map.cpp
+        game_manager.cpp
 )

@@ -1,17 +1,17 @@
 #pragma once
 #include "entities.h"
-
 #include "actions.h"
 #include "game_map.h"
 
 class GameManager;
 class Player {
 private:
-    Tank tank;
+    Tank* tank;
+
 
 public:
     virtual Action requestAction(const GameMap& gameMap) = 0;
-    friend GameManager;
+    [[nodiscard]] inline Tank* getTank() const{return tank;}
 
 };
 

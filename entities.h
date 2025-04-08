@@ -6,6 +6,7 @@
 enum TankMode {
     NormalMode,
     PreparingReverse,
+    JustEnteredReverse,
     ReverseMode
 };
 
@@ -14,12 +15,13 @@ protected:
     Cell* cell;
     int xCoord;
     int yCoord;
+    int health;
 
 public:
     inline virtual ~GameEntity(){
         cell->entitySet.erase(this);
     }
-    inline GameEntity(int y, int x, Cell* cell) : xCoord(x), yCoord(y), cell(cell){}
+    inline GameEntity(int y, int x, Cell* cell) : xCoord(x), yCoord(y), cell(cell){health = 1;}
     [[nodiscard]] inline Cell* getCell() const{
         return cell;
     }
@@ -27,7 +29,7 @@ public:
         cell = newCell;
     }
 
-    inline void setCoords(int x, int y){
+    inline void setCoords(int y, int x){
         xCoord = x;
         yCoord = y;
     }
@@ -37,39 +39,39 @@ public:
     [[nodiscard]] inline int getY() const{
         return yCoord;
     }
-    virtual bool collide() = 0;
-    inline virtual bool isMine(){return false;}
-    inline virtual bool isWall(){return true;}
+    [[nodiscard]] inline virtual bool isMine() const{return false;}
+    [[nodiscard]] inline virtual bool isWall() const{return false;}
+    [[nodiscard]] inline virtual bool isTank() const{return false;}
+    [[nodiscard]] inline virtual bool isShell() const{return false;}
+    inline bool isAlive() const{return health>0;}
+    inline bool hit() {health--;return health>0;}
 };
 
 class Tank : public GameEntity{
 private:
-    enum Direction currDirection = Up;
+    Direction currDirection = Up;
     int shellCount = 16;
-    bool isAlive = true;
-    bool canFire = true;
     int stepsSinceLastShot = 100; // Placeholder initial value
     int preparingReverseCounter = -1;
     Action nextStepAction = NoAction;
-    bool enteredReverse = false;
     TankMode mode = NormalMode;
 
 
 public:
     Tank(int y, int x, Cell *cell);
-    [[nodiscard]] inline enum Direction getDirection() const { return currDirection; }
-    [[nodiscard]] inline int getShellCount() const{ return shellCount; }
-    [[nodiscard]] inline bool getCanFire() const{ return canFire; }
-    [[nodiscard]] inline bool getEnteredReverse() const{ return enteredReverse; }
+    [[nodiscard]] inline enum Direction getDirection() const {return currDirection; }
+    [[nodiscard]] inline int getShellCount() const {return shellCount;}
+    [[nodiscard]] inline TankMode getMode() const {return mode;}
+    [[nodiscard]] inline bool isTank() const override{return true;}
+    [[nodiscard]] inline Action peekAction() const{return nextStepAction;}
+    [[nodiscard]] bool canFire() const;
     void rotate(int rotationAmount);
     void setMode(TankMode newMode);
-    [[nodiscard]] inline TankMode getMode() const {return mode;}
     void fire();
-    void moveForward();
-    bool collide() override;
     Action consumeAction();
     void setAction(Action action);
     void tickUpdate();
+
 
 
 };
@@ -78,31 +80,22 @@ class Shell : public GameEntity{
 private:
     const enum Direction dir;
 public:
-    Shell(int y, int x, Cell *cell, Direction dir);
+    inline Shell(int y, int x, Cell *cell, Direction dir) : GameEntity(y, x ,cell), dir(dir){}
     [[nodiscard]] inline enum Direction getDirection() const{
         return dir;
     }
+    [[nodiscard]] inline bool isShell() const override{return true;}
 };
 
 class Wall : public GameEntity{
-private:
-    int health = 2;
 
 public:
-    Wall(int y, int x, Cell *cell);
-    bool collide() override;
-    inline bool isWall() override{
-        return true;
-    }
+    inline Wall(int y, int x, Cell *cell) : GameEntity(y, x ,cell){health = 2;}
+    [[nodiscard]] inline bool isWall() const override{return true;}
 };
 
 class Mine : public GameEntity{
 public:
-    Mine(int y, int x, Cell *cell);
-    inline bool collide() override{
-        return false;
-    }
-    inline bool isMine() override{
-        return true;
-    }
+    inline Mine(int y, int x, Cell* cell) : GameEntity(y, x, cell){}
+    [[nodiscard]] inline bool isMine() const override{return true;}
 };

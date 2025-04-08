@@ -15,7 +15,7 @@ enum Direction {
     UpRight   = 315
 };
 
-Direction getOppositeDirection(Direction dir) {
+inline Direction getOppositeDirection(Direction dir) {
     int opposite = (static_cast<int>(dir) + 180) % 360;
     return static_cast<Direction>(opposite);
 }

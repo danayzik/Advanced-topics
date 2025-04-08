@@ -25,6 +25,7 @@ private:
     static void handleCell(char cell, int y, int x, int& tank1Count, int& tank2Count);
     static void handleMissingCharacter(int y, int x);
     static void fillMissingRow(int y);
+    static void handleBadCharacter(int y, int x);
 
 public:
     MapLoader() = delete;
