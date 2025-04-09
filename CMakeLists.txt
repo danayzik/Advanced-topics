@@ -9,4 +9,5 @@ add_executable(tank_game
         map_loader.cpp
         game_map.cpp
         game_manager.cpp
+        cell.cpp
 )

@@ -1,4 +1,4 @@
-#include <cmath>
+
 #include <sstream>
 #include "game_map.h"
 #include "map_loader.h"
@@ -105,9 +105,7 @@ void GameMap::shellsAboutToCollide() {
 std::pair<int, int> GameMap::getNewPosition(const GameEntity* entity, Direction dir) const {
     int currX = entity->getX();
     int currY = entity->getY();
-    double radians = dir * PI / 180.0;
-    int dx = static_cast<int>(round(cos(radians)));
-    int dy = static_cast<int>(round(sin(radians)));
+    auto [dy, dx] = directionToCoordinatesOffset(dir);
     int newX = (currX + dx + cols) % cols;
     int newY = (currY + dy + rows) % rows;
     return {newY, newX};
@@ -173,6 +171,16 @@ bool GameMap::tankCanMoveInDirection(const Tank* tank, Direction dir) const {
                 return !entity->isWall();
             }
     );
+}
+
+const Tank *GameMap::getEnemyTank(int playerNumber) const {
+    if(playerNumber == 1){
+        return *playerTwoTanks.begin();
+    }
+    if(playerNumber == 2){
+        return *playerOneTanks.begin();
+    }
+    return nullptr;
 }
 
 

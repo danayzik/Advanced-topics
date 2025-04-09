@@ -42,7 +42,10 @@ public:
     bool tanksAboutToCollide(Tank* tank1, Tank* tank2);
     void shellsAboutToCollide();
     GameResult getGameResult() const;
+    const Tank* getEnemyTank(int playerNumber)const;
+    inline const vector<vector<Cell>>& getGrid() const{return grid;}
     inline std::pair<Tank*, Tank*> getPlayerTanks(){
         return {*playerOneTanks.begin(),*playerTwoTanks.begin()};}
+
 
 };
