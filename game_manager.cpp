@@ -3,7 +3,7 @@
 #include "entities.h"
 
 
-GameManager::GameManager(Player &playerOne, Player &playerTwo, std::string mapFilePath) : playerOne(playerOne), playerTwo(playerTwo), gameMap(mapFilePath){
+GameManager::GameManager(Player &playerOne, Player &playerTwo, const std::string& mapFilePath) : playerOne(playerOne), playerTwo(playerTwo), gameMap(mapFilePath){
     auto [tank1, tank2] = gameMap.getPlayerTanks();
     playerOne.setTank(tank1);
     playerTwo.setTank(tank2);
@@ -25,20 +25,10 @@ bool GameManager::isLegaLAction(Action action, const Player& player) const{
             return gameMap.tankCanMoveInDirection(tank, tank->getDirection());
         case MoveBackward:
             return gameMap.tankCanMoveInDirection(tank, getOppositeDirection(tank->getDirection()));
-        case RotateLeft45:
-            return true;
-        case RotateRight45:
-            return true;
-        case RotateLeft90:
-            return true;
-        case RotateRight90:
-            return true;
         case Shoot:
             return tank->canFire();
-        case NoAction:
-            return true;
         default:
-            return false;
+            return true;
     }
 }
 
@@ -138,7 +128,7 @@ void GameManager::shellStep() {
 }
 
 void GameManager::gameLoop() {
-    while(gameRunning){
+    while(!gameOverCheck()){
         tankStep();
         if(gameOverCheck())
             break;
@@ -146,6 +136,7 @@ void GameManager::gameLoop() {
         if(gameOverCheck())
             break;
         shellStep();
+
     }
 }
 

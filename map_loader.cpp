@@ -6,6 +6,9 @@
 using std::vector;
 using std::string;
 
+MapData MapLoader::mapData;
+std::ofstream MapLoader::errorLog;
+
 bool MapLoader::openFile(const string &filePath) {
     std::ifstream file(filePath);
     if (!file) {

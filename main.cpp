@@ -5,8 +5,8 @@
 
 int main(int argc, char* argv[]){
     string mapFilePath = argv[1];
-    Player playerOne = Player();
-    Player playerTwo = Player();
+    auto playerOne = ChasingPlayer(1);
+    auto playerTwo = PlayerV1(2);
     GameManager* gameManager = nullptr;
     try {
         gameManager = new GameManager(playerOne, playerTwo, mapFilePath);

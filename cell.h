@@ -7,5 +7,6 @@ using std::unordered_set;
 
 struct Cell {
     unordered_set<GameEntity*> entitySet;
-    bool isPassable() const;
+    bool isPassableForTank() const;
+    bool isPassableForShell() const;
 };

@@ -38,3 +38,15 @@ inline int rotateActionToAngle(Action action){
             return 0;
     }
 }
+//Name does not suggest it can return MoveForward
+inline Action getFirstRotationAction(Direction current, Direction target) {
+    int diff = static_cast<int>(target) - static_cast<int>(current);
+    if (diff > 180) diff -= 360;
+    if (diff < -180) diff += 360;
+    if (diff == 0) return MoveForward;
+    if (diff > 0) {
+        return (diff >= 90) ? Action::RotateRight90 : Action::RotateRight45;
+    } else {
+        return (-diff >= 90) ? Action::RotateLeft90 : Action::RotateLeft45;
+    }
+}

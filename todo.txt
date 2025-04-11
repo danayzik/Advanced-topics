@@ -1,12 +1,18 @@
 
 ToDo:
 Player algo #priority
+Refactor player algo to algorithms that are fields
+Make utilities like bfs/line of sight calculator etc..
+Map without a path between tanks will crash currently due to BFS
 
 
-Reading tanks from the map -> Give players a pointer
+
 Check errors and create error log properly
 
-
+Add constructors to GameMap
+Add create entities api to GameMap
+Simplify APIs
+Think about object ownership
 Think about 3 shell steps on first turn?
 Think about fire cooldown amount
 

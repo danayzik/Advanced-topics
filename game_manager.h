@@ -10,7 +10,7 @@ private:
     Player& playerTwo;
     GameMap gameMap;
     GameResult gameResult = NotOver;
-    bool gameRunning;
+    bool gameRunning = false;
     void gameLoop();
     bool isLegaLAction(Action action, const Player& player) const;
     bool getAndSetAction(Player& player);
@@ -21,7 +21,7 @@ private:
     void tankStep();
 
 public:
-    GameManager(Player& playerOne, Player& playerTwo, string mapFilePath);
+    GameManager(Player& playerOne, Player& playerTwo, const string& mapFilePath);
     GameResult run();
 
 };

@@ -11,24 +11,34 @@ struct CellSearchItem{
 
 class GameManager;
 class Player {
-private:
-    Tank* tank = nullptr;
 
 protected:
     int playerNumber;
+    Tank* tank = nullptr;
 public:
-    virtual Action requestAction(const GameMap& gameMap) = 0;
+    virtual inline Action requestAction(const GameMap& gameMap){return NoAction;}
+    inline explicit Player(int number) : playerNumber(number){}
     [[nodiscard]] inline Tank* getTank() const{return tank;}
     inline void setTank(Tank* newTank){tank = newTank;}
-
 };
 
 
 class ChasingPlayer : public Player{
-private:
 
 public:
     Action requestAction(const GameMap& gameMap) override;
+    inline explicit ChasingPlayer(int num): Player(num){}
+
+};
+
+class PlayerV1 : public Player{
+
+private:
+    [[nodiscard]] int distanceToEnemy(const GameMap& gameMap) const;
+    [[nodiscard]] bool enemyInLineOfSight(const GameMap& gameMap) const;
+public:
+    Action requestAction(const GameMap& gameMap) override;
+    inline explicit PlayerV1(int num): Player(num){}
 
 
 };

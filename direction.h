@@ -1,5 +1,7 @@
 #pragma once
 #include <cmath>
+#include <stdexcept>
+
 constexpr double PI = 3.14159265358979323846;
 
 
@@ -23,4 +25,13 @@ inline std::pair<int, int> directionToCoordinatesOffset(Direction dir){
     double radians = dir * PI / 180.0;
     return {static_cast<int>(round(sin(radians))), static_cast<int>(round(cos(radians)))};
 }
+
+inline Direction offSetToDirection(int dy, int dx){
+    if (dy == 0 && dx == 0) throw std::invalid_argument("Zero offset has no direction.");
+    double angle = atan2(dy, dx) * 180.0 / PI;
+    if (angle < 0) angle += 360.0;
+    int roundedAngle = static_cast<int>(round(angle / 45.0)) * 45 % 360;
+    return static_cast<Direction>(roundedAngle);
+}
+
 
