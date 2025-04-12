@@ -7,7 +7,7 @@
 #include "cell.h"
 #include "direction.h"
 #include "entities.h"
-
+#include "renderer.h"
 using std::unordered_set;
 using std::vector;
 using std::string;
@@ -38,7 +38,7 @@ public:
     void moveEntity(GameEntity* entity, Direction dir);
     void moveShells();
     void createShell(Tank* tank);
-    void checkCollisions();
+    void checkCollisions(Renderer* renderer);
     bool tanksAboutToCollide(Tank* tank1, Tank* tank2);
     void shellsAboutToCollide();
     GameResult getGameResult() const;

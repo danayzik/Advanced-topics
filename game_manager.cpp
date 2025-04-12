@@ -119,13 +119,13 @@ void GameManager::tankStep() {
     }
     actionStep(playerOne);
     actionStep(playerTwo);
-    gameMap.checkCollisions();
+    gameMap.checkCollisions(renderer);
 }
 
 void GameManager::shellStep() {
     gameMap.shellsAboutToCollide();
     gameMap.moveShells();
-    gameMap.checkCollisions();
+    gameMap.checkCollisions(renderer);
 }
 
 void GameManager::gameLoop() {
@@ -133,13 +133,13 @@ void GameManager::gameLoop() {
         tankStep();
         if(gameOverCheck())
             break;
-        renderer->drawGrid(gameMap.getGrid());
+//        renderer->drawGrid(gameMap.getGrid());
         shellStep();
         if(gameOverCheck())
             break;
-        renderer->drawGrid(gameMap.getGrid());
+//        renderer->drawGrid(gameMap.getGrid());
         shellStep();
-        renderer->drawGrid(gameMap.getGrid());
+//        renderer->drawGrid(gameMap.getGrid());
 
     }
 }

@@ -5,7 +5,8 @@ Refactor player algo to algorithms that are fields
 Make utilities like bfs/line of sight calculator etc..
 Map without a path between tanks will crash currently due to BFS
 
-
+Currently dirtyCells are only new locations not old.
+Get simpler API for map.
 
 Check errors and create error log properly
 

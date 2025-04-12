@@ -59,10 +59,10 @@ void SFMLRenderer::drawEntity(const GameEntity* entity){
 }
 
 
-void SFMLRenderer::drawCell(const Cell* cell, int y, int x){
-    sf::RectangleShape square(sf::Vector2f(cellSize, cellSize));
-    float xPos = x*cellSize;
-    float yPos = y*cellSize;
+void SFMLRenderer::drawCell(const Cell* cell){
+    sf::RectangleShape square(sf::Vector2f(static_cast<float>(cellSize), static_cast<float>(cellSize)));
+    auto xPos = static_cast<float>(cell->x*cellSize);
+    auto yPos = static_cast<float>(cell->y*cellSize);
     square.setPosition({xPos, yPos});
     square.setFillColor(sf::Color::Black);
     window.draw(square);
@@ -71,12 +71,18 @@ void SFMLRenderer::drawCell(const Cell* cell, int y, int x){
     }
 }
 
-//void SFMLRenderer::drawDirtyCells(const std::unordered_set<Cell*>)
+void SFMLRenderer::drawCells(const std::unordered_set<Cell*>& cells){
+    for(const Cell* cell : cells){
+        drawCell(cell);
+    }
+    window.display();
+
+}
 
 void SFMLRenderer::drawGrid(const std::vector<std::vector<Cell>>& grid){
-    for (std::size_t i = 0; i < grid.size(); ++i) {
-        for (std::size_t j = 0; j < grid[i].size(); ++j) {
-            drawCell(&grid[i][j], i, j);
+    for (const auto & row : grid) {
+        for (const auto & cell : row) {
+            drawCell(&cell);
         }
     }
     window.display();

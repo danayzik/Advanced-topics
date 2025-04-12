@@ -4,14 +4,14 @@
 #include "map_loader.h"
 #include "entities.h"
 #include <algorithm>
-
+#include "renderer.h"
 
 
 GameMap::GameMap(const string& filePath) {
     MapData mapData = MapLoader::loadMap(filePath);
     rows = mapData.rows;
     cols = mapData.cols;
-    grid = mapData.grid;
+    grid = std::move(mapData.grid);
     playerOneTanks.insert(mapData.tank1);
     playerTwoTanks.insert(mapData.tank2);
 }
@@ -142,7 +142,7 @@ void GameMap::createShell(Tank* tank) {
 }
 
 
-void GameMap::checkCollisions(){
+void GameMap::checkCollisions(Renderer* renderer){
     unordered_set<Cell*> dirtyCells;
     for (Tank* tank : playerOneTanks) {
         Cell* tankCell = tank->getCell();
@@ -157,6 +157,7 @@ void GameMap::checkCollisions(){
         dirtyCells.insert(shellCell);
     }
     resolveCollisions(dirtyCells);
+    renderer->drawCells(dirtyCells);
 }
 
 

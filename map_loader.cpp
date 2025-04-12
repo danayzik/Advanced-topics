@@ -23,7 +23,6 @@ bool MapLoader::readDimensions(const string &filePath) {
     int rows, cols;
     file >> rows >> cols;
     file.ignore();
-
     if (rows <= 0 || cols <= 0) {
         std::cerr << "Invalid dimensions in the input file." << std::endl;
         return false;
@@ -31,6 +30,12 @@ bool MapLoader::readDimensions(const string &filePath) {
     mapData.rows = rows;
     mapData.cols = cols;
     mapData.grid = vector<vector<Cell>>(rows, vector<Cell>(cols));
+    for (int y = 0; y < rows; ++y) {
+    for (int x = 0; x < cols; ++x) {
+        mapData.grid[y][x].x = x;
+        mapData.grid[y][x].y = y;
+    }
+}
     return true;
 }
 

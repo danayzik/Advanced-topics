@@ -24,5 +24,6 @@ public:
     SFMLRenderer(unsigned int rows, unsigned int cols);
     void initialize() override;
     void drawGrid(const std::vector<std::vector<Cell>>& grid) override;
-    void drawCell(const Cell* cell, int y, int x) override;
+    void drawCell(const Cell* cell) override;
+    void drawCells(const unordered_set<Cell*>& cells) override;
 };
