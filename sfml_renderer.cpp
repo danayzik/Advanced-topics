@@ -1,29 +1,29 @@
 #include "sfml_renderer.h"
 
-void SFMLRenderer::initialize(int r, int c) {
-    rows = r;
-    cols = c;
-    sf::Vector2<unsigned int> dimensions = sf::Vector2(cols * cellSize, rows * cellSize);
-    window.create(sf::VideoMode(dimensions), "tank_game", sf::State::Windowed);
+SFMLRenderer::SFMLRenderer(unsigned int rows, unsigned int cols)  : rows(rows), cols(cols), screenWidth(cols*cellSize) , screenHeight(rows * cellSize){
+    windowSize = {screenWidth, screenHeight};}
+
+void SFMLRenderer::initialize() {
+    window.create(sf::VideoMode(windowSize), "tank_game", sf::State::Windowed);
 }
 
-void SFMLRenderer::render() {
-    window.clear();
-
-    for (auto& wall : walls) window.draw(wall);
-    for (auto& mine : mines) window.draw(mine);
-    for (auto& tank : tanks) window.draw(tank);
-
-    window.display();
+void SFMLRenderer::drawEntity(GameEntity* entity){
 
 }
 
 void SFMLRenderer::drawWall(int y, int x) {
-    sf::RectangleShape wall(sf::Vector2f(cellSize, cellSize));
-    wall.setFillColor(sf::Color::Blue);
+    sf::Texture texture(wallImagePath);
+    sf::Sprite sprite(texture);
+    sf::Vector2u originalSize = texture.getSize();
+    float targetWidth = 32.f;
+    float targetHeight = 32.f;
+    sprite.setScale(
+            {targetWidth / originalSize.x,
+            targetHeight / originalSize.y}
+    );
     sf::Vector2f position = sf::Vector2f(x * cellSize, y * cellSize);
-    wall.setPosition(position);
-    walls.push_back(wall);
+    sprite.setPosition(position);
+    window.draw(sprite);
 }
 
 void SFMLRenderer::drawMine(int y, int x) {
@@ -40,4 +40,8 @@ void SFMLRenderer::drawTank(int y, int x, int playerNumber) {
     sf::Vector2f position = sf::Vector2f(x * cellSize, y * cellSize);
     tank.setPosition(position);
     tanks.push_back(tank);
+}
+
+void SFMLRenderer::drawCell(const Cell* cell, int y, int x){
+    return;
 }

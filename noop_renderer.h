@@ -8,4 +8,5 @@ public:
     void drawTank(int y, int x, int playerNumber) override {}
     void drawWall(int y, int x) override {}
     void drawMine(int y, int x) override {}
+    void drawCell(const Cell* cell) override {}
 };
