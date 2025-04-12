@@ -1,9 +1,10 @@
 #include "game_manager.h"
 #include "game_map.h"
 #include "entities.h"
-
+#include "sfml_renderer.h"
 
 GameManager::GameManager(Player &playerOne, Player &playerTwo, const std::string& mapFilePath) : playerOne(playerOne), playerTwo(playerTwo), gameMap(mapFilePath){
+    renderer = new SFMLRenderer(gameMap.getCols(), gameMap.getRows());
     auto [tank1, tank2] = gameMap.getPlayerTanks();
     playerOne.setTank(tank1);
     playerTwo.setTank(tank2);
@@ -132,10 +133,13 @@ void GameManager::gameLoop() {
         tankStep();
         if(gameOverCheck())
             break;
+        renderer->drawGrid(gameMap.getGrid());
         shellStep();
         if(gameOverCheck())
             break;
+        renderer->drawGrid(gameMap.getGrid());
         shellStep();
+        renderer->drawGrid(gameMap.getGrid());
 
     }
 }
@@ -143,6 +147,8 @@ void GameManager::gameLoop() {
 
 GameResult GameManager::run() {
     gameRunning = true;
+    renderer->initialize();
+    renderer->drawGrid(gameMap.getGrid());
     gameLoop();
     return gameResult;
 }

@@ -19,6 +19,7 @@ add_executable(tank_game tank.cpp
         game_manager.cpp
         cell.cpp
         player_v1.cpp
+        sfml_renderer.cpp
         chasing_player.cpp)
 target_compile_features(tank_game PRIVATE cxx_std_17)
 target_link_libraries(tank_game PRIVATE SFML::Graphics)

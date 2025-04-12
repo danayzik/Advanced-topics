@@ -19,11 +19,10 @@ private:
     std::filesystem::path shellImagePath = "C:\\Users\\danay\\CLionProjects\\Advanced-topics\\assets\\shell.png";
 
 public:
+    std::filesystem::path getImagePath(const GameEntity* entity) const;
+    void drawEntity(const GameEntity* entity);
     SFMLRenderer(unsigned int rows, unsigned int cols);
     void initialize() override;
-    void render() override;
-    void drawTank(int y, int x, int playerNumber) override;
-    void drawWall(int y, int x) override;
-    void drawMine(int y, int x) override;
-    void drawCell(const Cell* cell, int y, int x);
+    void drawGrid(const std::vector<std::vector<Cell>>& grid) override;
+    void drawCell(const Cell* cell, int y, int x) override;
 };

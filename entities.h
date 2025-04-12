@@ -9,6 +9,11 @@ enum TankMode {
     JustEnteredReverse,
     ReverseMode
 };
+enum Owner{
+    Game,
+    PlayerOne,
+    PlayerTwo
+};
 
 class GameEntity{
 protected:
@@ -16,15 +21,19 @@ protected:
     int xCoord;
     int yCoord;
     int health;
+    Owner owner = Game;
 
 public:
     inline virtual ~GameEntity(){
         cell->entitySet.erase(this);
     }
+    inline void setOwner(Owner newOwner){owner = newOwner;}
+    [[nodiscard]] inline Owner getOwner() const{return owner;}
     inline GameEntity(int y, int x, Cell* cell) : xCoord(x), yCoord(y), cell(cell){health = 1;}
     [[nodiscard]] inline Cell* getCell() const{
         return cell;
     }
+    [[nodiscard]] inline int getHealth() const {return health;}
     inline void setCell(Cell* newCell){
         cell = newCell;
     }
@@ -71,7 +80,6 @@ public:
     Action consumeAction();
     void setAction(Action action);
     void tickUpdate();
-
 
 
 };

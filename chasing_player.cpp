@@ -26,10 +26,10 @@ CellSearchItem bfs(const GameMap& gameMap, const Tank* enemyTank, const Tank* yo
     const auto& grid = gameMap.getGrid();
     queue<CellSearchItem> bfsQueue;
     vector<vector<bool>> visited(rows, vector<bool>(cols, false));
-    bfsQueue.push({enemyY, enemyX, 0});
+    bfsQueue.emplace(enemyY, enemyX, 0);
     visited[enemyY][enemyX] = true;
     bool reached = false;
-    while (!bfsQueue.empty() || reached) {
+    while (!bfsQueue.empty() || !reached) {
         CellSearchItem current = bfsQueue.front();
         bfsQueue.pop();
         for (const auto& direction : directions) {

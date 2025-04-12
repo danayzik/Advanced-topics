@@ -7,6 +7,8 @@ struct CellSearchItem{
     int y;
     int x;
     int distanceFromTarget;
+    CellSearchItem(int y, int x , int distance): y(y), x(x), distanceFromTarget(distance){}
+    CellSearchItem() = default;
 };
 
 class GameManager;

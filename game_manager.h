@@ -2,6 +2,7 @@
 #include "players.h"
 #include "actions.h"
 #include "game_map.h"
+#include "renderer.h"
 using std::string;
 
 class GameManager{
@@ -9,6 +10,7 @@ private:
     Player& playerOne;
     Player& playerTwo;
     GameMap gameMap;
+    Renderer* renderer;
     GameResult gameResult = NotOver;
     bool gameRunning = false;
     void gameLoop();

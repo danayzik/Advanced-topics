@@ -37,6 +37,7 @@ bool MapLoader::readDimensions(const string &filePath) {
 void MapLoader::processMapData(const string &filePath) {
     std::ifstream file(filePath);
     string line;
+    std::getline(file, line);
     int tank1Count = 0;
     int tank2Count = 0;
     int y = 0;
@@ -72,6 +73,7 @@ void MapLoader::handleCell(char cell, int y, int x, int &tank1Count, int &tank2C
         case '1':
             if (tank1Count < 1) {
                 Tank* tank = new Tank(y, x, &mapData.grid[y][x]);
+                tank->setOwner(PlayerOne);
                 mapData.grid[y][x].entitySet.insert(tank);
                 mapData.tank1 = tank;
                 tank1Count++;
@@ -80,6 +82,7 @@ void MapLoader::handleCell(char cell, int y, int x, int &tank1Count, int &tank2C
         case '2':
             if (tank2Count < 1) {
                 Tank* tank = new Tank(y, x, &mapData.grid[y][x]);
+                tank->setOwner(PlayerTwo);
                 mapData.grid[y][x].entitySet.insert(tank);
                 mapData.tank2 = tank;
                 tank2Count++;
