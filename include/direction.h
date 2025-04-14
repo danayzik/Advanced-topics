@@ -33,5 +33,14 @@ inline Direction offSetToDirection(int dy, int dx){
     int roundedAngle = static_cast<int>(round(angle / 45.0)) * 45 % 360;
     return static_cast<Direction>(roundedAngle);
 }
+inline int getDirectionDiff(Direction currDirection, Direction targetDirection){
+    return (static_cast<int>(targetDirection) - static_cast<int>(currDirection) + 540) % 360 - 180;
+}
+
+inline int minimalRotationsNeeded(Direction currDirection, Direction targetDirection){
+    if(currDirection == targetDirection) return 0;
+    int diff = std::abs(getDirectionDiff(currDirection, targetDirection));
+    return diff > 90 ? 2 : 1;
+}
 
 

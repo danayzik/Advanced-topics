@@ -1,42 +1,56 @@
-#include "sfml_renderer.h"
+#include "../include/sfml_renderer.h"
 
 SFMLRenderer::SFMLRenderer(unsigned int rows, unsigned int cols)  : rows(rows), cols(cols), screenWidth(cols*cellSize) , screenHeight(rows * cellSize){
     windowSize = {screenWidth, screenHeight};}
 
 void SFMLRenderer::initialize() {
     window.create(sf::VideoMode(windowSize), "tank_game", sf::State::Windowed);
+
+    if (!blueTankTexture.loadFromFile(blueTankImagePath))
+        throw std::runtime_error("Failed to fetch image: " + blueTankImagePath.string());
+
+    if (!greenTankTexture.loadFromFile(greenTankImagePath))
+        throw std::runtime_error("Failed to fetch image: " + greenTankImagePath.string());
+
+    if (!mineTexture.loadFromFile(mineImagePath))
+        throw std::runtime_error("Failed to fetch image: " + mineImagePath.string());
+
+    if (!wallTexture.loadFromFile(wallImagePath))
+        throw std::runtime_error("Failed to fetch image: " + wallImagePath.string());
+
+    if (!crackedWallTexture.loadFromFile(crackedWallImagePath))
+        throw std::runtime_error("Failed to fetch image: " + crackedWallImagePath.string());
+
+    if (!shellTexture.loadFromFile(shellImagePath))
+        throw std::runtime_error("Failed to fetch image: " + shellImagePath.string());
+
 }
-std::filesystem::path SFMLRenderer::getImagePath (const GameEntity* entity) const{
-    std::filesystem::path imagePath;
+const sf::Texture& SFMLRenderer::getTexture(const GameEntity* entity) const{
     if(entity->isMine())
-        imagePath = mineImagePath;
+        return mineTexture;
     if(entity->isWall()) {
         if (entity->getHealth() == 1) {
-            imagePath = crackedWallImagePath;
+            return crackedWallTexture;
         } else {
-            imagePath = wallImagePath;
+            return wallTexture;
         }
-
     }
     if(entity->isShell()){
-        imagePath = shellImagePath;
+        return shellTexture;
     }
     if(entity->isTank()){
         if(entity->getOwner() == PlayerOne){
-            imagePath = blueTankImagePath;
+            return blueTankTexture;
         }
         if(entity->getOwner() == PlayerTwo){
-            imagePath = greenTankImagePath;
+            return greenTankTexture;
         }
     }
-    return imagePath;
+    return shellTexture; //Default, need to add error image
 }
 
 void SFMLRenderer::drawEntity(const GameEntity* entity){
-    sf::Texture texture;
-    if(!texture.loadFromFile(getImagePath(entity))){
-        //Throw error
-    }
+    const sf::Texture& texture = getTexture(entity);
     sf::Sprite sprite(texture);
     sf::Vector2u originalSize = texture.getSize();
     float targetWidth = cellSize;
@@ -71,15 +85,9 @@ void SFMLRenderer::drawCell(const Cell* cell){
     }
 }
 
-void SFMLRenderer::drawCells(const std::unordered_set<Cell*>& cells){
-    for(const Cell* cell : cells){
-        drawCell(cell);
-    }
-    window.display();
-
-}
 
 void SFMLRenderer::drawGrid(const std::vector<std::vector<Cell>>& grid){
+    window.clear();
     for (const auto & row : grid) {
         for (const auto & cell : row) {
             drawCell(&cell);

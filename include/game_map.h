@@ -11,7 +11,7 @@
 using std::unordered_set;
 using std::vector;
 using std::string;
-
+class MapLoader;
 enum GameResult{
     PlayerOneWin,
     PlayerTwoWin,
@@ -25,6 +25,7 @@ private:
     unordered_set<Tank*> playerOneTanks;
     unordered_set<Tank*> playerTwoTanks;
     unordered_set<Shell*> shells;
+    Renderer* renderer;
     int rows;
     int cols;
     std::pair<int, int> getNewPosition(const GameEntity* entity, Direction dir) const;
@@ -33,21 +34,22 @@ private:
 
 
 public:
-    explicit GameMap(const string& filePath);
+    explicit GameMap(const string& filePath, bool visuals = false);
     bool tankCanMoveInDirection(const Tank* tank, Direction dir) const;
     void moveEntity(GameEntity* entity, Direction dir);
     void moveShells();
     void createShell(Tank* tank);
-    void checkCollisions(Renderer* renderer);
+    void checkCollisions();
     bool tanksAboutToCollide(Tank* tank1, Tank* tank2);
     void shellsAboutToCollide();
-    GameResult getGameResult() const;
-    const Tank* getEnemyTank(int playerNumber)const;
-    inline int getRows() const{return rows;}
-    inline int getCols() const{return cols;}
-    inline const vector<vector<Cell>>& getGrid() const{return grid;}
+    [[nodiscard]] GameResult getGameResult() const;
+    [[nodiscard]] const Tank* getEnemyTank(int playerNumber)const;
+    [[nodiscard]] inline int getRows() const{return rows;}
+    [[nodiscard]] inline int getCols() const{return cols;}
+    void updateVisuals();
+    [[nodiscard]] inline const vector<vector<Cell>>& getGrid() const{return grid;}
+    friend MapLoader;
     inline std::pair<Tank*, Tank*> getPlayerTanks(){
         return {*playerOneTanks.begin(),*playerTwoTanks.begin()};}
-
 
 };

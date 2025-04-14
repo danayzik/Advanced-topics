@@ -1,5 +1,5 @@
-#include "cell.h"
-#include "entities.h"
+#include "../include/cell.h"
+#include "../include/entities.h"
 #include <algorithm>
 
 bool Cell::isPassableForTank() const {

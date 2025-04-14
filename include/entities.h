@@ -16,7 +16,9 @@ enum Owner{
 };
 
 class GameEntity{
+
 protected:
+
     Cell* cell;
     int xCoord;
     int yCoord;
@@ -27,9 +29,10 @@ public:
     inline virtual ~GameEntity(){
         cell->entitySet.erase(this);
     }
+
     inline void setOwner(Owner newOwner){owner = newOwner;}
     [[nodiscard]] inline Owner getOwner() const{return owner;}
-    inline GameEntity(int y, int x, Cell* cell) : xCoord(x), yCoord(y), cell(cell){health = 1;}
+    inline GameEntity(int y, int x, Cell* cell) : xCoord(x), yCoord(y), cell(cell){health = 1; }
     [[nodiscard]] inline Cell* getCell() const{
         return cell;
     }
@@ -53,7 +56,7 @@ public:
     [[nodiscard]] inline virtual bool isTank() const{return false;}
     [[nodiscard]] inline virtual bool isShell() const{return false;}
     [[nodiscard]] inline bool isAlive() const{return health>0;}
-    inline bool hit() {health--;return health>0;}
+    inline void hit() {health--;}
 };
 
 class Tank : public GameEntity{

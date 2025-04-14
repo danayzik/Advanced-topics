@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 project(tank_game LANGUAGES CXX)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 include(FetchContent)
 FetchContent_Declare(SFML
@@ -12,15 +12,16 @@ FetchContent_Declare(SFML
         SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(tank_game tank.cpp
-        main.cpp
-        map_loader.cpp
-        game_map.cpp
-        game_manager.cpp
-        cell.cpp
-        player_v1.cpp
-        sfml_renderer.cpp
-        chasing_player.cpp)
+add_executable(tank_game src/tank.cpp
+        src/main.cpp
+        src/map_loader.cpp
+        src/game_map.cpp
+        src/game_manager.cpp
+        src/cell.cpp
+        src/sfml_renderer.cpp
+        src/chasing_algorithm.cpp
+        src/algorithm_v1.cpp
+)
 target_compile_features(tank_game PRIVATE cxx_std_17)
 target_link_libraries(tank_game PRIVATE SFML::Graphics)
 

@@ -7,23 +7,30 @@ using std::string;
 
 class GameManager{
 private:
+
+    std::ofstream outputFile;
     Player& playerOne;
     Player& playerTwo;
     GameMap gameMap;
-    Renderer* renderer;
     GameResult gameResult = NotOver;
+    int stepCounter = 1;
     bool gameRunning = false;
+    bool visuals;
+    int stepsPerSecond = 2;
     void gameLoop();
-    bool isLegaLAction(Action action, const Player& player) const;
+    [[nodiscard]] bool isLegaLAction(Action action, const Player& player) const;
     bool getAndSetAction(Player& player);
     void tanksTickUpdate();
     void actionStep(Player& player);
     bool gameOverCheck();
     void shellStep();
     void tankStep();
+    void logAction(Action action, int playerNumber);
 
 public:
-    GameManager(Player& playerOne, Player& playerTwo, const string& mapFilePath);
+    GameManager(Player& playerOne, Player& playerTwo, const string& mapFilePath, bool visuals = false);
     GameResult run();
+    ~GameManager();
+
 
 };

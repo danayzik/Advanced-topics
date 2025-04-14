@@ -1,10 +1,10 @@
-#include "game_manager.h"
-#include "game_map.h"
-#include "entities.h"
-#include "sfml_renderer.h"
-
-GameManager::GameManager(Player &playerOne, Player &playerTwo, const std::string& mapFilePath) : playerOne(playerOne), playerTwo(playerTwo), gameMap(mapFilePath){
-    renderer = new SFMLRenderer(gameMap.getCols(), gameMap.getRows());
+#include "../include/game_manager.h"
+#include "../include/game_map.h"
+#include "../include/entities.h"
+#include "../include/sfml_renderer.h"
+#include <thread>
+using namespace std::chrono;
+GameManager::GameManager(Player &playerOne, Player &playerTwo, const std::string& mapFilePath, bool visuals) : playerOne(playerOne), playerTwo(playerTwo), gameMap(mapFilePath, visuals), visuals(visuals){
     auto [tank1, tank2] = gameMap.getPlayerTanks();
     playerOne.setTank(tank1);
     playerTwo.setTank(tank2);
@@ -43,7 +43,7 @@ bool GameManager::getAndSetAction(Player& player){ // Check
     Tank* tank = player.getTank();
     Action action = player.requestAction(gameMap);
     TankMode mode = tank->getMode();
-    if(isLegaLAction(action, playerOne)){
+    if(isLegaLAction(action, player)){
         bool inReverse = mode == ReverseMode;
         bool preparingReverse = mode == PreparingReverse;
         bool justEnteredReverse = mode == JustEnteredReverse;
@@ -67,9 +67,11 @@ bool GameManager::getAndSetAction(Player& player){ // Check
             tank->setMode(ReverseMode);
             return true;
         }
+        logAction(action, player.getPlayerNumber());
         tank->setAction(action);
         return true;
     }
+    outputFile << "Player" << player.getPlayerNumber() << " bad step."  << '\n';
     return false;
 }
 
@@ -119,36 +121,65 @@ void GameManager::tankStep() {
     }
     actionStep(playerOne);
     actionStep(playerTwo);
-    gameMap.checkCollisions(renderer);
+    gameMap.checkCollisions();
 }
 
 void GameManager::shellStep() {
+    const auto stepDuration = milliseconds(1000 / stepsPerSecond);
+    auto start = steady_clock::now();
     gameMap.shellsAboutToCollide();
     gameMap.moveShells();
-    gameMap.checkCollisions(renderer);
+    gameMap.checkCollisions();
+    gameMap.updateVisuals();
+    auto end = steady_clock::now();
+    auto elapsed = duration_cast<milliseconds>(end - start);
+    if (elapsed < stepDuration && visuals) {
+        std::this_thread::sleep_for(stepDuration - elapsed);
+    }
 }
 
 void GameManager::gameLoop() {
     while(!gameOverCheck()){
+        outputFile << "Step " << stepCounter << '\n';
         tankStep();
         if(gameOverCheck())
             break;
-//        renderer->drawGrid(gameMap.getGrid());
         shellStep();
         if(gameOverCheck())
             break;
-//        renderer->drawGrid(gameMap.getGrid());
         shellStep();
-//        renderer->drawGrid(gameMap.getGrid());
-
+        stepCounter++;
     }
 }
 
+void GameManager::logAction(Action action, int playerNumber) {
+    if (outputFile.is_open()) {
+        outputFile << "Player" << playerNumber << " " << actionToString(action) << '\n';
+    }
+}
 
 GameResult GameManager::run() {
+    outputFile.open("output.txt");
     gameRunning = true;
-    renderer->initialize();
-    renderer->drawGrid(gameMap.getGrid());
     gameLoop();
     return gameResult;
+}
+
+GameManager::~GameManager(){
+    if (outputFile.is_open()) {
+        switch(gameResult){
+            case PlayerOneWin:
+                outputFile << "Player 1 wins" << '\n';
+                break;
+            case PlayerTwoWin:
+                outputFile << "Player 2 wins" << '\n';
+                break;
+            case Draw:
+                outputFile << "Game ended in a draw" << '\n';
+                break;
+            default:
+                outputFile << "An error has occurred" << '\n';
+        }
+        outputFile.close();
+    }
 }

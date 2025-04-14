@@ -1,5 +1,5 @@
-#include "entities.h"
-#include "direction.h"
+#include "../include/entities.h"
+#include "../include/direction.h"
 
 
 void Tank::rotate(int rotationAmount) {
@@ -11,7 +11,7 @@ void Tank::rotate(int rotationAmount) {
 void Tank::setMode(TankMode newMode){
     mode = newMode;
     if(newMode == PreparingReverse){
-        preparingReverseCounter = 2;//maybe 3?
+        preparingReverseCounter = 2;
     }
 }
 
@@ -41,6 +41,7 @@ bool Tank::canFire() const {
 
 void Tank::fire() {
     shellCount--;
+    stepsSinceLastShot = 0;
 }
 
 void Tank::setAction(Action action) {

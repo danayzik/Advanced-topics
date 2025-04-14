@@ -1,30 +1,51 @@
 
 ToDo:
-Player algo #priority
-Refactor player algo to algorithms that are fields
+CHECK OffsetToDirection in direction.h
+
+Algo:
+Improve simple Algo
 Make utilities like bfs/line of sight calculator etc..
-Map without a path between tanks will crash currently due to BFS
+Map without a path between tanks will crash currently due to BFS //possibly okay, think
+Refactor distance as utility
+Chasing shoots if in LOS and distance < 4
 
-Currently dirtyCells are only new locations not old.
+Remove binary heap
+
+Action:
+Change name/function for getFirstRotationAction, used in chasing_algo
+
+
+GameMap:
 Get simpler API for map.
-
-Check errors and create error log properly
-
-Add constructors to GameMap
+Add different constructors to GameMap
 Add create entities api to GameMap
-Simplify APIs
-Think about object ownership
-Think about 3 shell steps on first turn?
-Think about fire cooldown amount
+Simplify API
 
+
+
+GameManager:
+
+Add different constructors to GameManager
 40 steps after using all shells
+Check move backward requests
 
+
+Entities:
+Think about 3 shell steps on first turn?
+
+
+
+Players:
 Make tanks for players const?
+
+
+General:
 Think about destructors
+Think about object ownership
 Think about potentially using stack objects and not pointers
-Fix maploader handle errors
 
-Bonus:
 
-Create game log
-Create visuals
+Visuals:
+Add cmake option for visuals
+
+

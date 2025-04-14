@@ -1,19 +1,24 @@
 
 #include <sstream>
-#include "game_map.h"
-#include "map_loader.h"
-#include "entities.h"
+#include "../include/game_map.h"
+#include "../include/map_loader.h"
 #include <algorithm>
-#include "renderer.h"
+#include "../include/sfml_renderer.h"
+#include "../include/noop_renderer.h"
 
 
-GameMap::GameMap(const string& filePath) {
-    MapData mapData = MapLoader::loadMap(filePath);
-    rows = mapData.rows;
-    cols = mapData.cols;
-    grid = std::move(mapData.grid);
-    playerOneTanks.insert(mapData.tank1);
-    playerTwoTanks.insert(mapData.tank2);
+GameMap::GameMap(const string& filePath, bool visuals) {
+    rows = 0;
+    cols = 0;
+    MapLoader::loadMap(filePath, this);
+    if(visuals){
+        renderer = new SFMLRenderer(rows, cols);
+    }
+    else{
+        renderer = new NoOpRenderer();
+    }
+    renderer->initialize();
+    renderer->drawGrid(grid);
 }
 
 GameResult GameMap::getGameResult() const {
@@ -41,10 +46,10 @@ void GameMap::resolveCollisions(const std::unordered_set<Cell*>& dirtyCells) {
                 if (!b->isAlive()) continue;
 
                 if (!(a->isShell() && b->isMine() || a->isMine() && b->isShell()) ) {
-                    bool aDead = a->hit();
-                    bool bDead = b->hit();
-                    if (aDead) toDelete.insert(a);
-                    if (bDead) toDelete.insert(b);
+                    a->hit();
+                    b->hit();
+                    if (!a->isAlive()) toDelete.insert(a);
+                    if (!b->isAlive()) toDelete.insert(b);
                 }
             }
         }
@@ -57,6 +62,11 @@ void GameMap::resolveCollisions(const std::unordered_set<Cell*>& dirtyCells) {
         }
         delete e;
     }
+}
+
+void GameMap::updateVisuals() {
+    renderer->drawGrid(grid);
+
 }
 
 bool GameMap::tanksAboutToCollide(Tank* tank1,Tank* tank2){
@@ -139,10 +149,11 @@ void GameMap::createShell(Tank* tank) {
     auto* shell = new Shell(y, x, cell, tank->getDirection());
     cell->entitySet.insert(shell);
     shells.insert(shell);
+
 }
 
 
-void GameMap::checkCollisions(Renderer* renderer){
+void GameMap::checkCollisions(){
     unordered_set<Cell*> dirtyCells;
     for (Tank* tank : playerOneTanks) {
         Cell* tankCell = tank->getCell();
@@ -157,7 +168,6 @@ void GameMap::checkCollisions(Renderer* renderer){
         dirtyCells.insert(shellCell);
     }
     resolveCollisions(dirtyCells);
-    renderer->drawCells(dirtyCells);
 }
 
 

@@ -1,4 +1,4 @@
-#include "binary_heap.h"
+#include "../include/binary_heap.h"
 
 
 template <typename T>
