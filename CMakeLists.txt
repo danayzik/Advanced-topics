@@ -3,6 +3,7 @@ project(tank_game LANGUAGES CXX)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 
+
 include(FetchContent)
 FetchContent_Declare(SFML
         GIT_REPOSITORY https://github.com/SFML/SFML.git
@@ -21,6 +22,7 @@ add_executable(tank_game src/tank.cpp
         src/sfml_renderer.cpp
         src/chasing_algorithm.cpp
         src/algorithm_v1.cpp
+        src/algorithms.cpp
 )
 target_compile_features(tank_game PRIVATE cxx_std_17)
 target_link_libraries(tank_game PRIVATE SFML::Graphics)
