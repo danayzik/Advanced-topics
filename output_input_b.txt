@@ -1,0 +1,10 @@
+Step 1
+Player1 RotateLeft45
+Player2 bad step.
+Step 2
+Player1 Shoot
+Player2 bad step.
+Step 3
+Player1 MoveForward
+Player2 bad step.
+Player 1 wins

@@ -64,7 +64,7 @@ private:
     Direction currDirection = Up;
     int shellCount = 16;
     int stepsSinceLastShot = 100; // Placeholder initial value
-    int preparingReverseCounter = -1;
+    int preparingReverseCounter = -1;// Placeholder initial value
     Action nextStepAction = NoAction;
     TankMode mode = NormalMode;
 
@@ -79,6 +79,7 @@ public:
     [[nodiscard]] bool canFire() const;
     void rotate(int rotationAmount);
     void setMode(TankMode newMode);
+    [[nodiscard]] inline bool hasShells() const{return shellCount>0;}
     void fire();
     Action consumeAction();
     void setAction(Action action);

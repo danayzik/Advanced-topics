@@ -13,7 +13,7 @@ class MapLoader {
 private:
 
     static std::stringstream errorBuffer;
-    static bool openFile(const string& filePath, GameMap* gameMap);
+    static bool openFile(const string& filePath);
     static bool readDimensions(const string& filePath, GameMap* gameMap);
     static void processMapData(const string& filePath, GameMap* gameMap);
     static void processRow(const string& line, int y, int& tank1Count, int& tank2Count, GameMap* gameMap);

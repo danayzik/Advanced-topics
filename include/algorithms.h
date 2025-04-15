@@ -25,17 +25,7 @@ struct HeapNode{
     }
 };
 
-inline int distanceBetweenTanks(const GameMap &gameMap, const Tank* tank1, const Tank* tank2){
-    int rows = gameMap.getRows();
-    int cols = gameMap.getCols();
-    int firstY = tank1->getY();
-    int firstX = tank1->getX();
-    int secondY = tank2->getY();
-    int secondX = tank2->getX();
-    int dy = std::min(abs(secondY - firstY), rows - abs(secondY - firstY));
-    int dx = std::min(std::abs(secondX - firstX), cols - std::abs(secondX - firstX));
-    return std::max(dy, dx);
-}
+
 
 
 
@@ -43,6 +33,9 @@ class Algorithm{
 public:
     virtual Action getAction(const GameMap& gameMap, int playerNumber, const Tank* myTank) = 0;
     virtual ~Algorithm() = default;
+    static int distanceBetweenTanks(const GameMap &gameMap, const Tank* tank1, const Tank* tank2);
+    static bool enemyInLineOfSight(const GameMap &gameMap, const Tank* enemyTank, const Tank* myTank);
+    static Action rotationTowardsEnemy(const Tank* enemyTank, const Tank* myTank);
 };
 
 
@@ -72,8 +65,6 @@ public:
 };
 
 class AlgorithmV1 : public Algorithm{
-private:
-    bool enemyInLineOfSight(const GameMap &gameMap, const Tank* enemyTank, const Tank* myTank) const;
 
 public:
     Action getAction(const GameMap& gameMap, int playerNumber, const Tank* myTank) override;

@@ -25,6 +25,15 @@ inline std::pair<int, int> directionToCoordinatesOffset(Direction dir){
     double radians = dir * PI / 180.0;
     return {static_cast<int>(round(sin(radians))), static_cast<int>(round(cos(radians)))};
 }
+inline Direction getDirectionBetweenPoints(int y1, int x1, int y2, int x2){
+    double dy = y2 - y1;
+    double dx = x2 - x1;
+    double angle = std::atan2(dy, dx) * (180.0 / PI);
+    if (angle < 0) angle += 360.0;
+    int snapped = static_cast<int>(std::round(angle / 45.0)) * 45 % 360;
+
+    return static_cast<Direction>(snapped);
+}
 
 inline Direction offSetToDirection(int dy, int dx){
     if (dy == 0 && dx == 0) throw std::invalid_argument("Zero offset has no direction.");

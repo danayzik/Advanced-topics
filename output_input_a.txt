@@ -1,0 +1,118 @@
+Step 1
+Player1 RotateRight90
+Player2 RotateLeft90
+Step 2
+Player1 MoveForward
+Player2 RotateLeft90
+Step 3
+Player1 MoveForward
+Player2 MoveForward
+Step 4
+Player1 MoveForward
+Player2 MoveForward
+Step 5
+Player1 MoveForward
+Player2 RotateLeft45
+Step 6
+Player1 MoveForward
+Player2 MoveForward
+Step 7
+Player1 MoveForward
+Player2 bad step.
+Step 8
+Player1 MoveForward
+Player2 bad step.
+Step 9
+Player1 MoveForward
+Player2 bad step.
+Step 10
+Player1 MoveForward
+Player2 bad step.
+Step 11
+Player1 MoveForward
+Player2 bad step.
+Step 12
+Player1 MoveForward
+Player2 bad step.
+Step 13
+Player1 MoveForward
+Player2 bad step.
+Step 14
+Player1 MoveForward
+Player2 bad step.
+Step 15
+Player1 MoveForward
+Player2 bad step.
+Step 16
+Player1 MoveForward
+Player2 bad step.
+Step 17
+Player1 MoveForward
+Player2 bad step.
+Step 18
+Player1 MoveForward
+Player2 bad step.
+Step 19
+Player1 MoveForward
+Player2 bad step.
+Step 20
+Player1 MoveForward
+Player2 bad step.
+Step 21
+Player1 MoveForward
+Player2 bad step.
+Step 22
+Player1 MoveForward
+Player2 bad step.
+Step 23
+Player1 RotateRight45
+Player2 bad step.
+Step 24
+Player1 MoveForward
+Player2 bad step.
+Step 25
+Player1 MoveForward
+Player2 bad step.
+Step 26
+Player1 RotateRight45
+Player2 bad step.
+Step 27
+Player1 MoveForward
+Player2 bad step.
+Step 28
+Player1 RotateRight45
+Player2 RotateLeft45
+Step 29
+Player1 MoveForward
+Player2 MoveForward
+Step 30
+Player1 MoveForward
+Player2 MoveForward
+Step 31
+Player1 MoveForward
+Player2 MoveForward
+Step 32
+Player1 MoveForward
+Player2 MoveForward
+Step 33
+Player1 MoveForward
+Player2 MoveForward
+Step 34
+Player1 MoveForward
+Player2 MoveForward
+Step 35
+Player1 MoveForward
+Player2 MoveForward
+Step 36
+Player1 RotateRight45
+Player2 Shoot
+Step 37
+Player1 MoveForward
+Player2 MoveForward
+Step 38
+Player1 MoveForward
+Player2 MoveForward
+Step 39
+Player1 MoveForward
+Player2 MoveForward
+Player 2 wins

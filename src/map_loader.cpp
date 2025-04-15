@@ -10,7 +10,7 @@ using std::string;
 
 std::stringstream MapLoader::errorBuffer;
 
-bool MapLoader::openFile(const string &filePath, GameMap* gameMap) {
+bool MapLoader::openFile(const string &filePath) {
     std::ifstream file(filePath);
     if (!file) {
         std::cerr << "Error opening file" << std::endl;
@@ -46,7 +46,7 @@ void MapLoader::processMapData(const string &filePath, GameMap* gameMap) {
     int tank1Count = 0;
     int tank2Count = 0;
     int y = 0;
-    while (std::getline(file, line)) {
+    while (std::getline(file, line) && y < gameMap->rows) {
         processRow(line, y, tank1Count, tank2Count, gameMap);
         y++;
     }
@@ -69,7 +69,7 @@ void MapLoader::processRow(const string &line, int y, int &tank1Count, int &tank
     }
 }
 
-//Check constructors
+
 void MapLoader::handleCell(char cell, int y, int x, int &tank1Count, int &tank2Count, GameMap* gameMap) {
     switch (cell) {
         case ' ':
@@ -122,7 +122,7 @@ void MapLoader::fillMissingRow(int y) {
 }
 
 void MapLoader::loadMap(const string &filePath, GameMap* gameMap) {
-    if (!openFile(filePath, gameMap)) throw std::runtime_error("Failed to open map file: " + filePath);
+    if (!openFile(filePath)) throw std::runtime_error("Failed to open map file: " + filePath);
 
     if (!readDimensions(filePath, gameMap)) throw std::runtime_error("Failed to read dimensions from map file: " + filePath);
 

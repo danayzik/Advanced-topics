@@ -4,7 +4,7 @@
 #include "../include/sfml_renderer.h"
 #include <thread>
 using namespace std::chrono;
-GameManager::GameManager(Player &playerOne, Player &playerTwo, const std::string& mapFilePath, bool visuals) : playerOne(playerOne), playerTwo(playerTwo), gameMap(mapFilePath, visuals), visuals(visuals){
+GameManager::GameManager(Player &playerOne, Player &playerTwo, const std::string& mapFilePath, bool visuals) : playerOne(playerOne), playerTwo(playerTwo), gameMap(mapFilePath, visuals), visuals(visuals), mapFilePath(mapFilePath){
     auto [tank1, tank2] = gameMap.getPlayerTanks();
     playerOne.setTank(tank1);
     playerTwo.setTank(tank2);
@@ -14,7 +14,7 @@ GameManager::GameManager(Player &playerOne, Player &playerTwo, const std::string
 bool GameManager::isLegaLAction(Action action, const Player& player) const{
     Tank* tank = player.getTank();
     TankMode mode = tank->getMode();
-    bool preparingReverse = mode == PreparingReverse;
+    bool preparingReverse = mode == PreparingReverse || mode == JustEnteredReverse;
     if(action != MoveForward && preparingReverse){
         return false;
     }
@@ -39,40 +39,47 @@ void GameManager::tanksTickUpdate(){
 }
 
 
-bool GameManager::getAndSetAction(Player& player){ // Check
+void GameManager::getAndSetAction(Player& player){
     Tank* tank = player.getTank();
     Action action = player.requestAction(gameMap);
     TankMode mode = tank->getMode();
+    bool justEnteredReverse = mode == JustEnteredReverse;
+    if(justEnteredReverse && action != MoveForward){
+        tank->setAction(MoveBackward);
+        outputFile << "Player" << player.getPlayerNumber() << " Moving backwards from earlier request"  << '\n';
+        return;
+    }
     if(isLegaLAction(action, player)){
         bool inReverse = mode == ReverseMode;
         bool preparingReverse = mode == PreparingReverse;
-        bool justEnteredReverse = mode == JustEnteredReverse;
         bool normalMode = (!inReverse) || (!preparingReverse);
+
         if(action == MoveForward){
             if(inReverse){
                 tank->setMode(NormalMode);
             }
-            if(preparingReverse || justEnteredReverse){
+            else if(preparingReverse || justEnteredReverse){
                 tank->setMode(NormalMode);
-                return true;
-            }
-        }
-        else{
-            if(justEnteredReverse){
-                tank->setAction(MoveBackward);
-                return true;
+                logAction(action, player.getPlayerNumber());
+                outputFile << "Player" << player.getPlayerNumber() << " Canceling backwards request"  << '\n';
+                tank->setAction(NoAction);
+                return;
             }
         }
         if(normalMode && action == MoveBackward){
-            tank->setMode(ReverseMode);
-            return true;
+            tank->setMode(PreparingReverse);
+            logAction(action, player.getPlayerNumber());
+            tank->setAction(NoAction);
+            return;
         }
         logAction(action, player.getPlayerNumber());
         tank->setAction(action);
-        return true;
+        return;
     }
-    outputFile << "Player" << player.getPlayerNumber() << " bad step."  << '\n';
-    return false;
+    else{
+        outputFile << "Player" << player.getPlayerNumber() << " bad step."  << '\n';
+        tank->setAction(NoAction);
+    }
 }
 
 void GameManager::actionStep(Player& player) {
@@ -101,6 +108,11 @@ void GameManager::actionStep(Player& player) {
 }
 
 bool GameManager::gameOverCheck(){
+    if(stepsSinceNoAmmo >= 40){
+        gameResult = Draw;
+        gameRunning = false;
+        return true;
+    }
     gameResult = gameMap.getGameResult();
     if(gameResult != NotOver){
         gameRunning = false;
@@ -110,7 +122,6 @@ bool GameManager::gameOverCheck(){
 }
 
 void GameManager::tankStep() {
-    tanksTickUpdate();
     getAndSetAction(playerOne);
     getAndSetAction(playerTwo);
     bool draw = gameMap.tanksAboutToCollide(playerOne.getTank(), playerTwo.getTank());
@@ -138,8 +149,18 @@ void GameManager::shellStep() {
     }
 }
 
+void GameManager::roundTick(){
+    stepCounter++;
+    tanksTickUpdate();
+    if(!playerOne.getTank()->hasShells() && !playerTwo.getTank()->hasShells())
+        allTanksOutOfAmmo = true;
+    if(allTanksOutOfAmmo)
+        stepsSinceNoAmmo++;
+}
+
 void GameManager::gameLoop() {
     while(!gameOverCheck()){
+        roundTick();
         outputFile << "Step " << stepCounter << '\n';
         tankStep();
         if(gameOverCheck())
@@ -148,7 +169,7 @@ void GameManager::gameLoop() {
         if(gameOverCheck())
             break;
         shellStep();
-        stepCounter++;
+
     }
 }
 
@@ -159,7 +180,7 @@ void GameManager::logAction(Action action, int playerNumber) {
 }
 
 GameResult GameManager::run() {
-    outputFile.open("output.txt");
+    outputFile.open("output_" + mapFilePath);
     gameRunning = true;
     gameLoop();
     return gameResult;

@@ -54,11 +54,9 @@ inline Action angleToRotationAction(int angle){
 }
 
 
-
-//Name does not suggest it can return MoveForward
 inline Action getFirstRotationAction(Direction current, Direction target) {
     int angle = getDirectionDiff(current, target);
-    if (angle == 0) return MoveForward;
+    if (angle == 0) return NoAction;
     if(-90 <= angle && angle <= 90){
         return angleToRotationAction(angle);
     }
