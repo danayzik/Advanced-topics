@@ -3,3 +3,22 @@ ToDo:
 
 
 
+Make visual and non visual option
+add pedantic flags to compiling
+Check more
+
+
+
+sudo apt-get update
+sudo apt-get install libx11-dev libxrandr-dev libxcursor-dev libxi-dev
+sudo apt-get install libgl1-mesa-dev
+sudo apt install libx11-dev libxrandr-dev libxcursor-dev libxi-dev libgl1-mesa-dev libudev-dev
+sudo apt install libfreetype6-dev
+sudo apt install libvorbis-dev libogg-dev
+sudo apt install libflac-dev
+
+
+cmake -S . -B build
+cmake --build build
+
+

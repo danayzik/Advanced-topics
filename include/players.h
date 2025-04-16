@@ -3,6 +3,7 @@
 #include "actions.h"
 #include "game_map.h"
 #include "algorithms.h"
+#include <memory>
 
 
 

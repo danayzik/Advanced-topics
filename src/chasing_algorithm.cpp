@@ -1,6 +1,6 @@
 #include "../include/algorithms.h"
 #include <queue>
-
+#include <algorithm>
 
 void ChasingAlgorithm::initGraph(const GameMap& gameMap) {
     int rows = gameMap.getRows();
