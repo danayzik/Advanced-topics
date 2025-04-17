@@ -1,8 +1,8 @@
 
-Extra work added to this project for which I'm requesting a bonus:
+Extra work added to this project for which we're requesting a bonus:
 
 1) I've added visuals using images in the assets directory and using the SFML library.
-   To run with or without visuals, please refer to the instructions in readme.txt and use the corresponding make configuration.
+   To run with or without visuals, please refer to the instructions in README.md and use the corresponding make configuration.
 
    *The visuals are implemented in include/sfml_renderer.h and src/sfml_renderer.cpp
 
