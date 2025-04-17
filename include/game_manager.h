@@ -8,16 +8,17 @@ using std::string;
 class GameManager{
 private:
 
-    std::ofstream outputFile;
-    const string& mapFilePath;
+
     Player& playerOne;
     Player& playerTwo;
     GameMap gameMap;
+    bool visuals;
+    const string& mapFilePath;
     GameResult gameResult = NotOver;
     int stepCounter = 0;
     bool allTanksOutOfAmmo = false;
     int stepsSinceNoAmmo = 0;
-    bool visuals;
+    std::ofstream outputFile;
     int stepsPerSecond = 4;
     void gameLoop();
     [[nodiscard]] bool isLegaLAction(Action action, const Player& player) const;
