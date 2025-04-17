@@ -16,9 +16,7 @@ if(USE_SFML)
             SYSTEM)
     FetchContent_MakeAvailable(SFML)
 endif()
-if(USE_SFML)
-    target_compile_definitions(tank_game PRIVATE USE_SFML)
-endif()
+
 
 
 set(SOURCES
@@ -41,7 +39,7 @@ endif()
 add_executable(tank_game ${SOURCES})
 target_compile_features(tank_game PRIVATE cxx_std_17)
 
-
 if(USE_SFML)
     target_link_libraries(tank_game PRIVATE SFML::Graphics)
+    target_compile_definitions(tank_game PRIVATE USE_SFML)
 endif()
