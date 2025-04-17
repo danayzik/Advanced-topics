@@ -7,6 +7,11 @@ To view this README properly in the terminal, you should use the `less` command:
 
 less README.md
 ```
+To exit 'less'
+```bash
+
+q
+```
 
 ## This project is submitted by
 

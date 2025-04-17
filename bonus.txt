@@ -15,6 +15,7 @@ Extra work added to this project for which we're requesting a bonus:
 
 2) Instead of using BFS for shortest path search, I've implemented a modified version of Dijkstra's algorithm
    That takes into account the number of rotations needed to travel a specific path, which end up costing 'time'.
+   This algorithm is located in src/chasing_algorithm.cpp. Function declared line 26
 
    While the guidelines mention that implementing a 'smart' algorithm doesn't entitle you for a bonus, this is different
    as it's not necessarily a 'better' playing algorithm, but rather a creative way of taking rotational costs into account.
