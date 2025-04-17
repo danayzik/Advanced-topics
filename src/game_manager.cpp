@@ -1,10 +1,9 @@
 #include "../include/game_manager.h"
 #include "../include/game_map.h"
 #include "../include/entities.h"
-#include "../include/sfml_renderer.h"
 #include <thread>
 using namespace std::chrono;
-GameManager::GameManager(Player &playerOne, Player &playerTwo, const std::string& mapFilePath, bool visuals) : playerOne(playerOne), playerTwo(playerTwo), gameMap(mapFilePath, visuals), visuals(visuals), mapFilePath(mapFilePath){
+GameManager::GameManager(Player &playerOne, Player &playerTwo, const std::string& mapFilePath, bool visuals) : playerOne(playerOne), playerTwo(playerTwo), gameMap(mapFilePath), visuals(visuals), mapFilePath(mapFilePath){
     auto [tank1, tank2] = gameMap.getPlayerTanks();
     playerOne.setTank(tank1);
     playerTwo.setTank(tank2);

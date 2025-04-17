@@ -22,3 +22,13 @@ cmake -S . -B build
 cmake --build build
 
 
+
+
+sudo apt remove libflac-dev
+
+
+
+
+
+
+

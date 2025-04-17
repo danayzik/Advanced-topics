@@ -1,6 +1,5 @@
 #include "../include/game_manager.h"
 #include <iostream>
-#include "SFML/Graphics.hpp"
 
 
 int main(int argc, char* argv[]){
@@ -10,8 +9,12 @@ int main(int argc, char* argv[]){
     Player playerOne = Player(1, std::move(chasingAlgo));
     Player playerTwo = Player(2, std::move(simpleAlgo));
     GameManager* gameManager = nullptr;
+    bool visuals = false;
+#ifdef USE_SFML
+    visuals = true;
+#endif
     try {
-        gameManager = new GameManager(playerOne, playerTwo, mapFilePath, true);
+        gameManager = new GameManager(playerOne, playerTwo, mapFilePath, visuals);
     } catch (const std::runtime_error& e) {
         std::cerr << "Map loading error: " << e.what() << std::endl;
         return 1;

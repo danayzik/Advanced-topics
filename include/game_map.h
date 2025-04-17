@@ -34,7 +34,7 @@ private:
 
 
 public:
-    explicit GameMap(const string& filePath, bool visuals = false);
+    explicit GameMap(const string& filePath);
     bool tankCanMoveInDirection(const Tank* tank, Direction dir) const;
     void moveEntity(GameEntity* entity, Direction dir);
     void moveShells();

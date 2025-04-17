@@ -3,20 +3,23 @@
 #include "../include/game_map.h"
 #include "../include/map_loader.h"
 #include <algorithm>
+#ifdef USE_SFML
 #include "../include/sfml_renderer.h"
+#endif
 #include "../include/noop_renderer.h"
 
 
-GameMap::GameMap(const string& filePath, bool visuals) {
+GameMap::GameMap(const string& filePath) {
     rows = 0;
     cols = 0;
     MapLoader::loadMap(filePath, this);
-    if(visuals){
-        renderer = new SFMLRenderer(rows, cols);
-    }
-    else{
-        renderer = new NoOpRenderer();
-    }
+
+    #ifdef USE_SFML
+    renderer = new SFMLRenderer(rows, cols);
+    #else
+    renderer = new NoOpRenderer();
+    #endif
+
     renderer->initialize();
     renderer->drawGrid(grid);
 }
