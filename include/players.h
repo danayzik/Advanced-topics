@@ -10,12 +10,15 @@
 
 class GameManager;
 class Player {
-private:
-    std::unique_ptr<Algorithm> algorithm;
 
 protected:
     int playerNumber;
     Tank* tank = nullptr;
+
+private:
+    std::unique_ptr<Algorithm> algorithm;
+
+
 public:
     virtual inline Action requestAction(const GameMap& gameMap){return algorithm->getAction(gameMap, playerNumber, tank);}
     inline Player(int number, std::unique_ptr<Algorithm> algo) : playerNumber(number), algorithm(std::move(algo)){}

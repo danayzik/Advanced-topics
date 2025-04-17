@@ -113,12 +113,10 @@ void GameManager::actionStep(Player& player) {
 bool GameManager::gameOverCheck(){
     if(stepsSinceNoAmmo >= 40){
         gameResult = Draw;
-        gameRunning = false;
         return true;
     }
     gameResult = gameMap.getGameResult();
     if(gameResult != NotOver){
-        gameRunning = false;
         return true;
     }
     return false;
@@ -131,7 +129,6 @@ void GameManager::tankStep() {
     bool draw = gameMap.tanksAboutToCollide(playerOne.getTank(), playerTwo.getTank());
     if(draw) {
         gameResult = Draw;
-        gameRunning = false;
         return;
     }
     actionStep(playerOne);
@@ -185,11 +182,9 @@ void GameManager::logAction(Action action, int playerNumber) {
     }
 }
 
-GameResult GameManager::run() {
+void GameManager::run() {
     outputFile.open("output_" + mapFilePath);
-    gameRunning = true;
     gameLoop();
-    return gameResult;
 }
 
 GameManager::~GameManager(){

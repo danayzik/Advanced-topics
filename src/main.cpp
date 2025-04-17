@@ -3,6 +3,10 @@
 
 
 int main(int argc, char* argv[]){
+    if(argc != 2){
+        std::cerr << "Invalid number of arguments" << std::endl;
+        return 1;
+    }
     string mapFilePath = argv[1];
     std::unique_ptr<Algorithm> chasingAlgo = std::make_unique<ChasingAlgorithm>();
     std::unique_ptr<Algorithm> simpleAlgo = std::make_unique<AlgorithmV1>();
@@ -19,7 +23,7 @@ int main(int argc, char* argv[]){
         std::cerr << "Map loading error: " << e.what() << std::endl;
         return 1;
     }
-    GameResult gameResult = gameManager->run();
+    gameManager->run();
     delete gameManager;
 }
 
