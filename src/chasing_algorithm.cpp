@@ -12,8 +12,8 @@ void ChasingAlgorithm::initGraph(const GameMap& gameMap) {
 
 
 void ChasingAlgorithm::resetGraph() {
-    for(int i = 0; i < gridGraph.size(); i++){
-        for (int j = 0; j < gridGraph[i].size(); ++j) {
+    for(size_t i = 0; i < gridGraph.size(); i++){
+        for (size_t j = 0; j < gridGraph[i].size(); ++j) {
             gridGraph[i][j].setParams(i, j, INT32_MAX, Up);
         }
     }
@@ -81,7 +81,7 @@ Action ChasingAlgorithm::getBestMovement(int currY, int currX, Direction currDir
     size_t cols = gridGraph[0].size();
     vector<int> costs(8, 0);
     if(currDirection == gridGraph[currY][currX].optimalDirectionToGo)return MoveForward;
-    for (int i = 0; i < directions.size(); i++) {
+    for (size_t i = 0; i < directions.size(); i++) {
         auto [dy, dx] = directions[i];
         size_t newY = (currY + dy + rows) % rows;
         size_t newX = (currX + dx + cols) % cols;
