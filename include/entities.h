@@ -19,9 +19,10 @@ class GameEntity{
 
 protected:
 
-    Cell* cell;
-    int xCoord;
+
     int yCoord;
+    int xCoord;
+    Cell* cell;
     int health;
     Owner owner = Game;
 
@@ -32,7 +33,7 @@ public:
 
     inline void setOwner(Owner newOwner){owner = newOwner;}
     [[nodiscard]] inline Owner getOwner() const{return owner;}
-    inline GameEntity(int y, int x, Cell* cell) : xCoord(x), yCoord(y), cell(cell){health = 1; }
+    inline GameEntity(int y, int x, Cell* cell) : yCoord(y), xCoord(x),  cell(cell){health = 1; }
     [[nodiscard]] inline Cell* getCell() const{
         return cell;
     }
