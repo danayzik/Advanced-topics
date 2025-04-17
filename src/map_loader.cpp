@@ -60,7 +60,7 @@ void MapLoader::processMapData(const string &filePath, GameMap* gameMap) {
 
 void MapLoader::processRow(const string &line, int y, int &tank1Count, int &tank2Count, GameMap* gameMap) {
     for (int x = 0; x < gameMap->cols; ++x) {
-        if (x >= line.size()) {
+        if (x >= static_cast<int>(line.size())) {
             handleMissingCharacter(y, x);
         } else {
             char cell = line[x];
