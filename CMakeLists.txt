@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
-project(tank_game LANGUAGES CXX)
+project(tanks_game LANGUAGES CXX)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 
@@ -36,12 +36,12 @@ if(USE_SFML)
     list(APPEND SOURCES src/sfml_renderer.cpp)
 endif()
 
-add_executable(tank_game ${SOURCES})
+add_executable(tanks_game ${SOURCES})
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-target_compile_options(tank_game PRIVATE
+target_compile_options(tanks_game PRIVATE
         -Wall
         -Wextra
         -Werror
@@ -49,6 +49,6 @@ target_compile_options(tank_game PRIVATE
 )
 
 if(USE_SFML)
-    target_link_libraries(tank_game PRIVATE SFML::Graphics)
-    target_compile_definitions(tank_game PRIVATE USE_SFML)
+    target_link_libraries(tanks_game PRIVATE SFML::Graphics)
+    target_compile_definitions(tanks_game PRIVATE USE_SFML)
 endif()

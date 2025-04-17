@@ -113,11 +113,11 @@ cmake --build build
 Linux:
 ```bash
 
-./tank_game <Map_File_Name>
+./tanks_game <Map_File_Name>
 ```
 
 Windows:
 ```bash
 
-tank_game.exe <Map_File_Name>
+tanks_game.exe <Map_File_Name>
 ```
