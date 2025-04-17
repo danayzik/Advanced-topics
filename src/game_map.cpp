@@ -49,7 +49,7 @@ void GameMap::resolveCollisions(const std::unordered_set<Cell*>& dirtyCells) {
                 GameEntity* b = entities[j];
                 if (!b->isAlive()) continue;
 
-                if (!(a->isShell() && b->isMine() || a->isMine() && b->isShell()) ) {
+                if (!((a->isShell() && b->isMine()) || (a->isMine() && b->isShell())) ) {
                     a->hit();
                     b->hit();
                     if (!a->isAlive()) toDelete.insert(a);
