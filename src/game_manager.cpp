@@ -3,13 +3,15 @@
 #include "../include/entities.h"
 #include <thread>
 using namespace std::chrono;
+
+
 GameManager::GameManager(Player &playerOne, Player &playerTwo, const std::string& mapFilePath, bool visuals) : playerOne(playerOne), playerTwo(playerTwo), gameMap(mapFilePath), visuals(visuals), mapFilePath(mapFilePath){
     auto [tank1, tank2] = gameMap.getPlayerTanks();
     playerOne.setTank(tank1);
     playerTwo.setTank(tank2);
 }
 
-
+//Returns whether the player can perform the requested action
 bool GameManager::isLegaLAction(Action action, const Player& player) const{
     Tank* tank = player.getTank();
     TankMode mode = tank->getMode();
@@ -32,12 +34,13 @@ bool GameManager::isLegaLAction(Action action, const Player& player) const{
     }
 }
 
+//Signal to the tanks that a round has passed/started for their internal counters.
 void GameManager::tanksTickUpdate(){
     playerOne.getTank()->tickUpdate();
     playerTwo.getTank()->tickUpdate();
 }
 
-
+//Requests the action from a player, sets the action their tank will actually perform in this round.
 void GameManager::getAndSetAction(Player& player){
     Tank* tank = player.getTank();
     Action action = player.requestAction(gameMap);
@@ -81,6 +84,7 @@ void GameManager::getAndSetAction(Player& player){
     }
 }
 
+//Performs the action set by "getAndSetAction()". If the action is moving, GameMap moves the tank.
 void GameManager::actionStep(Player& player) {
     Tank* tank = player.getTank();
     Action action = tank->consumeAction();
@@ -120,6 +124,7 @@ bool GameManager::gameOverCheck(){
     return false;
 }
 
+
 void GameManager::tankStep() {
     getAndSetAction(playerOne);
     getAndSetAction(playerTwo);
@@ -134,6 +139,7 @@ void GameManager::tankStep() {
     gameMap.checkCollisions();
 }
 
+//Contains delay only if visuals are on, for viewing experience.
 void GameManager::shellStep() {
     const auto stepDuration = milliseconds(1000 / stepsPerSecond);
     auto start = steady_clock::now();
@@ -157,6 +163,7 @@ void GameManager::roundTick(){
         stepsSinceNoAmmo++;
 }
 
+//Main game flow
 void GameManager::gameLoop() {
     while(!gameOverCheck()){
         roundTick();

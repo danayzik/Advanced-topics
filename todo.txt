@@ -3,9 +3,9 @@ ToDo:
 
 
 
-Make visual and non visual option
+
 add pedantic flags to compiling
-Check more
+
 
 
 

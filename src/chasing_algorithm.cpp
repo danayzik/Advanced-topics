@@ -19,6 +19,10 @@ void ChasingAlgorithm::resetGraph() {
     }
 }
 
+/*
+ * Modified Dijkstra's algorithm.
+ * Calculates distances and optimal direction to continue to in order to reach the enemy tank.
+ */
 void ChasingAlgorithm::calculateGridPathsFromTarget(const GameMap& gameMap, int playerNumber){
     resetGraph();
     const Tank* enemyTank = gameMap.getEnemyTank(playerNumber);
@@ -66,7 +70,12 @@ void ChasingAlgorithm::calculateGridPathsFromTarget(const GameMap& gameMap, int 
     stepsSinceLastCalculation = 0;
 }
 
-
+/*
+ * Given the distances and direction from dijkstra's algorithm;
+ * We check what is the best move given our cell and rotation.
+ * If we are already facing the optimal direction, we move forward.
+ * Otherwise, we calculate our surrounding cells distances and cost to rotate to them and take the minimum.
+ */
 Action ChasingAlgorithm::getBestMovement(int currY, int currX, Direction currDirection) const{
     size_t rows = gridGraph.size();
     size_t cols = gridGraph[0].size();
@@ -97,7 +106,10 @@ Action ChasingAlgorithm::getBestMovement(int currY, int currX, Direction currDir
 
 }
 
-
+/*
+ * We fire a shell if the enemy is in our LOS and we are at most at distance 3 from him,
+ * Otherwise we chase.
+ */
 Action ChasingAlgorithm::getAction(const GameMap &gameMap, int playerNumber, const Tank* myTank) {
     if(!initialized){
         initGraph(gameMap);

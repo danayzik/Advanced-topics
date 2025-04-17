@@ -37,7 +37,16 @@ if(USE_SFML)
 endif()
 
 add_executable(tank_game ${SOURCES})
-target_compile_features(tank_game PRIVATE cxx_std_17)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+target_compile_options(tank_game PRIVATE
+        -Wall
+        -Wextra
+        -Werror
+        -pedantic
+)
 
 if(USE_SFML)
     target_link_libraries(tank_game PRIVATE SFML::Graphics)

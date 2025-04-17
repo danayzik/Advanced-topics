@@ -1,0 +1,24 @@
+
+Extra work added to this project for which I'm requesting a bonus:
+
+1) I've added visuals using images in the assets directory and using the SFML library.
+   To run with or without visuals, please refer to the instructions in readme.txt and use the corresponding make configuration.
+
+   *The visuals are implemented in include/sfml_renderer.h and src/sfml_renderer.cpp
+
+    Please note:
+    - Some dependencies will need to be installed in order to build the project with visuals on. Please refer to the instructions mentioned above.
+    - When visuals are on, the game is intentionally slowed down to performing a step every second or so. This is intentional and for viewing experience.
+    - When visuals are off, the game runs and completes as fast as possible without intentional delay.
+
+
+
+2) Instead of using BFS for shortest path search, I've implemented a modified version of Dijkstra's algorithm
+   That takes into account the number of rotations needed to travel a specific path, which end up costing 'time'.
+
+   While the guidelines mention that implementing a 'smart' algorithm doesn't entitle you for a bonus, this is different
+   as it's not necessarily a 'better' playing algorithm, but rather a creative way of taking rotational costs into account.
+
+   Note that a basic Dijkstra does not work as the cost for an 'edge' change depending on your current orientation.
+   My algorithm avoids that problem creatively. Please refer to the pdf file for a full explanation on it.
+

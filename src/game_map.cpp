@@ -7,8 +7,8 @@
 #include "../include/sfml_renderer.h"
 #endif
 #include "../include/noop_renderer.h"
-
-
+//This file includes pre-processor commands based on build options.
+//Map is loaded by the Map loader.
 GameMap::GameMap(const string& filePath) {
     rows = 0;
     cols = 0;
@@ -36,6 +36,7 @@ GameResult GameMap::getGameResult() const {
     return NotOver;
 }
 
+//Checks the collisions and resolves them for a set of cells.
 void GameMap::resolveCollisions(const std::unordered_set<Cell*>& dirtyCells) {
     unordered_set<GameEntity*> toDelete;
     for (Cell* cell : dirtyCells) {
@@ -69,9 +70,9 @@ void GameMap::resolveCollisions(const std::unordered_set<Cell*>& dirtyCells) {
 
 void GameMap::updateVisuals() {
     renderer->drawGrid(grid);
-
 }
 
+//Checks if the tanks are about to go past each other, if so destroys them preemptively.
 bool GameMap::tanksAboutToCollide(Tank* tank1,Tank* tank2){
     Action action1 = tank1->peekAction();
     Action action2 = tank2->peekAction();
@@ -91,6 +92,7 @@ bool GameMap::tanksAboutToCollide(Tank* tank1,Tank* tank2){
     return false;
 }
 
+//Checks if any two shells are about to go past each other, if so destroys them preemptively.
 void GameMap::shellsAboutToCollide() {
     unordered_set<Shell*> toDelete;
     for (Shell* shell1 : shells) {
@@ -114,7 +116,7 @@ void GameMap::shellsAboutToCollide() {
     }
 }
 
-
+//Calculates the position of an entity if it were to move in a direction. Does not move the entity.
 std::pair<int, int> GameMap::getNewPosition(const GameEntity* entity, Direction dir) const {
     int currX = entity->getX();
     int currY = entity->getY();
@@ -124,6 +126,7 @@ std::pair<int, int> GameMap::getNewPosition(const GameEntity* entity, Direction 
     return {newY, newX};
 }
 
+//Moves the entity in given direction
 void GameMap::moveEntity(GameEntity* entity, Direction dir){
     int currX = entity->getX();
     int currY = entity->getY();
@@ -134,6 +137,7 @@ void GameMap::moveEntity(GameEntity* entity, Direction dir){
     entity->setCell(&grid[newY][newX]);
 }
 
+//Moves all shells one step in their direction, except shells created this turn. This is because shells already get created 1 cell away from the tank.
 void GameMap::moveShells(){
     for (Shell* shell : shells) {
         if(shell->isNewShell()){
@@ -146,6 +150,7 @@ void GameMap::moveShells(){
     }
 }
 
+//Fires a shell from given tank, in the direction the tank is facing. Creates the shell one cell away from the tank.
 void GameMap::createShell(Tank* tank) {
     auto[y, x] = getNewPosition(tank, tank->getDirection());
     Cell* cell = &grid[y][x];
@@ -155,7 +160,7 @@ void GameMap::createShell(Tank* tank) {
 
 }
 
-
+//Public function that checks and resolves the collisions in cells where tanks and cell exist only for efficiency.
 void GameMap::checkCollisions(){
     unordered_set<Cell*> dirtyCells;
     for (Tank* tank : playerOneTanks) {
@@ -174,7 +179,7 @@ void GameMap::checkCollisions(){
 }
 
 
-
+//Returns true iff there's no wall in 1 cell away from the tank in the given direction
 bool GameMap::tankCanMoveInDirection(const Tank* tank, Direction dir) const {
     auto [newY, newX] = getNewPosition(tank, dir);
     const Cell& targetCell = grid[newY][newX];
@@ -187,6 +192,7 @@ bool GameMap::tankCanMoveInDirection(const Tank* tank, Direction dir) const {
     );
 }
 
+//Returns a pointer to the enemy tank given your player number.
 const Tank *GameMap::getEnemyTank(int playerNumber) const {
     if(playerNumber == 1){
         return *playerTwoTanks.begin();
