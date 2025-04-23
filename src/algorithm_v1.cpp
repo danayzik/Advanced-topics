@@ -3,20 +3,36 @@
 
 
 /*
- * Simplified Algorithm. Shoots if the enemy is in LOS, if not rotates towards his direction,
- * If already facing his direction just move forward.
+ * Simplified Algorithm. Shoots if the enemy is in LOS, if tank can move and chased by shell will move,
  * This algorithm often gets stuck on walls, but that's not the point of this exercise.
  */
 Action AlgorithmV1::getAction(const GameMap& gameMap, int playerNumber, const Tank* myTank) {
+
+
     const Tank* enemyTank = gameMap.getEnemyTank(playerNumber);
     bool inLineOfSight = enemyInLineOfSight(gameMap, enemyTank, myTank);
     if(inLineOfSight && myTank->canFire()){
         return Shoot;
     }
+
+    const auto& grid = gameMap.getGrid();
+    int cols = gameMap.getCols();
+    int rows = gameMap.getRows();
+    auto [dy, dx] = directionToCoordinatesOffset(myTank->getDirection());
+    int newY = (myTank->getY() + dy + rows) % rows;
+    int newX = (myTank->getX() + dx + cols) % cols;
+    bool canMove = grid[newY][newX].isPassableForTank();
+    bool chasedByShell = hasShellMovingTowardsTank(gameMap, myTank);
+
+    if(canMove && chasedByShell)
+        return MoveForward;
+
     Action rotationAction = rotationTowardsEnemy(enemyTank, myTank);
     if(rotationAction != NoAction){
         return rotationAction;
     }
-    return MoveForward;
+    if(canMove)
+        return MoveForward;
+    return RotateRight45;
 
 }

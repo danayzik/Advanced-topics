@@ -48,6 +48,7 @@ public:
     [[nodiscard]] inline int getCols() const{return cols;}
     void updateVisuals();
     [[nodiscard]] inline const vector<vector<Cell>>& getGrid() const{return grid;}
+    [[nodiscard]] inline const unordered_set<Shell*>& getShells() const{return shells;}
     friend MapLoader;
     inline std::pair<Tank*, Tank*> getPlayerTanks(){
         return {*playerOneTanks.begin(),*playerTwoTanks.begin()};}

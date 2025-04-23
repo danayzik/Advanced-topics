@@ -25,6 +25,19 @@ struct HeapNode{
     }
 };
 
+struct Vec2 {
+    int y, x;
+    inline Vec2(int y_, int x_) : y(y_), x(x_) {}
+    inline explicit Vec2(std::pair<int, int> p) : y(p.first), x(p.second) {}
+    Vec2 operator-(const Vec2& other) const {
+        return {y - other.y, x - other.x};
+    }
+
+    bool operator==(const Vec2& other) const {
+        return x == other.x && y == other.y;
+    }
+};
+
 
 
 
@@ -35,6 +48,7 @@ public:
     virtual ~Algorithm() = default;
     static int distanceBetweenTanks(const GameMap &gameMap, const Tank* tank1, const Tank* tank2);
     static bool enemyInLineOfSight(const GameMap &gameMap, const Tank* enemyTank, const Tank* myTank);
+    static bool hasShellMovingTowardsTank(const GameMap &gameMap, const Tank* tank);
     static Action rotationTowardsEnemy(const Tank* enemyTank, const Tank* myTank);
 };
 
