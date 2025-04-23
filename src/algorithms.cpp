@@ -53,8 +53,6 @@ bool Algorithm::hasShellMovingTowardsTank(const GameMap &gameMap, const Tank *ta
     for(Shell* shell : shells){
         Vec2 delta = {tank->getY() - shell->getY(), tank->getX() - shell->getX()};
         Vec2 dir = Vec2(directionToCoordinatesOffset(shell->getDirection()));
-        int dx = dir.x, dy = dir.y;
-        int sx = delta.x, sy = delta.y;
         int cross = delta.x * dir.y - delta.y * dir.x;
         if (cross == 0)
             return true;
