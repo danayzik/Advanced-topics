@@ -48,7 +48,6 @@ bool Algorithm::enemyInLineOfSight(const GameMap &gameMap, const Tank *enemyTank
 }
 
 bool Algorithm::hasShellMovingTowardsTank(const GameMap &gameMap, const Tank *tank) {
-    const auto& grid = gameMap.getGrid();
     const auto& shells = gameMap.getShells();
     for(Shell* shell : shells){
         Vec2 delta = {tank->getY() - shell->getY(), tank->getX() - shell->getX()};
