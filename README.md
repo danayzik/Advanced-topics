@@ -42,7 +42,7 @@ Open a terminal and navigate to the advanced_topics_ex1 directory:
 
 ```bash
 
-cd /path/to/advanced_topics_ex1
+cd /path/to/206038929_314620071
 ```
 
 Build the project for Linux or for windows based on the following instructions. Then run the project based on the "Run instructions"
