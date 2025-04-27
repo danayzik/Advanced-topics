@@ -24,13 +24,16 @@ GameMap::GameMap(const string& filePath) {
     renderer->drawGrid(grid);
 }
 GameMap::~GameMap() {
+    std::vector<GameEntity*> entitiesToDelete;
     for (auto& row : grid) {
         for (auto& cell : row) {
             for (GameEntity* entity : cell.entitySet) {
-                delete entity;
+                entitiesToDelete.push_back(entity);
             }
-            cell.entitySet.clear();
         }
+    }
+    for (GameEntity* entity : entitiesToDelete) {
+        delete entity;
     }
     playerOneTanks.clear();
     playerTwoTanks.clear();
