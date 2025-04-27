@@ -22,7 +22,7 @@ protected:
 
     int yCoord;
     int xCoord;
-    Cell* cell;
+    Cell* cell; //Does not own
     int health;
     Owner owner = Game;
 

@@ -1,5 +1,5 @@
 #pragma once
-
+#include <memory>
 #include <unordered_set>
 #include <vector>
 #include <string>
@@ -25,7 +25,7 @@ private:
     unordered_set<Tank*> playerOneTanks;
     unordered_set<Tank*> playerTwoTanks;
     unordered_set<Shell*> shells;
-    Renderer* renderer;
+    std::unique_ptr<Renderer> renderer;
     int rows;
     int cols;
     std::pair<int, int> getNewPosition(const GameEntity* entity, Direction dir) const;
@@ -35,6 +35,7 @@ private:
 
 public:
     explicit GameMap(const string& filePath);
+    ~GameMap();
     bool tankCanMoveInDirection(const Tank* tank, Direction dir) const;
     void moveEntity(GameEntity* entity, Direction dir);
     void moveShells();

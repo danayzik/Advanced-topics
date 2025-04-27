@@ -15,13 +15,26 @@ GameMap::GameMap(const string& filePath) {
     MapLoader::loadMap(filePath, this);
 
     #ifdef USE_SFML
-    renderer = new SFMLRenderer(rows, cols);
+        renderer = std::make_unique<SFMLRenderer>(rows, cols);
     #else
-    renderer = new NoOpRenderer();
+        renderer = std::make_unique<NoOpRenderer>();
     #endif
 
     renderer->initialize();
     renderer->drawGrid(grid);
+}
+GameMap::~GameMap() {
+    for (auto& row : grid) {
+        for (auto& cell : row) {
+            for (GameEntity* entity : cell.entitySet) {
+                delete entity;
+            }
+            cell.entitySet.clear();
+        }
+    }
+    playerOneTanks.clear();
+    playerTwoTanks.clear();
+    shells.clear();
 }
 
 GameResult GameMap::getGameResult() const {
