@@ -62,7 +62,7 @@ public:
 
 class Tank : public GameEntity{
 private:
-    Direction currDirection = Up;
+    Direction currDirection;
     int shellCount = 16;
     int stepsSinceLastShot = 100; // Placeholder initial value
     int preparingReverseCounter = -1;// Placeholder initial value
@@ -71,7 +71,7 @@ private:
 
 
 public:
-    Tank(int y, int x, Cell *cell);
+    Tank(int y, int x, Cell *cell, Direction dir);
     [[nodiscard]] inline enum Direction getDirection() const {return currDirection; }
     [[nodiscard]] inline int getShellCount() const {return shellCount;}
     [[nodiscard]] inline TankMode getMode() const {return mode;}

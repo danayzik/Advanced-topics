@@ -82,7 +82,7 @@ void MapLoader::handleCell(char cell, int y, int x, int &tank1Count, int &tank2C
             break;
         case '1':
             if (tank1Count < 1) {
-                Tank* tank = new Tank(y, x, &gameMap->grid[y][x]);
+                Tank* tank = new Tank(y, x, &gameMap->grid[y][x], Direction::Left);
                 tank->setOwner(PlayerOne);
                 gameMap->grid[y][x].entitySet.insert(tank);
                 gameMap->playerOneTanks.insert(tank);
@@ -94,7 +94,7 @@ void MapLoader::handleCell(char cell, int y, int x, int &tank1Count, int &tank2C
             break;
         case '2':
             if (tank2Count < 1) {
-                Tank* tank = new Tank(y, x, &gameMap->grid[y][x]);
+                Tank* tank = new Tank(y, x, &gameMap->grid[y][x], Direction::Right);
                 tank->setOwner(PlayerTwo);
                 gameMap->grid[y][x].entitySet.insert(tank);
                 gameMap->playerTwoTanks.insert(tank);

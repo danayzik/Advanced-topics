@@ -15,7 +15,7 @@ void Tank::setMode(TankMode newMode){
     }
 }
 
-Tank::Tank(int y, int x, Cell *cell) : GameEntity(y, x, cell){}
+Tank::Tank(int y, int x, Cell *cell, Direction dir) : GameEntity(y, x, cell), currDirection(dir){}
 
 Action Tank::consumeAction() {
     Action action = nextStepAction;

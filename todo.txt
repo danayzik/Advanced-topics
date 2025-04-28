@@ -1,10 +1,8 @@
 
 ToDo:
 
-
-
-
-add pedantic flags to compiling
+Exit out of backward mode if in backward mode and move != backward
+change object ownership. don't use raw pointers.
 
 
 
@@ -21,10 +19,6 @@ sudo apt install libflac-dev
 cmake -S . -B build
 cmake --build build
 
-
-
-
-sudo apt remove libflac-dev
 
 
 
