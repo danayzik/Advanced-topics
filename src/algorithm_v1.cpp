@@ -6,7 +6,7 @@
  * Simplified Algorithm. Shoots if the enemy is in LOS, if tank can move and chased by shell will move,
  * This algorithm often gets stuck on walls, but that's not the point of this exercise.
  */
-Action AlgorithmV1::getAction(const GameMap& gameMap, int playerNumber, const Tank* myTank) {
+ActionRequest AlgorithmV1::getAction(const GameMap& gameMap, int playerNumber, const Tank* myTank) {
 
 
     const Tank* enemyTank = gameMap.getEnemyTank(playerNumber);
@@ -27,8 +27,8 @@ Action AlgorithmV1::getAction(const GameMap& gameMap, int playerNumber, const Ta
     if(canMove && chasedByShell)
         return MoveForward;
 
-    Action rotationAction = rotationTowardsEnemy(enemyTank, myTank);
-    if(rotationAction != NoAction){
+    ActionRequest rotationAction = rotationTowardsEnemy(enemyTank, myTank);
+    if(rotationAction != DoNothing){
         return rotationAction;
     }
     if(canMove)

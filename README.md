@@ -1,4 +1,4 @@
-# Advanced Topics Ex1 - Game Build Instructions
+# Advanced Topics Ex2 - Game Build Instructions
 
 ## Viewing the README
 
@@ -38,7 +38,7 @@ g++ -std=c++20 -Wall -Wextra -Werror -pedantic
 ```
 
 ## General Instructions
-Open a terminal and navigate to the advanced_topics_ex1 directory:
+Open a terminal and navigate to the project's directory:
 
 ```bash
 

@@ -1,6 +1,6 @@
 #include "../include/algorithms.h"
 
-Action Algorithm::rotationTowardsEnemy(const Tank *enemyTank, const Tank *myTank) {
+ActionRequest Algorithm::rotationTowardsEnemy(const Tank *enemyTank, const Tank *myTank) {
     int enemyX = enemyTank->getX();
     int enemyY = enemyTank->getY();
     int selfY = myTank->getY();
@@ -8,7 +8,7 @@ Action Algorithm::rotationTowardsEnemy(const Tank *enemyTank, const Tank *myTank
     Direction currentDirection = myTank->getDirection();
     Direction targetDirection = getDirectionBetweenPoints(selfY, selfX, enemyY, enemyX);
     if(currentDirection == targetDirection)
-        return NoAction;
+        return DoNothing;
     return getFirstRotationAction(currentDirection, targetDirection);
 }
 

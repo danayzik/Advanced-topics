@@ -1,6 +1,6 @@
 #include "../include/entities.h"
 #include "../include/direction.h"
-
+#include "../include/game_manager.h"
 
 void Tank::rotate(int rotationAmount) {
     int newAngle = (static_cast<int>(currDirection) + rotationAmount) % 360;
@@ -15,11 +15,12 @@ void Tank::setMode(TankMode newMode){
     }
 }
 
-Tank::Tank(int y, int x, Cell *cell, Direction dir) : GameEntity(y, x, cell), currDirection(dir){}
+Tank::Tank(size_t entityId, size_t y, size_t x, Direction dir, int playerIndex) : GameEntity(entityId, y, x), currDirection(dir), playerIndex(playerIndex){}
 
-Action Tank::consumeAction() {
-    Action action = nextStepAction;
-    nextStepAction = NoAction;
+
+ActionRequest Tank::consumeAction() {
+    ActionRequest action = nextStepAction;
+    nextStepAction = ActionRequest::DoNothing;
     return action;
 }
 
@@ -44,7 +45,7 @@ void Tank::fire() {
     stepsSinceLastShot = 0;
 }
 
-void Tank::setAction(Action action) {
+void Tank::setAction(ActionRequest action) {
     nextStepAction = action;
 }
 

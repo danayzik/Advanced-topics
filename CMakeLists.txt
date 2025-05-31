@@ -29,6 +29,7 @@ set(SOURCES
         src/chasing_algorithm.cpp
         src/algorithm_v1.cpp
         src/algorithms.cpp
+        src/entity_manager.cpp
 )
 
 

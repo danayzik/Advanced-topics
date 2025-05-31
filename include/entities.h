@@ -9,47 +9,33 @@ enum TankMode {
     JustEnteredReverse,
     ReverseMode
 };
-enum Owner{
-    Game,
-    PlayerOne,
-    PlayerTwo
-};
+
 
 class GameEntity{
 
 protected:
-
-
-    int yCoord;
-    int xCoord;
-    Cell* cell; //Does not own
+    size_t entityId;
+    size_t yCoord;
+    size_t xCoord;
     int health;
-    Owner owner = Game;
+
 
 public:
-    inline virtual ~GameEntity(){
-        cell->entitySet.erase(this);
-    }
-
-    inline void setOwner(Owner newOwner){owner = newOwner;}
-    [[nodiscard]] inline Owner getOwner() const{return owner;}
-    inline GameEntity(int y, int x, Cell* cell) : yCoord(y), xCoord(x),  cell(cell){health = 1; }
-    [[nodiscard]] inline Cell* getCell() const{
-        return cell;
-    }
+    inline virtual ~GameEntity()= default;
+    [[nodiscard]] virtual inline char getSymbol() const = 0;
+    [[nodiscard]] inline size_t getEntityId() const{return entityId;}
+    inline GameEntity(size_t entityId, size_t y, size_t x) : entityId(entityId), yCoord(y), xCoord(x){health = 1;}
     [[nodiscard]] inline int getHealth() const {return health;}
-    inline void setCell(Cell* newCell){
-        cell = newCell;
-    }
 
-    inline void setCoords(int y, int x){
+    inline void setCoords(size_t y, size_t x){
         xCoord = x;
         yCoord = y;
     }
-    [[nodiscard]] inline int getX() const{
+    [[nodiscard]] inline std::pair<size_t, size_t> getCoords() const{return {yCoord, xCoord};}
+    [[nodiscard]] inline size_t getX() const{
         return xCoord;
     }
-    [[nodiscard]] inline int getY() const{
+    [[nodiscard]] inline size_t getY() const{
         return yCoord;
     }
     [[nodiscard]] inline virtual bool isMine() const{return false;}
@@ -62,28 +48,30 @@ public:
 
 class Tank : public GameEntity{
 private:
+
     Direction currDirection;
     int shellCount = 16;
     int stepsSinceLastShot = 100; // Placeholder initial value
     int preparingReverseCounter = -1;// Placeholder initial value
-    Action nextStepAction = NoAction;
+    ActionRequest nextStepAction = ActionRequest::DoNothing;
     TankMode mode = NormalMode;
-
+    int playerIndex;
 
 public:
-    Tank(int y, int x, Cell *cell, Direction dir);
+    [[nodiscard]] inline char getSymbol() const override {return static_cast<char>('0' + playerIndex);}
+    Tank(size_t entityId, size_t y, size_t x, Direction dir, int playerIndex);
     [[nodiscard]] inline enum Direction getDirection() const {return currDirection; }
     [[nodiscard]] inline int getShellCount() const {return shellCount;}
     [[nodiscard]] inline TankMode getMode() const {return mode;}
     [[nodiscard]] inline bool isTank() const override{return true;}
-    [[nodiscard]] inline Action peekAction() const{return nextStepAction;}
+    [[nodiscard]] inline ActionRequest peekAction() const{return nextStepAction;}
     [[nodiscard]] bool canFire() const;
     void rotate(int rotationAmount);
     void setMode(TankMode newMode);
     [[nodiscard]] inline bool hasShells() const{return shellCount>0;}
     void fire();
-    Action consumeAction();
-    void setAction(Action action);
+    ActionRequest consumeAction();
+    void setAction(ActionRequest action);
     void tickUpdate();
 
 
@@ -94,7 +82,8 @@ private:
     const Direction dir;
     bool createdThisTurn = true;
 public:
-    inline Shell(int y, int x, Cell *cell, Direction dir) : GameEntity(y, x ,cell), dir(dir){}
+    inline char getSymbol() const override {return '*';}
+    inline Shell(size_t entityId, size_t y, size_t x, Direction dir) : GameEntity(entityId, y, x), dir(dir){}
     [[nodiscard]] inline enum Direction getDirection() const{
         return dir;
     }
@@ -106,12 +95,14 @@ public:
 class Wall : public GameEntity{
 
 public:
-    inline Wall(int y, int x, Cell *cell) : GameEntity(y, x ,cell){health = 2;}
+    [[nodiscard]] inline char getSymbol() const override {return '#';}
+    inline Wall(size_t entityId, size_t y, size_t x) : GameEntity(entityId, y, x){health = 2;}
     [[nodiscard]] inline bool isWall() const override{return true;}
 };
 
 class Mine : public GameEntity{
 public:
-    inline Mine(int y, int x, Cell* cell) : GameEntity(y, x, cell){}
+    [[nodiscard]] inline char getSymbol() const override {return '@';}
+    inline Mine(size_t entityId, size_t y, size_t x) : GameEntity(entityId, y, x){}
     [[nodiscard]] inline bool isMine() const override{return true;}
 };

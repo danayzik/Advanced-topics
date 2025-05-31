@@ -76,7 +76,7 @@ void ChasingAlgorithm::calculateGridPathsFromTarget(const GameMap& gameMap, int 
  * If we are already facing the optimal direction, we move forward.
  * Otherwise, we calculate our surrounding cells distances and cost to rotate to them and take the minimum.
  */
-Action ChasingAlgorithm::getBestMovement(int currY, int currX, Direction currDirection) const{
+ActionRequest ChasingAlgorithm::getBestMovement(int currY, int currX, Direction currDirection) const{
     size_t rows = gridGraph.size();
     size_t cols = gridGraph[0].size();
     vector<int> costs(8, 0);
@@ -110,7 +110,7 @@ Action ChasingAlgorithm::getBestMovement(int currY, int currX, Direction currDir
  * We fire a shell if the enemy is in our LOS and we are at most at distance 3 from him,
  * Otherwise we chase.
  */
-Action ChasingAlgorithm::getAction(const GameMap &gameMap, int playerNumber, const Tank* myTank) {
+ActionRequest ChasingAlgorithm::getAction(const GameMap &gameMap, int playerNumber, const Tank* myTank) {
     if(!initialized){
         initGraph(gameMap);
     }

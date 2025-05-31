@@ -44,12 +44,12 @@ struct Vec2 {
 
 class Algorithm{
 public:
-    virtual Action getAction(const GameMap& gameMap, int playerNumber, const Tank* myTank) = 0;
+    virtual ActionRequest getAction(const GameMap& gameMap, int playerNumber, const Tank* myTank) = 0;
     virtual ~Algorithm() = default;
     static int distanceBetweenTanks(const GameMap &gameMap, const Tank* tank1, const Tank* tank2);
     static bool enemyInLineOfSight(const GameMap &gameMap, const Tank* enemyTank, const Tank* myTank);
     static bool hasShellMovingTowardsTank(const GameMap &gameMap, const Tank* tank);
-    static Action rotationTowardsEnemy(const Tank* enemyTank, const Tank* myTank);
+    static ActionRequest rotationTowardsEnemy(const Tank* enemyTank, const Tank* myTank);
 };
 
 
@@ -61,7 +61,7 @@ private:
     int stepsSinceLastCalculation = INT32_MAX;
     bool initialized = false;
     void initGraph(const GameMap& gameMap);
-    [[nodiscard]] Action getBestMovement(int currY, int currX, Direction currDirection) const;
+    [[nodiscard]] ActionRequest getBestMovement(int currY, int currX, Direction currDirection) const;
     void resetGraph();
     vector<std::pair<int, int>> directions = {
             {0, 1},
@@ -75,11 +75,11 @@ private:
     };
 
 public:
-    Action getAction(const GameMap& gameMap, int playerNumber, const Tank* myTank) override;
+    ActionRequest getAction(const GameMap& gameMap, int playerNumber, const Tank* myTank) override;
 };
 
 class AlgorithmV1 : public Algorithm{
 
 public:
-    Action getAction(const GameMap& gameMap, int playerNumber, const Tank* myTank) override;
+    ActionRequest getAction(const GameMap& gameMap, int playerNumber, const Tank* myTank) override;
 };

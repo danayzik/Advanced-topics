@@ -11,19 +11,26 @@ using std::string;
 
 class MapLoader {
 private:
-
-    static std::stringstream errorBuffer;
-    static bool openFile(const string& filePath);
-    static bool readDimensions(const string& filePath, GameMap* gameMap);
-    static void processMapData(const string& filePath, GameMap* gameMap);
-    static void processRow(const string& line, int y, int& tank1Count, int& tank2Count, GameMap* gameMap);
-    static void handleCell(char cell, int y, int x, int& tank1Count, int& tank2Count, GameMap* gameMap);
-    static void handleMissingCharacter(int y, int x);
-    static void fillMissingRow(int y);
-    static void handleBadCharacter(int y, int x);
+    std::stringstream errorBuffer;
+    const std::string& filePath;
+    GameMap& gameMap;
+    GameManager& gameManager;
+    std::ifstream file;
+    bool openFile();
+    bool readSettings();
+    void processMapData();
+    void processRow(const string& line, size_t y);
+    void handleCell(char cell, size_t y, size_t x);
+    void handleMissingCharacter(size_t y, size_t x);
+    void fillMissingRow(size_t y);
+    void handleBadCharacter(size_t y, size_t x);
 
 public:
-    MapLoader() = delete;
-    static void loadMap(const std::string& filePath, GameMap* gameMap);
-
+    MapLoader(const std::string& filePath, GameMap& gameMap, GameManager& gameManager);
+    MapLoader(const MapLoader&) = delete;
+    MapLoader(MapLoader&&) = delete;
+    MapLoader& operator=(const MapLoader&) = delete;
+    MapLoader& operator=(MapLoader&&) = delete;
+    ~MapLoader() = default;
+    void loadMap();
 };
