@@ -93,32 +93,35 @@ void MapLoader::processRow(const string &line, size_t y) {
 
 
 void MapLoader::handleCell(char cell, size_t y, size_t x) {
-    size_t entityIndex;
+    if (cell >= '1' && cell <= '9') {
+        int playerNumber = cell - '0';
+
+        if(registeredPlayers.find(playerNumber) == registeredPlayers.end()){
+            gameManager.registerPlayer(playerNumber);
+            registeredPlayers.insert(playerNumber);
+        }
+        const Tank &tank = dynamic_cast<const Tank &>(
+                gameMap.entityManager.createTank(y, x, Direction::Left, playerNumber, tankCount)
+        );
+        tankCount++;
+        gameMap.grid[y][x].entitySet.insert(tank.getEntityId());
+        gameMap.tankIds.insert(tank.getEntityId());
+        gameManager.registerTank(tank);
+        return;
+    }
     switch (cell) {
         case ' ':
-            break;
-        case '#':
-            entityIndex = gameMap.entityManager.createWall(y, x);
-            gameMap.grid[y][x].entitySet.insert(entityIndex);
-            break;
-        case '@':
-            entityIndex = gameMap.entityManager.createMine(y, x);
-            gameMap.grid[y][x].entitySet.insert(entityIndex);
-
-            break;
-        case '1':
-            entityIndex = gameMap.entityManager.createTank(y, x, Direction::Left, 1);
-            gameMap.grid[y][x].entitySet.insert(entityIndex);
-            gameMap.tankIds.insert(entityIndex);
-            gameManager.registerTank(1, entityIndex);
-            break;
-        case '2':
-            entityIndex = gameMap.entityManager.createTank(y, x, Direction::Right, 2);
-            gameMap.grid[y][x].entitySet.insert(entityIndex);
-            gameMap.tankIds.insert(entityIndex);
-
-            gameManager.registerTank(2, entityIndex);
-            break;
+            return;
+        case '#': {
+            const GameEntity &entity = gameMap.entityManager.createWall(y, x);
+            gameMap.grid[y][x].entitySet.insert(entity.getEntityId());
+            return;
+        }
+        case '@': {
+            const GameEntity &entity = gameMap.entityManager.createWall(y, x);
+            gameMap.grid[y][x].entitySet.insert(entity.getEntityId());
+            return;
+        }
         default:
             handleBadCharacter(y, x);
     }

@@ -13,17 +13,17 @@ private:
     std::vector<size_t> freeIndicesList;
     std::optional<size_t> getFreeIndex();
     template<typename EntityType, typename... Args>
-    size_t createEntity(Args&&... args);
+    const GameEntity& createEntity(Args&&... args);
 
 
 public:
     [[nodiscard]] GameEntity& getEntity(size_t entityIndex);
     void destroyEntity(size_t entityIndex);
     void destroyEntity(GameEntity& entity);
-    size_t createTank(size_t y, size_t x, Direction dir, int playerIndex);
-    size_t createMine(size_t y, size_t x);
-    size_t createWall(size_t y, size_t x);
-    size_t createShell(size_t y, size_t x, Direction dir);
+    const GameEntity& createTank(size_t y, size_t x, Direction dir, int playerIndex, int tankIndex);
+    const GameEntity& createMine(size_t y, size_t x);
+    const GameEntity& createWall(size_t y, size_t x);
+    const GameEntity& createShell(size_t y, size_t x, Direction dir);
     [[nodiscard]] bool isTankAlive(size_t entityIndex) const;
 
 

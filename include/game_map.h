@@ -16,12 +16,7 @@ using std::vector;
 using std::string;
 class GameManager;
 class MapLoader;
-enum GameResult{
-    PlayerOneWin,
-    PlayerTwoWin,
-    Draw,
-    NotOver
-};
+
 
 class GameMap {
 private:

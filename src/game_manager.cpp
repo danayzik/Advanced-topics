@@ -46,15 +46,18 @@ bool GameManager::isLegaLAction(ActionRequest action, const Tank& tank) const{
 
 //Requests the action from a player, sets the action their tank will actually perform in this round.
 //If the action is GetBattleInfo, performs it right away
-void GameManager::getAndSetAction(int playerIndex, Tank& tank, TankAlgorithm& tankAlgorithm){
+void GameManager::getAndSetAction(Tank& tank){
+    TankAlgorithm& tankAlgorithm = *(tankAlgorithms.at(tank.getTankIndex()));
     ActionRequest actionRequest = tankAlgorithm.getAction();
     TankMode mode = tank.getMode();
+    int playerIndex = tank.getTankIndex();
     bool justEnteredReverse = mode == JustEnteredReverse;
+    logAction(actionRequest);
     if(justEnteredReverse &&  actionRequest != ActionRequest::MoveForward){
         tank.setAction(ActionRequest::MoveBackward);
-        outputFile << "Player" << playerIndex << " Moving backwards from earlier request"  << '\n';
         return;
     }
+    //Else ignore? think
     if(isLegaLAction(actionRequest, tank)){
         bool inReverse = mode == ReverseMode;
         bool preparingReverse = mode == PreparingReverse;
@@ -66,82 +69,44 @@ void GameManager::getAndSetAction(int playerIndex, Tank& tank, TankAlgorithm& ta
             }
             else if(preparingReverse || justEnteredReverse){
                 tank.setMode(NormalMode);
-                logAction(actionRequest, playerIndex);
-                outputFile << "Player" << playerIndex << " Canceling backwards request"  << '\n';
                 tank.setAction(ActionRequest::DoNothing);
                 return;
             }
         }
         if(normalMode && actionRequest == ActionRequest::MoveBackward){
             tank.setMode(PreparingReverse);
-            logAction(actionRequest, playerIndex);
             tank.setAction(ActionRequest::DoNothing);
             return;
         }
-        logAction(actionRequest, playerIndex);
         tank.setAction(actionRequest);
         if(actionRequest == ActionRequest::GetBattleInfo){
-            unique_ptr<SatelliteView> view = gameMap.getSatelliteView(tank);
-            if(playerIndex == 1){
-                playerOne->updateTankWithBattleInfo(tankAlgorithm, *view);
+            if(!satelliteViewOpt){
+                satelliteViewOpt = gameMap.getSatelliteView(tank);
             }
-            else{
-                playerTwo->updateTankWithBattleInfo(tankAlgorithm, *view);
-            }
+            (**(players.at(playerIndex-1))).updateTankWithBattleInfo(tankAlgorithm, **satelliteViewOpt);
+
         }
-        return;
     }
     else{
-        outputFile << "Player" << playerIndex << " bad step."  << '\n';
+        outputLine.back() += " (ignored)";
         tank.setAction(ActionRequest::DoNothing);
     }
 }
 
 //Performs the action set by "getAndSetAction()". If the action is moving, GameMap moves the tank.
 void GameManager::actionStep() {
-    for(size_t i = 0; i < playerOneTankAlgorithms.size(); i++){
-        auto& opt = playerOneTanks.at(i);
-        if(!opt){
-            //Log as killed for output
+    for(size_t i = 0; i < tankAlgorithms.size(); i++){
+        auto& tankEntityIDopt = tankEntityIds.at(i);
+        if(!tankEntityIDopt){
             continue;
         }
-        if(!gameMap.isTankAlive(opt.value())){
-            //log as killed for output
-            playerOneTanks[i] = std::nullopt;
-        }
-        Tank& tank = gameMap.getTank(opt.value());
-        ActionRequest action = tank.consumeAction();
-        int rotation = rotateActionToAngle(action);
-        if(rotation != 0){
-            tank.rotate(rotation);
+        if(!gameMap.isTankAlive(tankEntityIDopt.value())){
+            tankEntityIds[i] = std::nullopt;
+            totalTankCount--;
+            outputLine[i] += " (killed)";
             continue;
         }
-        switch (action) {
-            case ActionRequest::MoveForward:
-                gameMap.moveEntity(tank, tank.getDirection());
-                break;
-            case ActionRequest::MoveBackward:
-                gameMap.moveEntity(tank, getOppositeDirection(tank.getDirection()));
-                break;
-            case ActionRequest::Shoot:
-                tank.fire();
-                gameMap.fireShell(tank);
-                break;
-            default:
-                break;
-        }
-    }
-    for(size_t i = 0; i < playerTwoTankAlgorithms.size(); i++){
-        auto& opt = playerTwoTanks.at(i);
-        if(!opt){
-            //Log as killed for output
-            continue;
-        }
-        if(!gameMap.isTankAlive(opt.value())){
-            //log as killed for output
-            playerTwoTanks[i] = std::nullopt;
-        }
-        Tank& tank = gameMap.getTank(opt.value());
+        Tank& tank = gameMap.getTank(tankEntityIDopt.value());
         ActionRequest action = tank.consumeAction();
         int rotation = rotateActionToAngle(action);
         if(rotation != 0){
@@ -167,52 +132,53 @@ void GameManager::actionStep() {
 }
 
 bool GameManager::gameOverCheck(){
-    if(stepsSinceNoAmmo >= 40){
-        gameResult = Draw;
+    if(stepsSinceNoAmmo >= stepsWithNoAmmoLimit){
+        gameResult = GameResult::DrawFromNoAmmo;
         return true;
     }
-    gameResult = gameMap.getGameResult();
-    if(gameResult != NotOver){
+    if(totalTankCount == 0){
+        gameResult = GameResult::DrawFromAllTanksDead;
         return true;
+    }
+    if(stepCounter >= maxSteps){
+        gameResult = GameResult::DrawFromMaxSteps;
+        return true;
+    }
+    tanksPerPlayer = {};
+    for(auto& tankEntityIdOpt : tankEntityIds){
+        if(tankEntityIdOpt){
+            Tank& tank = gameMap.getTank(tankEntityIdOpt.value());
+            tanksPerPlayer[tank.getPlayerIndex()-1]++;
+        }
+    }
+    for(size_t i = 0; i < tanksPerPlayer.size(); i++){
+        if(tanksPerPlayer[i] == totalTankCount){
+            gameResult = GameResult::WinOccurred;
+            winningPlayer = i + 1;
+        }
     }
     return false;
 }
 
 
+void GameManager::getAndSetActionsForAllTanks() {
+    for(size_t i = 0; i < tankAlgorithms.size(); i++){
+        auto& tankEntityIdOpt = tankEntityIds.at(i);
+        if(!tankEntityIdOpt){
+            outputLine.emplace_back("killed");
+            continue;
+        }
+        Tank& tank = gameMap.getTank(tankEntityIdOpt.value());
+        getAndSetAction(tank);
+    }
+}
+
 void GameManager::tankStep() {
-    for(size_t i = 0; i < playerOneTankAlgorithms.size(); i++){
-        TankAlgorithm& algorithm = *(playerOneTankAlgorithms.at(i));
-        auto& opt = playerOneTanks.at(i);
-        if(!opt){
-            //Log as killed for output
-            continue;
-        }
-        if(!gameMap.isTankAlive(opt.value())){
-            //log as killed for output
-            playerOneTanks[i] = std::nullopt;
-        }
-        Tank& tank = gameMap.getTank(opt.value());
-        tank.tickUpdate();
-        getAndSetAction(1, tank, algorithm);
-    }
-    for(size_t i = 0; i < playerTwoTankAlgorithms.size(); i++){
-        TankAlgorithm& algorithm = *(playerTwoTankAlgorithms.at(i));
-        auto& opt = playerTwoTanks.at(i);
-        if(!opt){
-            //Log as killed for output
-            continue;
-        }
-        if(!gameMap.isTankAlive(opt.value())){
-            //log as killed for output
-            playerTwoTanks[i] = std::nullopt;
-        }
-        Tank& tank = gameMap.getTank(opt.value());
-        tank.tickUpdate();
-        getAndSetAction(2, tank, algorithm);
-    }
+    getAndSetActionsForAllTanks();
     gameMap.tanksAboutToCollide();
     actionStep();
     gameMap.checkCollisions();
+    checkForDeadTanks();
 }
 
 //Contains delay only if visuals are on, for viewing experience.
@@ -222,6 +188,7 @@ void GameManager::shellStep() {
     gameMap.shellsAboutToCollide();
     gameMap.moveShells();
     gameMap.checkCollisions();
+    checkForDeadTanks();
     gameMap.updateVisuals();
     auto end = steady_clock::now();
     auto elapsed = duration_cast<milliseconds>(end - start);
@@ -232,18 +199,26 @@ void GameManager::shellStep() {
 
 void GameManager::roundTick(){
     stepCounter++;
-    tanksTickUpdate();
-    if(!playerOne.getTank()->hasShells() && !playerTwo.getTank()->hasShells())
-        allTanksOutOfAmmo = true;
+    outputLine = {};
+    satelliteViewOpt = std::nullopt;
     if(allTanksOutOfAmmo)
         stepsSinceNoAmmo++;
+    allTanksOutOfAmmo = true;
+    for (auto tankIdOpt : tankEntityIds){
+        if(tankIdOpt){
+            Tank& tank = gameMap.getTank(tankIdOpt.value());
+            tank.tickUpdate();
+            if(tank.hasShells()){
+                allTanksOutOfAmmo = false;
+            }
+        }
+    }
 }
 
 //Main game flow
 void GameManager::gameLoop() {
     while(!gameOverCheck()){
         roundTick();
-        outputFile << "Step " << stepCounter << '\n';
         tankStep();
         if(gameOverCheck())
             break;
@@ -251,14 +226,12 @@ void GameManager::gameLoop() {
         if(gameOverCheck())
             break;
         shellStep();
-
+        writeOutputLine();
     }
 }
 
-void GameManager::logAction(ActionRequest action, int playerNumber) {
-    if (outputFile.is_open()) {
-        outputFile << "Player" << playerNumber << " " << actionToString(action) << '\n';
-    }
+void GameManager::logAction(ActionRequest action) {
+    outputLine.push_back(actionToString(action));
 }
 
 void GameManager::run() {
@@ -267,10 +240,20 @@ void GameManager::run() {
 }
 
 GameManager::~GameManager(){
+    int playersPrinted = 0;
     if (outputFile.is_open()) {
         switch(gameResult){
-            case PlayerOneWin:
-                outputFile << "Player 1 wins" << '\n';
+            case GameResult::DrawFromMaxSteps:
+                outputFile << "Tie, reached max steps = " << maxSteps << ", ";
+                for(size_t i = 0; i < tanksPerPlayer.size(); i++){
+                    if(players[i]){
+                        outputFile << "Player " << i + 1 << "has " << tanksPerPlayer[i] << "tanks";
+                        playersPrinted++;
+                        if(playersPrinted < playerCount){
+                            outputFile << ", ";
+                        }
+                    }
+                }
                 break;
             case PlayerTwoWin:
                 outputFile << "Player 2 wins" << '\n';
@@ -285,16 +268,39 @@ GameManager::~GameManager(){
     }
 }
 
-void GameManager::registerTank(int playerIndex, size_t tankEntityIndex) {
-    if (playerIndex == 1){
-        playerOneTankAlgorithms.push_back(tankAlgorithmFactory.create(playerIndex, player1TankCount));
-        playerOneTanks.emplace_back(tankEntityIndex);
-        player1TankCount++;
+void GameManager::checkForDeadTanks() {
+    for(size_t i = 0; i < tankAlgorithms.size(); i++){
+        auto& tankEntityIdOpt = tankEntityIds.at(i);
+        if(!tankEntityIdOpt){
+            continue;
+        }
+        if(!gameMap.isTankAlive(tankEntityIdOpt.value())){
+            tankEntityIds[i] = std::nullopt;
+            totalTankCount--;
+            outputLine[i] += " (killed)";
+        }
     }
-    if(playerIndex == 2){
-        playerTwoTankAlgorithms.push_back(tankAlgorithmFactory.create(playerIndex, player2TankCount));
-        playerTwoTanks.emplace_back(tankEntityIndex);
-        player2TankCount++;
+}
+
+void GameManager::writeOutputLine() {
+    for (size_t i = 0; i < outputLine.size(); ++i) {
+        outputFile << outputLine[i];
+        if (i + 1 < outputLine.size()) outputFile << ", ";
     }
+    outputFile << '\n';
+}
+
+void GameManager::registerTank(const Tank& tank) {
+    int playerIndex = tank.getPlayerIndex();
+    int tankIndex = tank.getTankIndex();
+    size_t tankId = tank.getEntityId();
+    totalTankCount++;
+    tankAlgorithms.push_back(tankAlgorithmFactory.create(playerIndex, tankIndex));
+    tankEntityIds.emplace_back(tankId);
+}
+
+void GameManager::registerPlayer(int playerIndex) {
+    playerCount++;
+    players[playerIndex-1] = playerFactory.create(playerIndex, gameMap.getCols(), gameMap.getRows(), maxSteps, numShells);
 }
 

@@ -15,7 +15,7 @@ void Tank::setMode(TankMode newMode){
     }
 }
 
-Tank::Tank(size_t entityId, size_t y, size_t x, Direction dir, int playerIndex) : GameEntity(entityId, y, x), currDirection(dir), playerIndex(playerIndex){}
+Tank::Tank(size_t entityId, size_t y, size_t x, Direction dir, int playerIndex, int tankIndex) : GameEntity(entityId, y, x), currDirection(dir), playerIndex(playerIndex), tankIndex(tankIndex){}
 
 
 ActionRequest Tank::consumeAction() {

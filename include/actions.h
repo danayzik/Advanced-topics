@@ -58,7 +58,7 @@ inline ActionRequest getFirstRotationAction(Direction current, Direction target)
     }
 }
 
-inline const char* actionToString(ActionRequest action) {
+inline std::string actionToString(ActionRequest action) {
     switch (action) {
         case ActionRequest::MoveForward:     return "MoveForward";
         case ActionRequest::MoveBackward:    return "MoveBackward";
@@ -67,7 +67,7 @@ inline const char* actionToString(ActionRequest action) {
         case ActionRequest::RotateLeft90:    return "RotateLeft90";
         case ActionRequest::RotateRight90:   return "RotateRight90";
         case ActionRequest::Shoot:           return "Shoot";
-        case ActionRequest::DoNothing:        return "NoAction";
+        case ActionRequest::DoNothing:        return "DoNothing";
         case ActionRequest::GetBattleInfo:        return "GetBattleInfo";
         default:              return "UnknownAction";
     }

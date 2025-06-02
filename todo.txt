@@ -12,10 +12,17 @@ Add input_errors.txt errors that are fatal
 Questions:
 Without try in main, how can we exit gracefully if map loading fails?
 strict key = value ordering in map? what if i do better and make it key based?
+Check dying at the same time in diff shell steps
 
 
+More images of tanks for all players
 
-
+Things to clean at the end:
+Constructor for game manager, abstract?
+Rule of 5 for everything
+Try catch on all errors from map file
+Settings out of order works for me. ask if it's a problem on forums?
+Change map file path to file name, get only the name
 
 sudo apt-get update
 sudo apt-get install libx11-dev libxrandr-dev libxcursor-dev libxi-dev
@@ -29,7 +36,7 @@ sudo apt install libflac-dev
 cmake -S . -B build
 cmake --build build
 
-
+Current: Checking for dead tanks, can remove some killed checks from action step
 
 
 

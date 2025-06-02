@@ -56,16 +56,19 @@ private:
     ActionRequest nextStepAction = ActionRequest::DoNothing;
     TankMode mode = NormalMode;
     int playerIndex;
+    int tankIndex;
 
 public:
     [[nodiscard]] inline char getSymbol() const override {return static_cast<char>('0' + playerIndex);}
-    Tank(size_t entityId, size_t y, size_t x, Direction dir, int playerIndex);
+    Tank(size_t entityId, size_t y, size_t x, Direction dir, int playerIndex, int tankIndex);
     [[nodiscard]] inline enum Direction getDirection() const {return currDirection; }
     [[nodiscard]] inline int getShellCount() const {return shellCount;}
     [[nodiscard]] inline TankMode getMode() const {return mode;}
     [[nodiscard]] inline bool isTank() const override{return true;}
     [[nodiscard]] inline ActionRequest peekAction() const{return nextStepAction;}
     [[nodiscard]] bool canFire() const;
+    [[nodiscard]] inline int getTankIndex() const {return tankIndex;}
+    [[nodiscard]] inline int getPlayerIndex() const {return playerIndex;}
     void rotate(int rotationAmount);
     void setMode(TankMode newMode);
     [[nodiscard]] inline bool hasShells() const{return shellCount>0;}
@@ -82,7 +85,7 @@ private:
     const Direction dir;
     bool createdThisTurn = true;
 public:
-    inline char getSymbol() const override {return '*';}
+    [[nodiscard]] inline char getSymbol() const override {return '*';}
     inline Shell(size_t entityId, size_t y, size_t x, Direction dir) : GameEntity(entityId, y, x), dir(dir){}
     [[nodiscard]] inline enum Direction getDirection() const{
         return dir;

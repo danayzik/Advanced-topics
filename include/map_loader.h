@@ -16,6 +16,8 @@ private:
     GameMap& gameMap;
     GameManager& gameManager;
     std::ifstream file;
+    int tankCount = 0;
+    std::unordered_set<int> registeredPlayers = {};
     bool openFile();
     bool readSettings();
     void processMapData();

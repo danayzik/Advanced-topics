@@ -11,32 +11,32 @@ std::optional<size_t> EntityManager::getFreeIndex() {
 }
 
 template<typename EntityType, typename... Args>
-size_t EntityManager::createEntity(Args&&... args) {
+const GameEntity& EntityManager::createEntity(Args&&... args) {
     if (auto i = getFreeIndex()) {
         size_t id = i.value();
         entities[id] = std::make_unique<EntityType>(id, std::forward<Args>(args)...);
-        return id;
+        return **(entities[id]);
     } else {
         size_t id = generations++;
         entities.push_back(std::make_unique<EntityType>(id, std::forward<Args>(args)...));
-        return id;
+        return **(entities[id]);
     }
 }
 
-size_t EntityManager::createMine(size_t y, size_t x) {
+const GameEntity& EntityManager::createMine(size_t y, size_t x) {
     return createEntity<Mine>(y, x);
 }
 
-size_t EntityManager::createWall(size_t y, size_t x) {
+const GameEntity& EntityManager::createWall(size_t y, size_t x) {
     return createEntity<Wall>(y, x);
 }
 
-size_t EntityManager::createShell(size_t y, size_t x, Direction dir) {
+const GameEntity& EntityManager::createShell(size_t y, size_t x, Direction dir) {
     return createEntity<Shell>(y, x, dir);
 }
 
-size_t EntityManager::createTank(size_t y, size_t x, Direction dir, int playerIndex) {
-    return createEntity<Tank>(y, x, dir, playerIndex);
+const GameEntity& EntityManager::createTank(size_t y, size_t x, Direction dir, int playerIndex, int tankIndex) {
+    return createEntity<Tank>(y, x, dir, playerIndex, tankIndex);
 }
 
 GameEntity& EntityManager::getEntity(size_t entityIndex){

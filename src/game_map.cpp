@@ -158,7 +158,8 @@ void GameMap::moveShells(){
 void GameMap::fireShell(const Tank& tank) {
     auto[y, x] = getNewPosition(tank, tank.getDirection());
     Cell* cell = &grid[y][x];
-    size_t entityIndex = entityManager.createShell(y, x, tank.getDirection());
+    const GameEntity& shell = entityManager.createShell(y, x, tank.getDirection());
+    size_t entityIndex = shell.getEntityId();
     cell->entitySet.insert(entityIndex);
     shellsIds.insert(entityIndex);
 }
