@@ -20,27 +20,38 @@ endif()
 
 
 set(SOURCES
-        src/tank.cpp
         src/main.cpp
-        src/map_loader.cpp
-        src/game_map.cpp
-        src/game_manager.cpp
-        src/cell.cpp
-        src/chasing_algorithm.cpp
-        src/algorithm_v1.cpp
-        src/algorithms.cpp
-        src/entity_manager.cpp
+        game_side/src/Tank.cpp
+        game_side/src/MapLoader.cpp
+        game_side/src/GameMap.cpp
+        game_side/src/GameManager.cpp
+        game_side/src/Cell.cpp
+        game_side/src/EntityManager.cpp
+        players_side/src/FullBattleInfo.cpp
+        players_side/src/ObservedCell.cpp
+        players_side/src/AlgorithmUtilities.cpp
+        players_side/src/FirstTankAlgorithm.cpp
+        players_side/src/ObservedTank.cpp
+        players_side/src/PlayerOne.cpp
 )
 
 
 if(USE_SFML)
-    list(APPEND SOURCES src/sfml_renderer.cpp)
+    list(APPEND SOURCES game_side/src/SFMLRenderer.cpp)
 endif()
 
 add_executable(tanks_game ${SOURCES})
+
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+target_include_directories(tanks_game PRIVATE
+        ${CMAKE_SOURCE_DIR}/common
+        ${CMAKE_SOURCE_DIR}/players_side/include
+        ${CMAKE_SOURCE_DIR}/game_side/include
+)
 
 target_compile_options(tanks_game PRIVATE
         -Wall

@@ -1,10 +1,16 @@
 
 ToDo:
-Remove code duplication in ActionStep
+Make ObservedEntities also use Coords
+add getCell by coords for gamemap and for battleinfo
+Factories
+2nd algo
+2nd player
+Cleanup
+Make player decide how algo's act?
+
 Deal with GetEntity being const/non const check gameMap functions for const or no const
 ^^ Make GameManager have a ref to Entity Manager? then overload getEntity with const and non const
-change tankalgo vectors to vector of vector according to players
-maybe remove playerIndex from tank entity
+
 Exit out of backward mode if in backward mode and move != backward
 Can go into reverse even when something is behind
 check negative values in map settings
@@ -13,12 +19,10 @@ Questions:
 Without try in main, how can we exit gracefully if map loading fails?
 strict key = value ordering in map? what if i do better and make it key based?
 Check dying at the same time in diff shell steps
+Don't approve getbattleinfo if in preparing reverse . what about in justenteredreverse?
 
-
-More images of tanks for all players
 
 Things to clean at the end:
-Constructor for game manager, abstract?
 Rule of 5 for everything
 Try catch on all errors from map file
 Settings out of order works for me. ask if it's a problem on forums?
@@ -36,7 +40,7 @@ sudo apt install libflac-dev
 cmake -S . -B build
 cmake --build build
 
-Current: Checking for dead tanks, can remove some killed checks from action step
+
 
 
 

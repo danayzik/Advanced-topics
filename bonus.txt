@@ -20,6 +20,6 @@ Extra work added to this project for which we're requesting a bonus:
    While the guidelines mention that implementing a 'smart' algorithm doesn't entitle you for a bonus, this is different
    as it's not necessarily a 'better' playing algorithm, but rather a creative way of taking rotational costs into account.
 
-   Note that a basic Dijkstra does not work as the cost for an 'edge' change depending on your current orientation.
+   Note that a basic Dijkstra does not work as the cost for an 'edge' changes depending on your current facing direction.
    My algorithm avoids that problem creatively. Please refer to the pdf file for a full explanation on it.
 
