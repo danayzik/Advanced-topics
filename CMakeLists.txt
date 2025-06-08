@@ -33,6 +33,9 @@ set(SOURCES
         players_side/src/FirstTankAlgorithm.cpp
         players_side/src/ObservedTank.cpp
         players_side/src/PlayerOne.cpp
+        players_side/src/SecondTankAlgorithm.cpp
+        common/src/MyPlayerFactory.cpp
+        common/src/MyTankAlgorithmFactory.cpp
 )
 
 

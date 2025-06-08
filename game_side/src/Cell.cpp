@@ -1,8 +1,6 @@
 #include "Cell.h"
-
-
 #include <algorithm>
-
+#include "EntityManager.h"
 
 
 bool Cell::hasWall(const EntityManager &entityManager) const {

@@ -99,7 +99,7 @@ void MapLoader::handleCell(char cell, size_t y, size_t x) {
             registeredPlayers.insert(playerNumber);
         }
         const Tank &tank = dynamic_cast<const Tank &>(
-                gameMap.entityManager.createTank(y, x, Direction::Left, playerNumber, tankCount, gameManager.numShells)
+                gameMap.entityManager.createTank(y, x, playerNumber % 2 == 1 ?  Direction::Left : Direction::Right, playerNumber, tankCount, gameManager.numShells)
         );
         tankCount++;
         gameMap.grid[y][x].entitySet.insert(tank.getEntityId());

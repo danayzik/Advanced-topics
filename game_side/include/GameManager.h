@@ -36,7 +36,7 @@ private:
     std::vector<std::string> outputLine;
     int totalTankCount = 0;
     int playerCount = 0;
-    std::optional<unique_ptr<SatelliteView>> satelliteViewOpt = {};
+    std::optional<unique_ptr<ConcreteSatelliteView>> satelliteViewOpt = {};
     std::array<int, 9> tanksPerPlayer = {};
     std::array<std::optional<std::unique_ptr<Player>>, 9> players = {};
     std::vector<unique_ptr<TankAlgorithm>> tankAlgorithms = {};

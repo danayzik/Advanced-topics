@@ -20,6 +20,7 @@ struct ObservedCell{
     ObservedCell& operator=(const ObservedCell& other);
     ObservedCell(ObservedCell&&) noexcept = default;
     ObservedCell& operator=(ObservedCell&&) noexcept = default;
+
     [[nodiscard]] bool isPassableForTank() const;
     [[nodiscard]] bool isPassableForShell() const;
     [[nodiscard]] bool hasEntity() const { return entity != nullptr;}

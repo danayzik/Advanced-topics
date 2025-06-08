@@ -1,6 +1,6 @@
 #pragma once
 #include "ActionRequest.h"
-
+#include <string>
 namespace ActionRequestUtils {
     inline bool isRotation(ActionRequest action) {
         switch (action) {

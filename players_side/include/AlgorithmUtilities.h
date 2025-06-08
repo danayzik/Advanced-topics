@@ -45,8 +45,7 @@ struct Vec2 {
     }
 };
 
-int distanceBetweenTanks(const FullBattleInfo &battleInfo, const ObservedTank& tank1, size_t targetY, size_t targetX);
-bool enemyInLineOfSight(const FullBattleInfo &battleInfo, const ObservedTank& myTank, size_t targetY, size_t targetX);
+bool enemyInLineOfSight(const FullBattleInfo &battleInfo, const ObservedTank& myTank, Coordinates targetCoords);
 bool hasShellMovingTowardsTank(const FullBattleInfo &battleInfo, const ObservedTank& tank);
 ActionRequest rotationTowardsEnemy(const ObservedTank& enemyTank, const ObservedTank& myTank);
 

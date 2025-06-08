@@ -19,24 +19,30 @@ class ObservedEntity{
 
 protected:
 
-    size_t yCoord;
-    size_t xCoord;
+    Coordinates coords;
 
 
 public:
     inline virtual ~ObservedEntity() = default;
-    inline ObservedEntity(size_t y, size_t x) :  yCoord(y), xCoord(x){}
+    inline ObservedEntity(size_t y, size_t x) :  coords{y, x}{}
+    inline explicit ObservedEntity(Coordinates coords) :  coords(coords){}
     [[nodiscard]] virtual std::unique_ptr<ObservedEntity> clone() const = 0;
     inline void setCoords(size_t y, size_t x){
-        xCoord = x;
-        yCoord = y;
+        coords = {y, x};
     }
-    [[nodiscard]] inline std::pair<size_t, size_t> getCoords() const{return {yCoord, xCoord};}
-    [[nodiscard]] inline size_t getX() const{
-        return xCoord;
+    inline void setCoords(Coordinates newCoords){coords = newCoords;}
+    [[nodiscard]] inline Coordinates getCoords() const{return coords;}
+    [[nodiscard]] inline int getX() const{
+        return coords.x;
     }
-    [[nodiscard]] inline size_t getY() const{
-        return yCoord;
+    [[nodiscard]] inline int getY() const{
+        return coords.y;
+    }
+    [[nodiscard]] inline size_t getXAsSizeT() const{
+        return coords.xAsSizeT();
+    }
+    [[nodiscard]] inline size_t getYAsSizeT() const{
+        return coords.yAsSizeT();
     }
 
     [[nodiscard]] inline virtual bool isWall() const{return false;}
@@ -48,9 +54,8 @@ public:
 
 class ObservedTank : public ObservedEntity{
 private:
+
     static int constexpr firingCooldown = 4;
-
-
     int stepsSinceLastShot = 100; // Placeholder initial value
     int preparingReverseCounter = -1;
     int playerIndex;
@@ -61,6 +66,7 @@ private:
 
 public:
     ObservedTank(size_t y, size_t x, int playerIndex, size_t shellCount, std::optional<Direction> dir = std::nullopt): ObservedEntity(y, x), playerIndex(playerIndex), shellCount(shellCount), assumedDirection(dir){}
+    ObservedTank(Coordinates coords, int playerIndex, size_t shellCount, std::optional<Direction> dir = std::nullopt): ObservedEntity(coords), playerIndex(playerIndex), shellCount(shellCount), assumedDirection(dir){}
     [[nodiscard]] inline std::optional<Direction> getDirection() const {return assumedDirection;}
     [[nodiscard]] inline size_t getShellCount() const {return shellCount;}
     [[nodiscard]] inline bool isTank() const override{return true;}
@@ -88,7 +94,7 @@ private:
     EntityType type = EntityType::Shell;
 
 public:
-
+    inline explicit ObservedShell(Coordinates coords,  std::optional<Direction> assumedDirection = std::nullopt): ObservedEntity(coords), assumedDirection(assumedDirection){}
     inline ObservedShell(size_t y, size_t x,  std::optional<Direction> assumedDirection = std::nullopt): ObservedEntity(y,x), assumedDirection(assumedDirection){}
 
     [[nodiscard]] inline std::optional<Direction> getDirection() const {return assumedDirection; }
@@ -105,7 +111,8 @@ class ObservedWall : public ObservedEntity{
     EntityType type = EntityType::Wall;
 public:
 
-    inline ObservedWall(size_t y, size_t x) : ObservedEntity(y, x){;}
+    inline ObservedWall(size_t y, size_t x) : ObservedEntity(y, x){}
+    inline explicit  ObservedWall(Coordinates coords) : ObservedEntity(coords){}
     [[nodiscard]] inline bool isWall() const override{return true;}
     [[nodiscard]] inline std::unique_ptr<ObservedEntity> clone() const override {
         return std::make_unique<ObservedWall>(*this);

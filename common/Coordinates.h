@@ -1,6 +1,7 @@
 #pragma once
 #include <functional>
-
+#include <cmath>
+#include <cstdlib>
 struct Coordinates {
     int y;
     int x;
@@ -14,6 +15,15 @@ struct Coordinates {
     bool operator==(const Coordinates& other) const {
         return y == other.y && x == other.x;
     }
+
+    [[nodiscard]] inline int distanceToOtherCoord(Coordinates coord, size_t rows, size_t cols) const{
+        int intRows = static_cast<int>(rows);
+        int intCols = static_cast<int>(cols);
+        int dy = std::min(std::abs(coord.y - y), intRows - abs(coord.y - y));
+        int dx = std::min(std::abs(coord.x - x), intCols - std::abs(coord.x - x));
+        return std::max(dy, dx);
+    }
+
 };
 
 struct CoordinatesHash {

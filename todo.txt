@@ -7,6 +7,7 @@ Factories
 2nd player
 Cleanup
 Make player decide how algo's act?
+Allow lowercase letters in input txt, report it as small error. Same with misordering
 
 Deal with GetEntity being const/non const check gameMap functions for const or no const
 ^^ Make GameManager have a ref to Entity Manager? then overload getEntity with const and non const

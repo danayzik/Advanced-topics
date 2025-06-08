@@ -8,7 +8,6 @@ void FirstTankAlgorithm::roundTick() {
     stepsSinceLastInfoRequest++;
     if(initialized){
         battleInfo.moveKnownShells();
-
     }
 }
 
@@ -51,19 +50,27 @@ ActionRequest FirstTankAlgorithm::requestAction(ActionRequest action) {
 
 ActionRequest FirstTankAlgorithm::getAction() {
     roundTick();
+    if(!initialized){
+        stepsSinceLastInfoRequest = 0;
+        return ActionRequest::GetBattleInfo;
+    }
+
     if(stepsSinceLastInfoRequest > 3){
         return requestAction(ActionRequest::GetBattleInfo);
     }
     const ObservedTank& myTank = battleInfo.getMyTank();
     const Coordinates* closest = nullptr;
     const auto& enemyTanksCoordinates = battleInfo.getEnemyTanksCoordinates();
+    size_t rows = battleInfo.getRows();
+    size_t cols = battleInfo.getCols();
+    Coordinates myTankCoords = battleInfo.getMyTankCoords();
     closest = &(*std::min_element(
             enemyTanksCoordinates.begin(),
             enemyTanksCoordinates.end(),
             [&](const Coordinates& a, const Coordinates& b) {
 
-                return distanceBetweenTanks(battleInfo, myTank, a.yCoord, a.xCoord) <
-                       distanceBetweenTanks(battleInfo, myTank, b.yCoord, b.xCoord);
+                return myTankCoords.distanceToOtherCoord(a, rows, cols) <
+                        myTankCoords.distanceToOtherCoord(b, rows, cols);
             }));
 
     if(stepsSinceLastCalculation > 4){
@@ -71,12 +78,12 @@ ActionRequest FirstTankAlgorithm::getAction() {
     }
     int currY = myTank.getY();
     int currX = myTank.getX();
-    int dist = distanceBetweenTanks(battleInfo, myTank, closest->yCoord, closest->xCoord);
+    int dist = myTankCoords.distanceToOtherCoord(*closest, rows, cols);
     if(gridGraph[currY][currX].totalCost == INT32_MAX && !myTank.canFire())
         return requestAction(ActionRequest::GetBattleInfo);
 
     bool shouldFire = (dist < 3 || gridGraph[currY][currX].totalCost == INT32_MAX) && myTank.canFire() &&
-                      enemyInLineOfSight(battleInfo, myTank, closest->yCoord, closest->xCoord);
+                      enemyInLineOfSight(battleInfo, myTank, *closest);
     if(shouldFire)return requestAction(ActionRequest::Shoot);
     return getBestMovement();
 }
@@ -84,7 +91,7 @@ ActionRequest FirstTankAlgorithm::getAction() {
 void FirstTankAlgorithm::resetGraph() {
     for(size_t i = 0; i < gridGraph.size(); i++){
         for (size_t j = 0; j < gridGraph[i].size(); ++j) {
-            gridGraph[i][j].setParams(i, j, INT32_MAX, Up);
+            gridGraph[i][j].setParams(static_cast<int>(i), static_cast<int>(j), INT32_MAX, Direction::Up);
         }
     }
 }
@@ -99,10 +106,10 @@ void FirstTankAlgorithm::initGraph() {
 void FirstTankAlgorithm::calculateGridPathsFromTarget(Coordinates targetCoords) {
     resetGraph();
     const auto& grid = battleInfo.getGrid();
-    int cols = battleInfo.getCols();
-    int rows = battleInfo.getRows();
-    int targetX = targetCoords.xCoord;
-    int targetY = targetCoords.yCoord;
+    int cols = static_cast<int>(battleInfo.getCols());
+    int rows = static_cast<int>(battleInfo.getRows());
+    int targetX = targetCoords.x;
+    int targetY = targetCoords.y;
     std::priority_queue<HeapNode> pq;
     gridGraph[targetY][targetX].setParams(targetY, targetX, 0, Direction::Up);
     for(auto [dy, dx] : directions){
@@ -140,15 +147,15 @@ void FirstTankAlgorithm::calculateGridPathsFromTarget(Coordinates targetCoords) 
 }
 
 ActionRequest FirstTankAlgorithm::getBestMovement() {
-    size_t rows = gridGraph.size();
-    size_t cols = gridGraph[0].size();
+    int rows = static_cast<int>(gridGraph.size());
+    int cols = static_cast<int>(gridGraph[0].size());
     std::vector<int> costs(8, 0);
     const ObservedTank& myTank = battleInfo.getMyTank();
     Direction currDirection = myTank.getDirection().value();
     Coordinates myCoordinates = battleInfo.getMyTankCoords();
-    int currY = myCoordinates.yCoord;
-    int currX = myCoordinates.xCoord;
-    if(currDirection == gridGraph[currY][currX].optimalDirectionToGo)return requestAction(ActionRequest::MoveForward);
+    int currY = myCoordinates.y;
+    int currX = myCoordinates.x;
+    if(currDirection == gridGraph[myCoordinates.yAsSizeT()][myCoordinates.xAsSizeT()].optimalDirectionToGo)return requestAction(ActionRequest::MoveForward);
     for (size_t i = 0; i < directions.size(); i++) {
         auto [dy, dx] = directions[i];
         int newY = (currY + dy + rows) % rows;

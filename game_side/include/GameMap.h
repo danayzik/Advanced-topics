@@ -29,7 +29,10 @@ private:
     size_t cols = 0;
     Coordinates getNewPosition(const GameEntity& entity, Direction dir) const;
     void resolveCollisions(const unordered_set<Cell*>& dirtyCells);
-
+    [[nodiscard]] inline Cell& getCell(Coordinates coords){return grid[coords.yAsSizeT()][coords.xAsSizeT()];}
+    [[nodiscard]] inline Cell& getCell(size_t y, size_t x){return grid[y][x];}
+    [[nodiscard]] inline const Cell& getCell(Coordinates coords) const {return grid[coords.yAsSizeT()][coords.xAsSizeT()];}
+    [[nodiscard]] inline const Cell& getCell(size_t y, size_t x)const {return grid[y][x];}
 
 
 public:
@@ -43,7 +46,7 @@ public:
     void shellsAboutToCollide();
     void moveEntity(GameEntity& entity, Direction dir);
     inline Tank& getTank(size_t tankEntityIndex) {return dynamic_cast<Tank&>(entityManager.getEntity(tankEntityIndex));}
-    std::unique_ptr<SatelliteView> getSatelliteView(const Tank& tank);
+    std::unique_ptr<ConcreteSatelliteView> getSatelliteView();
     [[nodiscard]] inline size_t getRows() const{return rows;}
     [[nodiscard]] inline size_t getCols() const{return cols;}
     void updateVisuals();

@@ -1,5 +1,6 @@
 #include "GameManager.h"
 #include <thread>
+#include <iostream>
 
 using namespace std::chrono;
 using namespace DirectionUtils;
@@ -47,7 +48,7 @@ void GameManager::getAndSetAction(Tank& tank){
     TankAlgorithm& tankAlgorithm = *(tankAlgorithms.at(tank.getTankIndex()));
     ActionRequest actionRequest = tankAlgorithm.getAction();
     TankMode mode = tank.getMode();
-    int playerIndex = tank.getTankIndex();
+    int playerIndex = tank.getPlayerIndex();
     bool justEnteredReverse = mode == JustEnteredReverse;
     logAction(actionRequest);
     if(justEnteredReverse &&  actionRequest != ActionRequest::MoveForward){
@@ -78,10 +79,10 @@ void GameManager::getAndSetAction(Tank& tank){
         tank.setAction(actionRequest);
         if(actionRequest == ActionRequest::GetBattleInfo){
             if(!satelliteViewOpt){
-                satelliteViewOpt = gameMap.getSatelliteView(tank);
+                satelliteViewOpt = gameMap.getSatelliteView();
             }
+            satelliteViewOpt.value()->setRequestingTank(tank);
             (**(players.at(playerIndex-1))).updateTankWithBattleInfo(tankAlgorithm, **satelliteViewOpt);
-
         }
     }
     else{
@@ -295,12 +296,16 @@ void GameManager::registerTank(const Tank& tank) {
     int playerIndex = tank.getPlayerIndex();
     int tankIndex = tank.getTankIndex();
     size_t tankId = tank.getEntityId();
+    std::cout << "Registering tank for player: " << playerIndex << std::endl;
+    std::cout << "Tank index: " << tankIndex << std::endl;
+    std::cout << "Tank entity id: " << tankId << std::endl;
     totalTankCount++;
     tankAlgorithms.push_back(tankAlgorithmFactory.create(playerIndex, tankIndex));
     tankEntityIds.emplace_back(tankId);
 }
 
 void GameManager::registerPlayer(int playerIndex) {
+    std::cout << "Registering player: " << playerIndex << std::endl;
     playerCount++;
     players[playerIndex-1] = playerFactory.create(playerIndex, gameMap.getCols(), gameMap.getRows(), maxSteps, numShells);
 }

@@ -9,10 +9,6 @@ ObservedCell::ObservedCell(const ObservedCell &other): hasMine(other.hasMine) {
 }
 ObservedCell &ObservedCell::operator=(const ObservedCell &other) {
     if (this != &other) {
-        if(hasMine && other.entity && other.entity->isShell()){
-           entity = other.entity->clone();
-           return *this;
-        }
         hasMine = other.hasMine;
         entity = other.entity ? other.entity->clone() : nullptr;
     }

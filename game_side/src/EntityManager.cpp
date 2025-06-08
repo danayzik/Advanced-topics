@@ -1,5 +1,5 @@
 #include "EntityManager.h"
-
+#include "Entities.h"
 
 std::optional<size_t> EntityManager::getFreeIndex() {
     if(!freeIndicesList.empty()){

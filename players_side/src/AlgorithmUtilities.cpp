@@ -16,14 +16,14 @@ ActionRequest rotationTowardsEnemy(const ObservedTank& enemyTank, const Observed
     return getFirstRotationAction(currentDirection.value(), targetDirection);
 }
 
-bool enemyInLineOfSight(const FullBattleInfo &battleInfo, const ObservedTank& myTank, size_t targetY, size_t targetX){
+bool enemyInLineOfSight(const FullBattleInfo &battleInfo, const ObservedTank& myTank, Coordinates targetCoords){
     std::optional<Direction> currentDirection = myTank.getDirection();
     if(!currentDirection)
         return false;
-    int enemyX = targetX;
-    int enemyY = targetY;
-    int rows = battleInfo.getRows();
-    int cols = battleInfo.getCols();
+    int enemyX = targetCoords.x;
+    int enemyY = targetCoords.y;
+    int rows = static_cast<int>(battleInfo.getRows());
+    int cols = static_cast<int>(battleInfo.getCols());
     auto [dy, dx] = directionToCoordinatesOffset(currentDirection.value());
     const auto& grid = battleInfo.getGrid();
     int selfY = myTank.getY();
@@ -43,14 +43,13 @@ bool enemyInLineOfSight(const FullBattleInfo &battleInfo, const ObservedTank& my
 
 bool hasShellMovingTowardsTank(const FullBattleInfo &battleInfo, const ObservedTank& tank){
     const auto& shellCoordsSet = battleInfo.getShellsCoordinates();
-    const auto& grid = battleInfo.getGrid();
     for(auto& shellCoords : shellCoordsSet){
-        const ObservedShell& shell = dynamic_cast<const ObservedShell&>(*(grid[shellCoords.yCoord][shellCoords.xCoord].entity));
+        const auto& shell = dynamic_cast<const ObservedShell&>(*(battleInfo.getCell(shellCoords).entity));
         std::optional<Direction> shellDirection = shell.getDirection();
         if(!shellDirection)
             continue;
-        int shellY = shellCoords.yCoord;
-        int shellX = shellCoords.xCoord;
+        int shellY = shellCoords.y;
+        int shellX = shellCoords.x;
         int tankY = tank.getY();
         int tankX = tank.getX();
         Vec2 delta = {tankY - shellY, tankX - shellX};
@@ -62,14 +61,3 @@ bool hasShellMovingTowardsTank(const FullBattleInfo &battleInfo, const ObservedT
     return false;
 }
 
-int distanceBetweenTanks(const FullBattleInfo &battleInfo, const ObservedTank& tank1, size_t targetY, size_t targetX){
-    int rows = battleInfo.getRows();
-    int cols = battleInfo.getCols();
-    int firstY = tank1.getY();
-    int firstX = tank1.getX();
-    int secondY = targetY;
-    int secondX = targetX;
-    int dy = std::min(abs(secondY - firstY), rows - abs(secondY - firstY));
-    int dx = std::min(std::abs(secondX - firstX), cols - std::abs(secondX - firstX));
-    return std::max(dy, dx);
-}

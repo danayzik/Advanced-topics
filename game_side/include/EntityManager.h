@@ -1,10 +1,11 @@
 #pragma once
-#include "Entities.h"
 #include <optional>
 #include <memory>
 #include <vector>
+#include "Direction.h"
 class MapLoader;
 class GameMap;
+class GameEntity;
 
 class EntityManager{
 

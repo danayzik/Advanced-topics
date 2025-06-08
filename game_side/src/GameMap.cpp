@@ -133,8 +133,8 @@ Coordinates GameMap::getNewPosition(const GameEntity& entity, Direction dir) con
 void GameMap::moveEntity(GameEntity& entity, Direction dir){
     Coordinates currCoords = entity.getCoords();
     Coordinates newCoords = getNewPosition(entity, dir);
-    grid[newCoords.yAsSizeT()][newCoords.xAsSizeT()].entitySet.insert(entity.getEntityId());
-    grid[currCoords.yAsSizeT()][currCoords.xAsSizeT()].entitySet.erase(entity.getEntityId());
+    getCell(newCoords).insertEntity(entity);
+    getCell(currCoords).eraseEntity(entity);
     entity.setCoords(newCoords);
 }
 
@@ -157,10 +157,10 @@ void GameMap::fireShell(const Tank& tank) {
     Coordinates coords = getNewPosition(tank, tank.getDirection());
     auto y = coords.yAsSizeT();
     auto x = coords.xAsSizeT();
-    Cell* cell = &grid[y][x];
+    Cell* cell = &getCell(y, x);
     const GameEntity& shell = entityManager.createShell(y, x, tank.getDirection());
     size_t entityIndex = shell.getEntityId();
-    cell->entitySet.insert(entityIndex);
+    cell->insertEntity(entityIndex);
     shellsIds.insert(entityIndex);
 }
 
@@ -169,12 +169,12 @@ void GameMap::checkCollisions(){
     unordered_set<Cell*> dirtyCells;
     for(size_t tankId : tankIds){
         Coordinates coords = entityManager.getEntity(tankId).getCoords();
-        dirtyCells.insert(&grid[coords.yAsSizeT()][coords.xAsSizeT()]);
+        dirtyCells.insert(&getCell(coords));
     }
 
     for (size_t shellId : shellsIds) {
         Coordinates coords = entityManager.getEntity(shellId).getCoords();
-        dirtyCells.insert(&grid[coords.yAsSizeT()][coords.xAsSizeT()]);
+        dirtyCells.insert(&getCell(coords));
     }
     resolveCollisions(dirtyCells);
 }
@@ -183,15 +183,15 @@ void GameMap::checkCollisions(){
 //Returns true iff there's no wall in 1 cell away from the tank in the given direction
 bool GameMap::tankCanMoveInDirection(const Tank& tank, Direction dir) const {
     Coordinates newCoords = getNewPosition(tank, dir);
-    const Cell& targetCell = grid[newCoords.yAsSizeT()][newCoords.xAsSizeT()];
+    const Cell& targetCell = getCell(newCoords);
     return targetCell.hasWall(entityManager);
 }
 
-std::unique_ptr<SatelliteView> GameMap::getSatelliteView(const Tank& tank) {
+std::unique_ptr<ConcreteSatelliteView> GameMap::getSatelliteView() {
     std::vector<std::vector<char>> view(rows, std::vector<char>(cols, ' '));
     for (size_t y = 0; y < rows; ++y) {
         for (size_t x = 0; x < cols; ++x) {
-            const Cell& cell = grid[y][x];
+            const Cell& cell = getCell(y, x);
             if (!cell.entitySet.empty()) {
                 size_t entityId = *cell.entitySet.begin();
                 const GameEntity& entity = entityManager.getEntity(entityId);
@@ -206,9 +206,8 @@ std::unique_ptr<SatelliteView> GameMap::getSatelliteView(const Tank& tank) {
         auto x = shell.getXAsSizeT();
         view[y][x] = shell.getSymbol();
     }
-    auto tankY = tank.getYAsSizeT();
-    auto tankX = tank.getXAsSizeT();
-    view[tankY][tankX] = '%';
+
+
     return std::make_unique<ConcreteSatelliteView>(rows, cols, std::move(view));
 }
 

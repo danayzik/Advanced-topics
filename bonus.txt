@@ -1,4 +1,6 @@
 
+Caching technique for satelliteView
+
 Extra work added to this project for which we're requesting a bonus:
 
 1) I've added visuals using images in the assets directory and using the SFML library.

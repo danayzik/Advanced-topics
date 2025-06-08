@@ -1,5 +1,7 @@
 #include "SFMLRenderer.h"
+#include "EntityManager.h"
 using namespace DirectionUtils;
+
 
 SFMLRenderer::SFMLRenderer(size_t rows, size_t cols)  : rows(rows), cols(cols), screenWidth(cols*cellSize) , screenHeight(rows * cellSize){
     windowSize = {screenWidth, screenHeight};}
