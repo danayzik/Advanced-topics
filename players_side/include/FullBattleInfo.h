@@ -33,7 +33,7 @@ public:
     FullBattleInfo& operator=(FullBattleInfo&& other) noexcept = default;
     FullBattleInfo(FullBattleInfo&&) = default;
 
-
+    void roundTick();
     void updateFromTankInfo(FullBattleInfo& tankInfo);
     void updateFromEarlierInfo(FullBattleInfo& earlierInfo);
     void moveKnownShells();

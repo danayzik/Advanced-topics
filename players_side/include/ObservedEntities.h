@@ -4,16 +4,11 @@
 #include "Direction.h"
 #include <optional>
 #include <memory>
-enum TankMode {
-    NormalMode,
-    PreparingReverse,
-    JustEnteredReverse,
-    ReverseMode
-};
-
+#include "TankMode.h"
 enum class EntityType{
     Tank, Shell, Wall
 };
+
 
 class ObservedEntity{
 

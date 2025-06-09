@@ -7,7 +7,7 @@ void FirstTankAlgorithm::roundTick() {
     stepsSinceLastCalculation++;
     stepsSinceLastInfoRequest++;
     if(initialized){
-        battleInfo.moveKnownShells();
+        battleInfo.roundTick();
     }
 }
 

@@ -6,8 +6,8 @@
 #include <algorithm>
 #include <cctype>
 #include "GameManager.h"
-
-
+#include "utils.h"
+using namespace EntityUtils;
 using std::vector;
 using std::string;
 
@@ -98,8 +98,8 @@ void MapLoader::handleCell(char cell, size_t y, size_t x) {
             gameManager.registerPlayer(playerNumber);
             registeredPlayers.insert(playerNumber);
         }
-        const Tank &tank = dynamic_cast<const Tank &>(
-                gameMap.entityManager.createTank(y, x, playerNumber % 2 == 1 ?  Direction::Left : Direction::Right, playerNumber, tankCount, gameManager.numShells)
+        const Tank &tank = *entityCast<Tank>(
+                &gameMap.entityManager.createTank(y, x, playerNumber % 2 == 1 ?  Direction::Left : Direction::Right, playerNumber, tankCount, gameManager.numShells)
         );
         tankCount++;
         gameMap.grid[y][x].entitySet.insert(tank.getEntityId());

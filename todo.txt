@@ -1,7 +1,10 @@
 
 ToDo:
-Make ObservedEntities also use Coords
-add getCell by coords for gamemap and for battleinfo
+
+Win not working
+change TankMode to be in a proper namespace. rename utils.h
+Improve algo
+
 Factories
 2nd algo
 2nd player

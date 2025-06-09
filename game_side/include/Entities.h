@@ -1,13 +1,8 @@
 #pragma once
 #include "Direction.h"
 #include "ActionRequestUtils.h"
+#include "TankMode.h"
 
-enum TankMode {
-    NormalMode,
-    PreparingReverse,
-    JustEnteredReverse,
-    ReverseMode
-};
 
 
 class GameEntity{

@@ -7,6 +7,8 @@
 #include "SFMLRenderer.h"
 #endif
 #include "NoopRenderer.h"
+#include "utils.h"
+using namespace EntityUtils;
 using namespace DirectionUtils;
 //This file includes pre-processor commands based on build options.
 //Map is loaded by the Map loader.
@@ -69,12 +71,12 @@ void GameMap::updateVisuals() {
 void GameMap::tanksAboutToCollide(){
     unordered_set<size_t > toDelete;
     for (size_t tankId1 : tankIds) {
-        auto& tank1 = dynamic_cast<Tank&>(entityManager.getEntity(tankId1));
+        auto& tank1 = *entityCast<Tank>(&entityManager.getEntity(tankId1));
         ActionRequest action1 = tank1.peekAction();
         if (action1 != ActionRequest::MoveForward && action1 != ActionRequest::MoveBackward) continue;
         for (size_t tankId2 : tankIds) {
             if(tankId1 != tankId2){
-                auto& tank2 = dynamic_cast<Tank&>(entityManager.getEntity(tankId2));
+                auto& tank2 = *entityCast<Tank>(&entityManager.getEntity(tankId2));
                 ActionRequest action2 = tank2.peekAction();
                 if (action2 != ActionRequest::MoveForward && action2 != ActionRequest::MoveBackward) continue;
                 Direction direction1 = action1 == ActionRequest::MoveForward ? tank1.getDirection() : getOppositeDirection(tank1.getDirection());
@@ -102,8 +104,8 @@ void GameMap::shellsAboutToCollide() {
     for (size_t shellId1 : shellsIds) {
         for (size_t shellId2 : shellsIds) {
             if(shellId1 != shellId2){
-                auto& shell1 = dynamic_cast<Shell&>(entityManager.getEntity(shellId1));
-                auto& shell2 = dynamic_cast<Shell&>(entityManager.getEntity(shellId2));
+                auto& shell1 = *entityCast<Shell>(&entityManager.getEntity(shellId1));
+                auto& shell2 = *entityCast<Shell>(&entityManager.getEntity(shellId2));
                 Direction direction1 = shell1.getDirection();
                 Direction direction2 = shell2.getDirection();
                 Coordinates newCoords1 = getNewPosition(shell1, direction1);
@@ -141,7 +143,7 @@ void GameMap::moveEntity(GameEntity& entity, Direction dir){
 //Moves all shells one step in their direction, except shells created this turn. This is because shells already get created 1 cell away from the tank.
 void GameMap::moveShells(){
     for (size_t shellId : shellsIds) {
-        auto& shell = dynamic_cast<Shell&>(entityManager.getEntity(shellId));
+        auto& shell = *entityCast<Shell>(&entityManager.getEntity(shellId));
         if(shell.isNewShell()){
            shell.setAsOld();
         }
@@ -184,7 +186,7 @@ void GameMap::checkCollisions(){
 bool GameMap::tankCanMoveInDirection(const Tank& tank, Direction dir) const {
     Coordinates newCoords = getNewPosition(tank, dir);
     const Cell& targetCell = getCell(newCoords);
-    return targetCell.hasWall(entityManager);
+    return !targetCell.hasWall(entityManager);
 }
 
 std::unique_ptr<ConcreteSatelliteView> GameMap::getSatelliteView() {

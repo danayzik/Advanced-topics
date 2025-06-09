@@ -153,6 +153,7 @@ bool GameManager::gameOverCheck(){
         if(tanksPerPlayer[i] == totalTankCount){
             gameResult = GameResult::WinOccurred;
             winningPlayer = i + 1;
+            return true;
         }
     }
     return false;
@@ -217,6 +218,9 @@ void GameManager::roundTick(){
 void GameManager::gameLoop() {
     while(!gameOverCheck()){
         roundTick();
+//        if(stepCounter == 9){
+//            std::cout << "breakin";
+//        }
         tankStep();
         if(gameOverCheck())
             break;
@@ -261,7 +265,7 @@ GameManager::~GameManager(){
                 outputFile << "Tie, " << playerQuantifier << " players have zero shells for " << maxSteps << " steps";
                 break;
             case GameResult::WinOccurred:
-                outputFile << "Player " << winningPlayer << "won with " << totalTankCount << " still alive";
+                outputFile << "Player " << winningPlayer << " won with " << totalTankCount << " tanks still alive";
                 break;
             default:
                 outputFile << "An error has occurred" << '\n';
