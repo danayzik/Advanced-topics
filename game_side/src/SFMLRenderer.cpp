@@ -1,5 +1,7 @@
 #include "SFMLRenderer.h"
 #include "EntityManager.h"
+#include "utils.h"
+using namespace EntityUtils;
 using namespace DirectionUtils;
 
 
@@ -43,7 +45,7 @@ const sf::Texture& SFMLRenderer::getTexture(const GameEntity& entity) const{
         return shellTexture;
     }
     if(entity.isTank()){
-        int playerIndex = dynamic_cast<const Tank&>(entity).getPlayerIndex();
+        int playerIndex = entityCast<Tank>(&entity)->getPlayerIndex();
         return tanksTextures[playerIndex-1];
     }
     return shellTexture; //Default, need to add error image
@@ -62,7 +64,7 @@ void SFMLRenderer::drawEntity(const GameEntity& entity){
     sf::FloatRect bounds = sprite.getLocalBounds();
     sprite.setOrigin({bounds.size.x / 2.f, bounds.size.y / 2.f});
     if(entity.isTank()){
-        Direction dir = dynamic_cast<const Tank&>(entity).getDirection();
+        Direction dir = entityCast<Tank>(&entity)->getDirection();
         auto angle = static_cast<float>(((directionToInt(dir) + 90) % 360));
         sprite.rotate(sf::degrees(angle));
     }

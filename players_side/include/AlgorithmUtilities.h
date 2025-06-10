@@ -47,16 +47,8 @@ struct Vec2 {
 
 bool enemyInLineOfSight(const FullBattleInfo &battleInfo, const ObservedTank& myTank, Coordinates targetCoords);
 bool hasShellMovingTowardsTank(const FullBattleInfo &battleInfo, const ObservedTank& tank);
-ActionRequest rotationTowardsEnemy(const ObservedTank& enemyTank, const ObservedTank& myTank);
-
-inline ActionRequest getFirstRotationAction(Direction current, Direction target) {
-    int angle = getDirectionDiff(current, target);
-    if (angle == 0) return ActionRequest::DoNothing;
-    if (-90 <= angle && angle <= 90) {
-        return angleToRotationAction(angle);
-    } else if (angle < -90) {
-        return ActionRequest::RotateLeft90;
-    } else {
-        return ActionRequest::RotateRight90;
-    }
-}
+std::optional<ActionRequest> rotationTowardsCoords(const ObservedTank& myTank, Coordinates target);
+std::optional<ActionRequest> getFirstRotationAction(Direction current, Direction target);
+Coordinates getClosestCoordinates(const FullBattleInfo &battleInfo, const std::unordered_set<Coordinates, CoordinatesHash>& coordsSet);
+bool friendlyInDirectionWithinRange(const FullBattleInfo &battleInfo, Direction dir, int range);
+std::optional<Coordinates> getClosestEnemyInLineOfSight(const FullBattleInfo &battleInfo);

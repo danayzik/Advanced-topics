@@ -218,9 +218,6 @@ void GameManager::roundTick(){
 void GameManager::gameLoop() {
     while(!gameOverCheck()){
         roundTick();
-//        if(stepCounter == 9){
-//            std::cout << "breakin";
-//        }
         tankStep();
         if(gameOverCheck())
             break;

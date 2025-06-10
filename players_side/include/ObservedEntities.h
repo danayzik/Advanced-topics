@@ -59,6 +59,7 @@ private:
     EntityType type = EntityType::Tank;
     std::optional<Direction> assumedDirection;
 
+
 public:
     ObservedTank(size_t y, size_t x, int playerIndex, size_t shellCount, std::optional<Direction> dir = std::nullopt): ObservedEntity(y, x), playerIndex(playerIndex), shellCount(shellCount), assumedDirection(dir){}
     ObservedTank(Coordinates coords, int playerIndex, size_t shellCount, std::optional<Direction> dir = std::nullopt): ObservedEntity(coords), playerIndex(playerIndex), shellCount(shellCount), assumedDirection(dir){}
@@ -87,10 +88,10 @@ private:
 
     std::optional<Direction> assumedDirection;
     EntityType type = EntityType::Shell;
-
+    bool firedLastTurn;
 public:
-    inline explicit ObservedShell(Coordinates coords,  std::optional<Direction> assumedDirection = std::nullopt): ObservedEntity(coords), assumedDirection(assumedDirection){}
-    inline ObservedShell(size_t y, size_t x,  std::optional<Direction> assumedDirection = std::nullopt): ObservedEntity(y,x), assumedDirection(assumedDirection){}
+    inline explicit ObservedShell(Coordinates coords,  std::optional<Direction> assumedDirection = std::nullopt, bool firedLastTurn = false): ObservedEntity(coords), assumedDirection(assumedDirection), firedLastTurn(firedLastTurn){}
+    inline ObservedShell(size_t y, size_t x,  std::optional<Direction> assumedDirection = std::nullopt, bool firedLastTurn = false): ObservedEntity(y,x), assumedDirection(assumedDirection), firedLastTurn(firedLastTurn){}
 
     [[nodiscard]] inline std::optional<Direction> getDirection() const {return assumedDirection; }
     [[nodiscard]] inline bool isShell() const override{return true;}
@@ -100,6 +101,8 @@ public:
     inline void setDirection(Direction dir){assumedDirection = dir;};
     [[nodiscard]] inline bool directionKnown()const {return assumedDirection.has_value();}
     [[nodiscard]] inline EntityType getType() const override{return type;};
+    [[nodiscard]] inline bool getFiredLastTurn() const{return firedLastTurn;};
+    inline void setAsOld() {firedLastTurn = true;}
 };
 
 class ObservedWall : public ObservedEntity{

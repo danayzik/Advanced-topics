@@ -1,19 +1,31 @@
 
 ToDo:
+Current: Allocate roles by size. check if all tanks got info once, to assign getInfo timings
+Players calculating shell direction
+Chaser tries to shoot too early
+Write about unordered set adding randomness
 
-Win not working
+Sniping tank tries to dodge but doesn't check where to
+
+Add dodging shells for chaser?
+
+
 change TankMode to be in a proper namespace. rename utils.h
-Improve algo
 
-Factories
-2nd algo
+Cleanup doulbe check of isTank in fireShell from tank in battle info
+
+rename tankalgo
 2nd player
+
+Don't approve getbattleinfo if in preparing reverse . what about in justenteredreverse?
+
 Cleanup
-Make player decide how algo's act?
+Try catch map error
+
 Allow lowercase letters in input txt, report it as small error. Same with misordering
 
 Deal with GetEntity being const/non const check gameMap functions for const or no const
-^^ Make GameManager have a ref to Entity Manager? then overload getEntity with const and non const
+
 
 Exit out of backward mode if in backward mode and move != backward
 Can go into reverse even when something is behind
@@ -23,14 +35,16 @@ Questions:
 Without try in main, how can we exit gracefully if map loading fails?
 strict key = value ordering in map? what if i do better and make it key based?
 Check dying at the same time in diff shell steps
-Don't approve getbattleinfo if in preparing reverse . what about in justenteredreverse?
+
+
 
 
 Things to clean at the end:
 Rule of 5 for everything
-Try catch on all errors from map file
+
 Settings out of order works for me. ask if it's a problem on forums?
 Change map file path to file name, get only the name
+
 
 sudo apt-get update
 sudo apt-get install libx11-dev libxrandr-dev libxcursor-dev libxi-dev

@@ -1,18 +1,20 @@
 #include "AlgorithmUtilities.h"
+#include "utils.h"
+#include "algorithm"
+using namespace EntityUtils;
 
-
-ActionRequest rotationTowardsEnemy(const ObservedTank& enemyTank, const ObservedTank& myTank) {
-    int enemyX = enemyTank.getX();
-    int enemyY = enemyTank.getY();
+std::optional<ActionRequest> rotationTowardsCoords(const ObservedTank& myTank, Coordinates target) {
+    int enemyX = target.x;
+    int enemyY = target.y;
     int selfY = myTank.getY();
     int selfX = myTank.getX();
     std::optional<Direction> currentDirection = myTank.getDirection();
     if(!currentDirection){
-        return ActionRequest::DoNothing;
+        return std::nullopt;
     }
     Direction targetDirection = getDirectionBetweenPoints(selfY, selfX, enemyY, enemyX);
     if(currentDirection.value() == targetDirection)
-        return ActionRequest::DoNothing;
+        return std::nullopt;
     return getFirstRotationAction(currentDirection.value(), targetDirection);
 }
 
@@ -44,7 +46,7 @@ bool enemyInLineOfSight(const FullBattleInfo &battleInfo, const ObservedTank& my
 bool hasShellMovingTowardsTank(const FullBattleInfo &battleInfo, const ObservedTank& tank){
     const auto& shellCoordsSet = battleInfo.getShellsCoordinates();
     for(auto& shellCoords : shellCoordsSet){
-        const auto& shell = dynamic_cast<const ObservedShell&>(*(battleInfo.getCell(shellCoords).entity));
+        const auto& shell = *entityCast<ObservedShell>(battleInfo.getCell(shellCoords).entity.get());
         std::optional<Direction> shellDirection = shell.getDirection();
         if(!shellDirection)
             continue;
@@ -61,3 +63,57 @@ bool hasShellMovingTowardsTank(const FullBattleInfo &battleInfo, const ObservedT
     return false;
 }
 
+std::optional<ActionRequest> getFirstRotationAction(Direction current, Direction target) {
+    int angle = getDirectionDiff(current, target);
+    if (angle == 0) return std::nullopt;
+    if (-90 <= angle && angle <= 90) {
+        return angleToRotationAction(angle);
+    } else if (angle < -90) {
+        return ActionRequest::RotateLeft90;
+    } else {
+        return ActionRequest::RotateRight90;
+    }
+}
+
+Coordinates getClosestCoordinates(const FullBattleInfo &battleInfo, const std::unordered_set<Coordinates, CoordinatesHash>& coordsSet) {
+    const Coordinates* closest = nullptr;
+    size_t rows = battleInfo.getRows();
+    size_t cols = battleInfo.getCols();
+    Coordinates myTankCoords = battleInfo.getMyTankCoords();
+    closest = &(*std::min_element(
+            coordsSet.begin(),
+            coordsSet.end(),
+            [&](const Coordinates& a, const Coordinates& b) {
+
+                return myTankCoords.distanceToOtherCoord(a, rows, cols) <
+                       myTankCoords.distanceToOtherCoord(b, rows, cols);
+            }));
+    return *closest;
+}
+
+bool friendlyInDirectionWithinRange(const FullBattleInfo &battleInfo, Direction dir, int range){
+    const auto& friendlyTanks = battleInfo.getFriendlyTanksCoordinates();
+    Coordinates myTankCoords = battleInfo.getMyTankCoords();
+    Coordinates newPos = myTankCoords;
+    for (int i = 0; i < range; ++i) {
+        newPos = nextCoordinate(dir, newPos, battleInfo.getRows(), battleInfo.getCols());
+        if(friendlyTanks.count(newPos))
+            return true;
+    }
+    return false;
+}
+
+std::optional<Coordinates> getClosestEnemyInLineOfSight(const FullBattleInfo &battleInfo){
+    const auto& enemyCoords = battleInfo.getEnemyTanksCoordinates();
+    const ObservedTank& myTank = battleInfo.getMyTank();
+
+    std::unordered_set<Coordinates, CoordinatesHash> visibleEnemies;
+    for (const Coordinates& coord : enemyCoords) {
+        if (enemyInLineOfSight(battleInfo, myTank, coord)) {
+            visibleEnemies.insert(coord);
+        }
+    }
+    if(visibleEnemies.empty())
+        return std::nullopt;
+    return getClosestCoordinates(battleInfo, visibleEnemies);
+}

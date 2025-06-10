@@ -16,6 +16,10 @@ struct Coordinates {
         return y == other.y && x == other.x;
     }
 
+    bool operator!=(const Coordinates& other) const {
+        return y != other.y || x != other.x;
+    }
+
     [[nodiscard]] inline int distanceToOtherCoord(Coordinates coord, size_t rows, size_t cols) const{
         int intRows = static_cast<int>(rows);
         int intCols = static_cast<int>(cols);

@@ -1,8 +1,9 @@
 #pragma once
 #include <cassert>
+#include <iostream>
 #include "Entities.h"
 #include "ObservedEntities.h"
-
+#include <algorithm>
 
 
 namespace EntityUtils {
@@ -10,9 +11,9 @@ namespace EntityUtils {
 
     template<typename T>
     T *entityCast(ObservedEntity *e) {
+
         assert(e != nullptr);
-        if constexpr (std::is_same_v<T, ObservedTank>)
-            assert(e->isTank());
+        if constexpr (std::is_same_v<T, ObservedTank>)assert(e->isTank());
         else if constexpr (std::is_same_v<T, ObservedShell>)
             assert(e->isShell());
         else if constexpr (std::is_same_v<T, ObservedWall>)
@@ -58,6 +59,11 @@ namespace EntityUtils {
         else if constexpr (std::is_same_v<T, Mine>)
             assert(e->isMine());
         return static_cast<const T*>(e);
+    }
+
+    template <typename T>
+    bool contains(const std::vector<T>& vec, const T& value) {
+        return std::find(vec.begin(), vec.end(), value) != vec.end();
     }
 
 
