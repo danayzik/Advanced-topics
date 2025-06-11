@@ -1,8 +1,10 @@
 
 ToDo:
-Current: Allocate roles by size. check if all tanks got info once, to assign getInfo timings
-Players calculating shell direction
-Chaser tries to shoot too early
+Add proper dodging since tracking is perfect if not alone
+make players inherit from another unifying class
+Sniping tank doesn't perform correctly
+Don't take info when 1 tank only is alive
+
 Write about unordered set adding randomness
 
 Sniping tank tries to dodge but doesn't check where to
@@ -15,6 +17,7 @@ change TankMode to be in a proper namespace. rename utils.h
 Cleanup doulbe check of isTank in fireShell from tank in battle info
 
 rename tankalgo
+
 2nd player
 
 Don't approve getbattleinfo if in preparing reverse . what about in justenteredreverse?

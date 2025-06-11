@@ -10,6 +10,8 @@
 #include "TankRole.h"
 using namespace EntityUtils;
 using std::unique_ptr;
+
+
 class FullBattleInfo : public BattleInfo {
 private:
 
@@ -22,9 +24,9 @@ private:
     std::unordered_set<Coordinates, CoordinatesHash> friendlyTanksCoordinates;
     std::unordered_set<Coordinates, CoordinatesHash> enemyTanksCoordinates;
     int playerIndex;
-    int tankIndex;
+    int tankIndex{};
     TankRole roleToPlay{};
-
+    int requestInfoCountdown = 0;
     void moveKnownShells();
 
     void moveEntity(Coordinates from, Coordinates to);
@@ -69,7 +71,11 @@ public:
     [[nodiscard]] inline const std::unordered_set<Coordinates, CoordinatesHash>& getFriendlyTanksCoordinates() const {return friendlyTanksCoordinates;}
     [[nodiscard]] inline std::unordered_set<Coordinates, CoordinatesHash>& getFriendlyTanksCoordinates()  {return friendlyTanksCoordinates;}
     [[nodiscard]] inline int getTankIndex() const {return tankIndex;}
-    inline void setTankIndex(int index)  {tankIndex = index;}
+    void setTankIndex(int index);
     inline void setRole(TankRole role){roleToPlay = role;}
     [[nodiscard]] inline TankRole getRole() const{return roleToPlay;}
+    [[nodiscard]] inline bool shouldRequestInfo() const{return requestInfoCountdown <= 0;}
+    inline void setRequestInfoCounter(int turns) {requestInfoCountdown = turns;}
+    bool isFriendlyTankAlive(int index);
+    void assumeEnemyShellsDirections(int distanceFromTank);
 };

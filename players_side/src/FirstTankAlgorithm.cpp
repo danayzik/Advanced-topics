@@ -1,21 +1,29 @@
 #include "FirstTankAlgorithm.h"
-
+#include "SnipingTank.h"
+#include "ChasingTank.h"
 
 void FirstTankAlgorithm::roundTick() {
     roundCounter++;
-    stepsSinceLastInfoRequest++;
     if(initialized){
         battleInfo.roundTick();
     }
 }
 
 void FirstTankAlgorithm::updateBattleInfo(BattleInfo &info) {
-    stepsSinceLastInfoRequest = 0;
     auto& newInfo= dynamic_cast<FullBattleInfo&>(info);
     if(!initialized){
         battleInfo = newInfo;
-        battleInfo.setTankIndex(tankIndex);
-        //Craft algo
+        newInfo.setTankIndex(tankIndex);
+        switch (battleInfo.getRole()) {
+            case TankRole::Sniping:
+                algo = std::make_unique<SnipingTank>(battleInfo);
+                break;
+            case TankRole::Chasing:
+                algo = std::make_unique<ChasingTank>(battleInfo);
+                break;
+        }
+        algo->update(battleInfo);
+        initialized = true;
     }
     else{
         battleInfo.setTankIndex(tankIndex);
@@ -23,6 +31,7 @@ void FirstTankAlgorithm::updateBattleInfo(BattleInfo &info) {
         battleInfo = newInfo;
         algo->update(battleInfo);
     }
+
 }
 
 
@@ -50,13 +59,11 @@ ActionRequest FirstTankAlgorithm::requestAction(ActionRequest action) {
 ActionRequest FirstTankAlgorithm::getAction() {
     roundTick();
     if(!initialized){
-        stepsSinceLastInfoRequest = 0;
         return ActionRequest::GetBattleInfo;
     }
+    if(battleInfo.shouldRequestInfo())
+        return ActionRequest::GetBattleInfo;
 
-    if(stepsSinceLastInfoRequest > 3){
-        return requestAction(ActionRequest::GetBattleInfo);
-    }
     ActionRequest action = algo->getAction(battleInfo);
     return requestAction(action);
 }

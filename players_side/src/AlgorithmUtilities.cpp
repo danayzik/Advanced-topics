@@ -12,7 +12,7 @@ std::optional<ActionRequest> rotationTowardsCoords(const ObservedTank& myTank, C
     if(!currentDirection){
         return std::nullopt;
     }
-    Direction targetDirection = getDirectionBetweenPoints(selfY, selfX, enemyY, enemyX);
+    Direction targetDirection = DirectionUtils::getDirectionBetweenPoints(selfY, selfX, enemyY, enemyX);
     if(currentDirection.value() == targetDirection)
         return std::nullopt;
     return getFirstRotationAction(currentDirection.value(), targetDirection);
@@ -26,7 +26,7 @@ bool enemyInLineOfSight(const FullBattleInfo &battleInfo, const ObservedTank& my
     int enemyY = targetCoords.y;
     int rows = static_cast<int>(battleInfo.getRows());
     int cols = static_cast<int>(battleInfo.getCols());
-    auto [dy, dx] = directionToCoordinatesOffset(currentDirection.value());
+    auto [dy, dx] = DirectionUtils::directionToCoordinatesOffset(currentDirection.value());
     const auto& grid = battleInfo.getGrid();
     int selfY = myTank.getY();
     int selfX = myTank.getX();
@@ -55,7 +55,7 @@ bool hasShellMovingTowardsTank(const FullBattleInfo &battleInfo, const ObservedT
         int tankY = tank.getY();
         int tankX = tank.getX();
         Vec2 delta = {tankY - shellY, tankX - shellX};
-        Vec2 dir = Vec2(directionToCoordinatesOffset(shellDirection.value()));
+        Vec2 dir = Vec2(DirectionUtils::directionToCoordinatesOffset(shellDirection.value()));
         int cross = delta.x * dir.y - delta.y * dir.x;
         if (cross == 0)
             return true;
@@ -64,7 +64,7 @@ bool hasShellMovingTowardsTank(const FullBattleInfo &battleInfo, const ObservedT
 }
 
 std::optional<ActionRequest> getFirstRotationAction(Direction current, Direction target) {
-    int angle = getDirectionDiff(current, target);
+    int angle = DirectionUtils::getDirectionDiff(current, target);
     if (angle == 0) return std::nullopt;
     if (-90 <= angle && angle <= 90) {
         return angleToRotationAction(angle);
@@ -96,7 +96,7 @@ bool friendlyInDirectionWithinRange(const FullBattleInfo &battleInfo, Direction 
     Coordinates myTankCoords = battleInfo.getMyTankCoords();
     Coordinates newPos = myTankCoords;
     for (int i = 0; i < range; ++i) {
-        newPos = nextCoordinate(dir, newPos, battleInfo.getRows(), battleInfo.getCols());
+        newPos = DirectionUtils::nextCoordinate(dir, newPos, battleInfo.getRows(), battleInfo.getCols());
         if(friendlyTanks.count(newPos))
             return true;
     }

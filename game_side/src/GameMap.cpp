@@ -9,7 +9,7 @@
 #include "NoopRenderer.h"
 #include "utils.h"
 using namespace EntityUtils;
-using namespace DirectionUtils;
+
 //This file includes pre-processor commands based on build options.
 //Map is loaded by the Map loader.
 void GameMap::readBoard(const std::string &mapFilePath, GameManager &gameManager) {
@@ -79,8 +79,8 @@ void GameMap::tanksAboutToCollide(){
                 auto& tank2 = *entityCast<Tank>(&entityManager.getEntity(tankId2));
                 ActionRequest action2 = tank2.peekAction();
                 if (action2 != ActionRequest::MoveForward && action2 != ActionRequest::MoveBackward) continue;
-                Direction direction1 = action1 == ActionRequest::MoveForward ? tank1.getDirection() : getOppositeDirection(tank1.getDirection());
-                Direction direction2 = action2 == ActionRequest::MoveForward ? tank2.getDirection() : getOppositeDirection(tank2.getDirection());
+                Direction direction1 = action1 == ActionRequest::MoveForward ? tank1.getDirection() : DirectionUtils::getOppositeDirection(tank1.getDirection());
+                Direction direction2 = action2 == ActionRequest::MoveForward ? tank2.getDirection() : DirectionUtils::getOppositeDirection(tank2.getDirection());
 
                 Coordinates newCoords1 = getNewPosition(tank1, direction1);
                 Coordinates newCoords2 = getNewPosition(tank2, direction2);
@@ -92,6 +92,8 @@ void GameMap::tanksAboutToCollide(){
         }
     }
     for (size_t tankId : toDelete) {
+        GameEntity& tank = entityManager.getEntity(tankId);
+        getCell(tank.getCoords()).eraseEntity(tankId);
         entityManager.destroyEntity(tankId);
         tankIds.erase(tankId);
     }
@@ -120,6 +122,8 @@ void GameMap::shellsAboutToCollide() {
         }
     }
     for (size_t shellId : toDelete) {
+        GameEntity& shell = entityManager.getEntity(shellId);
+        getCell(shell.getCoords()).eraseEntity(shellId);
         entityManager.destroyEntity(shellId);
         shellsIds.erase(shellId);
     }
@@ -127,7 +131,7 @@ void GameMap::shellsAboutToCollide() {
 
 //Calculates the position of an entity if it were to move in a direction. Does not move the entity.
 Coordinates GameMap::getNewPosition(const GameEntity& entity, Direction dir) const {
-    Coordinates newCoords = nextCoordinate(dir, entity.getCoords(), rows, cols);
+    Coordinates newCoords = DirectionUtils::nextCoordinate(dir, entity.getCoords(), rows, cols);
     return newCoords;
 }
 

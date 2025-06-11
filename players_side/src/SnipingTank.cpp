@@ -10,7 +10,7 @@ ActionRequest SnipingTank::getAction(const FullBattleInfo &battleInfo) {
     const auto& myTank = battleInfo.getMyTank();
     Coordinates myCoords = myTank.getCoords();
     Direction dir = myTank.getDirection().value();
-    Coordinates coordsInFront = nextCoordinate(dir, myCoords, battleInfo.getRows(), battleInfo.getCols());
+    Coordinates coordsInFront = DirectionUtils::nextCoordinate(dir, myCoords, battleInfo.getRows(), battleInfo.getCols());
     auto& cellInFront = battleInfo.getCell(coordsInFront);
     bool canMoveForward = cellInFront.isPassableForTank();
     if(canMoveForward && shouldDodge)

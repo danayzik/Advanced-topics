@@ -2,7 +2,7 @@
 #include "EntityManager.h"
 #include "utils.h"
 using namespace EntityUtils;
-using namespace DirectionUtils;
+
 
 
 SFMLRenderer::SFMLRenderer(size_t rows, size_t cols)  : rows(rows), cols(cols), screenWidth(cols*cellSize) , screenHeight(rows * cellSize){
@@ -65,7 +65,7 @@ void SFMLRenderer::drawEntity(const GameEntity& entity){
     sprite.setOrigin({bounds.size.x / 2.f, bounds.size.y / 2.f});
     if(entity.isTank()){
         Direction dir = entityCast<Tank>(&entity)->getDirection();
-        auto angle = static_cast<float>(((directionToInt(dir) + 90) % 360));
+        auto angle = static_cast<float>(((DirectionUtils::directionToInt(dir) + 90) % 360));
         sprite.rotate(sf::degrees(angle));
     }
     auto x = static_cast<float>(entity.getX() * cellSize) + targetWidth / 2.f;

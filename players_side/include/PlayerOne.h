@@ -4,6 +4,7 @@
 class PlayerOne : public Player {
 
 private:
+    int tankCount = 0;
     int playerIndex;
     size_t rows;
     size_t cols;
@@ -11,8 +12,12 @@ private:
     size_t numShells;
     FullBattleInfo battleInfo;
     std::vector<int> tankIndices = {};
+    bool seenAllMyTanks = false;
+    std::vector<int> tankIndicesThatRecentlyDied{};
 
-    TankRole tankCountToRole() const;
+    void checkForDeadTanks();
+    void updateTankInstructions();
+    bool shouldCalculateShells(int tankIndex);
 
 public:
 

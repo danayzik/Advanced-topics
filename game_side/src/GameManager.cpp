@@ -3,7 +3,6 @@
 #include <iostream>
 
 using namespace std::chrono;
-using namespace DirectionUtils;
 using namespace ActionRequestUtils;
 
 
@@ -33,7 +32,7 @@ bool GameManager::isLegaLAction(ActionRequest action, const Tank& tank) const{
             }
             return gameMap.tankCanMoveInDirection(tank, tank.getDirection());
         case ActionRequest::MoveBackward:
-            return gameMap.tankCanMoveInDirection(tank, getOppositeDirection(tank.getDirection()));
+            return gameMap.tankCanMoveInDirection(tank, DirectionUtils::getOppositeDirection(tank.getDirection()));
         case ActionRequest::Shoot:
             return tank.canFire();
         default:
@@ -116,7 +115,7 @@ void GameManager::actionStep() {
                 gameMap.moveEntity(tank, tank.getDirection());
                 break;
             case ActionRequest::MoveBackward:
-                gameMap.moveEntity(tank, getOppositeDirection(tank.getDirection()));
+                gameMap.moveEntity(tank, DirectionUtils::getOppositeDirection(tank.getDirection()));
                 break;
             case ActionRequest::Shoot:
                 tank.fire();

@@ -1,10 +1,10 @@
 #include "Entities.h"
-using namespace DirectionUtils;
+
 
 void Tank::rotate(int rotationAmount) {
-    int newAngle = (directionToInt(currDirection) + rotationAmount) % 360;
+    int newAngle = (DirectionUtils::directionToInt(currDirection) + rotationAmount) % 360;
     if (newAngle < 0) newAngle += 360;
-    currDirection = intToDirection(newAngle).value();
+    currDirection = DirectionUtils::intToDirection(newAngle).value();
 }
 
 void Tank::setMode(TankMode newMode){

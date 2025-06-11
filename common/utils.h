@@ -10,7 +10,7 @@ namespace EntityUtils {
 
 
     template<typename T>
-    T *entityCast(ObservedEntity *e) {
+    inline T *entityCast(ObservedEntity *e) {
 
         assert(e != nullptr);
         if constexpr (std::is_same_v<T, ObservedTank>)assert(e->isTank());
@@ -22,7 +22,7 @@ namespace EntityUtils {
     }
 
     template<typename T>
-    const T *entityCast(const ObservedEntity *e) {
+    inline const T *entityCast(const ObservedEntity *e) {
         assert(e != nullptr);
         if constexpr (std::is_same_v<T, ObservedTank>)
             assert(e->isTank());
@@ -34,7 +34,7 @@ namespace EntityUtils {
     }
 
     template<typename T>
-    T *entityCast(GameEntity *e) {
+    inline T *entityCast(GameEntity *e) {
         assert(e != nullptr);
         if constexpr (std::is_same_v<T, Tank>)
             assert(e->isTank());
@@ -48,7 +48,7 @@ namespace EntityUtils {
     }
 
     template<typename T>
-    const T *entityCast(const GameEntity *e) {
+    inline const T *entityCast(const GameEntity *e) {
         assert(e != nullptr);
         if constexpr (std::is_same_v<T, Tank>)
             assert(e->isTank());
@@ -62,8 +62,27 @@ namespace EntityUtils {
     }
 
     template <typename T>
-    bool contains(const std::vector<T>& vec, const T& value) {
+    inline bool contains(const std::vector<T>& vec, const T& value) {
         return std::find(vec.begin(), vec.end(), value) != vec.end();
+    }
+
+    inline bool appearsRightAfter(const std::vector<int>& vec, int val) {
+        for (size_t i = 0; i < vec.size(); ++i)
+            if (vec[(i + 1) % vec.size()] == val)
+                return true;
+        return false;
+    }
+
+    inline void removeIfValIsAfter(std::vector<int>& vec, int val) {
+        if (vec.size() <= 1) return;
+
+        std::vector<int> result;
+        for (size_t i = 0; i < vec.size(); ++i) {
+            size_t next = (i + 1) % vec.size();
+            if (vec[next] != val)
+                result.push_back(vec[i]);
+        }
+        vec = std::move(result);
     }
 
 

@@ -5,16 +5,6 @@
 class ChasingTank : public TankRoleAlgorithm{
 private:
     Coordinates closestTarget = {};
-    const std::vector<std::pair<int, int>> directions = {
-            {0, 1},
-            {1, 1},
-            {1, 0},
-            {1, -1},
-            {0, -1},
-            {-1, -1},
-            {-1, 0},
-            {-1, 1}
-    };
     std::vector<std::vector<HeapNode>> gridGraph;
     void resetGraph();
     void calculateGridPathsFromTarget(const FullBattleInfo& battleInfo);

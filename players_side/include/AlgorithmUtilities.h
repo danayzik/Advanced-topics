@@ -7,7 +7,7 @@
 #include "ActionRequestUtils.h"
 #include "FullBattleInfo.h"
 #include "ObservedEntities.h"
-using namespace DirectionUtils;
+
 using namespace ActionRequestUtils;
 
 struct HeapNode{

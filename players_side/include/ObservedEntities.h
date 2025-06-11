@@ -58,6 +58,7 @@ private:
     TankMode mode = TankMode::NormalMode;
     EntityType type = EntityType::Tank;
     std::optional<Direction> assumedDirection;
+    int tankIndex{};
 
 
 public:
@@ -80,6 +81,8 @@ public:
     }
     inline void setDirection(Direction dir){assumedDirection = dir;};
     [[nodiscard]] inline EntityType getType() const override{return type;};
+    [[nodiscard]] inline int getIndex() const {return tankIndex;};
+    inline void setIndex(int newIndex){tankIndex = newIndex;}
 };
 
 
