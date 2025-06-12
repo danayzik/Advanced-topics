@@ -11,6 +11,9 @@ void Tank::setMode(TankMode newMode){
     if(newMode == PreparingReverse){
         preparingReverseCounter = 2;
     }
+    else{
+        preparingReverseCounter = -1;
+    }
 }
 
 Tank::Tank(size_t entityId, size_t y, size_t x, Direction dir, int playerIndex, int tankIndex, size_t shellCount) : GameEntity(entityId, y, x), currDirection(dir), playerIndex(playerIndex), tankIndex(tankIndex), shellCount(shellCount){}

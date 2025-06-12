@@ -1,35 +1,6 @@
 
 ToDo:
 
-make players inherit from another unifying class
-
-Write about unordered set adding randomness
-
-
-
-Don't approve getbattleinfo if in preparing reverse . what about in justenteredreverse?
-
-Cleanup
-Try catch map error
-
-Allow lowercase letters in input txt, report it as small error. Same with misordering
-
-
-Exit out of backward mode if in backward mode and move != backward
-
-Can go into reverse even when something is behind
-check negative values in map settings
-Add input_errors.txt errors that are fatal
-Questions:
-Without try in main, how can we exit gracefully if map loading fails?
-strict key = value ordering in map? what if i do better and make it key based?
-
-
-
-Things to clean at the end:
-
-Settings out of order works for me. ask if it's a problem on forums?
-Change map file path to file name, get only the name
 
 
 sudo apt-get update

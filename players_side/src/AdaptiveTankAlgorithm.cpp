@@ -38,7 +38,7 @@ void AdaptiveTankAlgorithm::updateBattleInfo(BattleInfo &info) {
 
 ActionRequest AdaptiveTankAlgorithm::requestAction(ActionRequest action) {
     auto& myTank = battleInfo.getMyTank();
-    switch (action){ //I know all algos currently never request backwards
+    switch (action){ //I know all algos currently never request backwards, add handling and tracking to it if needed
         case ActionRequest::DoNothing:
             break;
         case ActionRequest::MoveForward:

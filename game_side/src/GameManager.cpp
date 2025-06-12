@@ -50,21 +50,21 @@ void GameManager::getAndSetAction(Tank& tank){
     int playerIndex = tank.getPlayerIndex();
     bool justEnteredReverse = mode == JustEnteredReverse;
     logAction(actionRequest);
-    if(justEnteredReverse &&  actionRequest != ActionRequest::MoveForward){
+    bool notMoveForward = actionRequest != ActionRequest::MoveForward;
+    if(justEnteredReverse &&  notMoveForward){
         tank.setAction(ActionRequest::MoveBackward);
+        outputLine.back() += " (ignored)";
         return;
     }
-    //Else ignore? think
     if(isLegaLAction(actionRequest, tank)){
         bool inReverse = mode == ReverseMode;
         bool preparingReverse = mode == PreparingReverse;
-        bool normalMode = (!inReverse) || (!preparingReverse);
-
+        bool normalMode = mode == NormalMode;
+        if(inReverse && actionRequest != ActionRequest::MoveBackward){
+            tank.setMode(NormalMode);
+        }
         if(actionRequest == ActionRequest::MoveForward){
-            if(inReverse){
-                tank.setMode(NormalMode);
-            }
-            else if(preparingReverse || justEnteredReverse){
+            if(preparingReverse || justEnteredReverse){
                 tank.setMode(NormalMode);
                 tank.setAction(ActionRequest::DoNothing);
                 return;
@@ -82,6 +82,7 @@ void GameManager::getAndSetAction(Tank& tank){
             }
             satelliteViewOpt.value()->setRequestingTank(tank);
             (**(players.at(playerIndex-1))).updateTankWithBattleInfo(tankAlgorithm, **satelliteViewOpt);
+
         }
     }
     else{
@@ -238,7 +239,8 @@ void GameManager::run() {
 }
 
 GameManager::~GameManager(){
-    writeOutputLine();
+    if(!outputLine.empty())
+        writeOutputLine();
     int playersPrinted = 0;
     std::string playerQuantifier = playerCount > 2 ? "all" : "both";
     if (outputFile.is_open()) {
@@ -247,7 +249,7 @@ GameManager::~GameManager(){
                 outputFile << "Tie, reached max steps = " << maxSteps << ", ";
                 for(size_t i = 0; i < tanksPerPlayer.size(); i++){
                     if(players[i]){
-                        outputFile << "Player " << i + 1 << "has " << tanksPerPlayer[i] << "tanks";
+                        outputFile << "Player " << i + 1 << " has " << tanksPerPlayer[i] << " tanks";
                         playersPrinted++;
                         if(playersPrinted < playerCount){
                             outputFile << ", ";
@@ -259,7 +261,7 @@ GameManager::~GameManager(){
                 outputFile << "Tie, " << playerQuantifier << " players have zero tanks";
                 break;
             case GameResult::DrawFromNoAmmo:
-                outputFile << "Tie, " << playerQuantifier << " players have zero shells for " << maxSteps << " steps";
+                outputFile << "Tie, " << playerQuantifier << " players have zero shells for " << stepsWithNoAmmoLimit << " steps";
                 break;
             case GameResult::WinOccurred:
                 outputFile << "Player " << winningPlayer << " won with " << totalTankCount << " tanks still alive";

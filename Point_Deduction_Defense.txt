@@ -1,0 +1,47 @@
+Below are a list of possible things you may want to deduct points for.
+Please read this before you do.
+
+1) Adhering to the exercise api:
+   Honestly, it just wasn't very clear what we were exactly supposed to do. I hope I follow the instructions correctly.
+   Please note that if you want to use a different factory with my GameManager, you need to the construction of these objects in main.cpp
+   Also note, that they cannot be passed in the constructor as temporary objects like in the example main.cpp we were given as this
+   does not work.
+
+2) Global functions:
+   There are some global functions inside common\Utils.h and common\ActionRequestUtils.h
+   This shouldn't violate the exercise's guideline as only global variables are mentioned.
+
+
+3) Consistent results of runs:
+   Due to the usage of std::unordered_set, and iterating on it. I fear that results could potentially have some factor of randomness.
+   However, I've not yet encountered said issue. *Other than that no randomness is involved.
+
+4) Different order of map settings:
+   In the guideline, the correct order for map settings is:
+   MaxSteps
+   Rows
+   Cols
+   NumShells
+
+    In my implementation, it would also work out of order, and the values are mapped by the keys(Case sensitive).
+    If you have a test for out of order settings and expect it to fail. It won't.
+
+
+5) As mentioned in the Readme, SFML may require some installations, however you already went through those in ex 1
+   so you should be fine.
+
+
+6) Similarity between PlayerOne and PlayerTwo:
+   You may want to deduct points because these classes are very similar, so please let me highlight the differences:
+   PlayerOne tries to calculate direction of shells, PlayerTwo does not.
+   PlayerOne tank composition is made out of 1 chasing tank and the rest are snipers.
+   PlayerTwo tank composition is made out of 2 sniping tanks and the rest are chasing.
+   What makes them function differently is mostly the tank composition, so the differences are in how they make their tanks act.
+   It is also very easy to make new fairly naive tank algorithms, i was just a bit too lazy to make more just for variety.
+
+7) The game is fairly unoptimized and runs slowly especially on the bonus map file. I will optimize it when I have time.
+   for now, I don't expected point deduction for that as it wasn't mentioned in the guidelines.
+
+8) Unused parameters in Play.h:
+   The example given to us in the exercise had unused parameters in the constructor of Player.h. This doesn't compile because of -Werror.
+   I added [[maybe_unused]] tags to the parameters. Hope it's okay.

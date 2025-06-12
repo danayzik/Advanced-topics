@@ -32,6 +32,7 @@ void PlayerCommunicationModule::processBattleInfoPostSending() {
     }
     else{
         checkForDeadTanks();
+
         removeIfValIsAfter(tankIndicesThatRecentlyDied, index);
     }
 }

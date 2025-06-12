@@ -11,6 +11,13 @@ using std::string;
 
 class MapLoader {
 private:
+    const std::string settingsExamples = "Example settings (pay attention to capital letters):\n"
+                                         "<title>\n"
+                                                "MaxSteps=2000\n"
+                                                "NumShells=10\n"
+                                                "Rows=27\n"
+                                                "Cols=29\n"
+                                                "<Map data>";
     std::stringstream errorBuffer;
     const std::string& filePath;
     GameMap& gameMap;

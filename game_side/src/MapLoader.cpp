@@ -15,6 +15,7 @@ using std::string;
 MapLoader::MapLoader(const std::string &filePath, GameMap &gameMap, GameManager &gameManager) : filePath(filePath), gameMap(gameMap), gameManager(gameManager){}
 
 bool MapLoader::openFile() {
+    std::filesystem::remove("input_errors.txt");
     file.open(filePath);
     if (!file) {
         std::cerr << "Error opening file: " << filePath << std::endl;
@@ -27,6 +28,7 @@ bool MapLoader::readSettings() {
     size_t rows, cols, maxSteps, numShells;
     std::string line;
     size_t value;
+    long temp;
     std::getline(file, line);
     auto trim = [](std::string& s) {
         s.erase(std::remove_if(s.begin(), s.end(),
@@ -41,8 +43,14 @@ bool MapLoader::readSettings() {
         trim(key);
         trim(val);
         try {
-            value = std::stoul(val);
+            temp = std::stol(val);
+            if (temp < 0) {
+                std::cerr << "Negative numbers in the map settings are not allowed" << std::endl;
+                return false;
+            }
+            value = static_cast<size_t>(temp);
         } catch (const std::exception&) {
+
             return false;
         }
 
@@ -134,13 +142,13 @@ void MapLoader::handleMissingCharacter(size_t y, size_t x) {
 }
 
 void MapLoader::fillMissingRow(size_t y) {
-    errorBuffer << "Missing row " << y << ", filling with empty space.\n";
+    errorBuffer << "Missing row " << y << ", filling with empty spaces.\n";
 }
 
 void MapLoader::loadMap() {
     if (!openFile()) throw std::runtime_error("Failed to open map file: " + filePath);
 
-    if (!readSettings()) throw std::runtime_error("Failed to read settings from map file: " + filePath);
+    if (!readSettings()) throw std::runtime_error("Failed to read settings from map file: " + filePath + "\n" + settingsExamples);
 
     processMapData();
 
