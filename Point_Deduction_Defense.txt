@@ -45,3 +45,6 @@ Please read this before you do.
 8) Unused parameters in Play.h:
    The example given to us in the exercise had unused parameters in the constructor of Player.h. This doesn't compile because of -Werror.
    I added [[maybe_unused]] tags to the parameters. Hope it's okay.
+
+9) No extra line in output:
+   There's no extra empty line at the end of the output files. Hope it doesn't mess up your tester.
