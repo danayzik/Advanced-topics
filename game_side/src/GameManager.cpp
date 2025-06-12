@@ -238,6 +238,7 @@ void GameManager::run() {
 }
 
 GameManager::~GameManager(){
+    writeOutputLine();
     int playersPrinted = 0;
     std::string playerQuantifier = playerCount > 2 ? "all" : "both";
     if (outputFile.is_open()) {

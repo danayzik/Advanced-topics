@@ -2,9 +2,8 @@
 
 
 void Tank::rotate(int rotationAmount) {
-    int newAngle = (DirectionUtils::directionToInt(currDirection) + rotationAmount) % 360;
-    if (newAngle < 0) newAngle += 360;
-    currDirection = DirectionUtils::intToDirection(newAngle).value();
+    currDirection = DirectionUtils::rotateDirection(currDirection, rotationAmount);
+
 }
 
 void Tank::setMode(TankMode newMode){

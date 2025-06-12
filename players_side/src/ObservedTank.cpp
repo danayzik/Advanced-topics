@@ -13,9 +13,7 @@ bool ObservedTank::canFire() const {
 void ObservedTank::rotate(int rotationAmount) {
     if(!assumedDirection)
         return;
-    int newAngle = (DirectionUtils::directionToInt(assumedDirection.value()) + rotationAmount) % 360;
-    if (newAngle < 0) newAngle += 360;
-    assumedDirection = DirectionUtils::intToDirection(newAngle).value();
+    assumedDirection = DirectionUtils::rotateDirection(assumedDirection.value(), rotationAmount);
 }
 
 void ObservedTank::tickUpdate() {

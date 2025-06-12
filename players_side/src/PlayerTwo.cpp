@@ -3,13 +3,14 @@
 
 void PlayerTwo::updateTankWithBattleInfo(TankAlgorithm &tank, SatelliteView &satellite_view) {
     FullBattleInfo satelliteInfo{rows, cols, numShells, satellite_view, playerIndex};
-
     satelliteInfo.updateFromEarlierInfo(battleInfo);
     battleInfo = satelliteInfo;
+
     if(!seenAllMyTanks)
         updateTankInstructions();
     else{
-        battleInfo.setRequestInfoCounter(tankCount);
+        int getInfoCounter = tankCount == 1 ? getInfoCounterWhenAlone : tankCount;
+        battleInfo.setRequestInfoCounter(getInfoCounter);
     }
     tank.updateBattleInfo(battleInfo);
     int index = battleInfo.getTankIndex();
@@ -22,6 +23,9 @@ void PlayerTwo::updateTankWithBattleInfo(TankAlgorithm &tank, SatelliteView &sat
             seenAllMyTanks = true;
         }
     }
+    else{
+        tankCount = static_cast<int>(battleInfo.getFriendlyTanksCoordinates().size());
+    }
 
 }
 
@@ -32,3 +36,4 @@ void PlayerTwo::updateTankInstructions() {
         battleInfo.setRole(TankRole::Chasing);
     battleInfo.setRequestInfoCounter(4);
 }
+

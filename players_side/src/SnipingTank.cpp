@@ -1,39 +1,53 @@
 #include "SnipingTank.h"
 
 
-SnipingTank::SnipingTank(const FullBattleInfo &battleInfo) {
-    targetCoords = getClosestEnemyInLineOfSight(battleInfo);
-}
+SnipingTank::SnipingTank() {}
 
+
+//Action priority:
+// Dodge if needs to -> rotate towards target if possible -> shoot if possible -> Get info
 ActionRequest SnipingTank::getAction(const FullBattleInfo &battleInfo) {
-    bool shouldDodge = hasShellMovingTowardsTank(battleInfo, battleInfo.getMyTank());
     const auto& myTank = battleInfo.getMyTank();
-    Coordinates myCoords = myTank.getCoords();
-    Direction dir = myTank.getDirection().value();
-    Coordinates coordsInFront = DirectionUtils::nextCoordinate(dir, myCoords, battleInfo.getRows(), battleInfo.getCols());
-    auto& cellInFront = battleInfo.getCell(coordsInFront);
-    bool canMoveForward = cellInFront.isPassableForTank();
-    if(canMoveForward && shouldDodge)
-        return ActionRequest::MoveForward;
+    std::optional<ActionRequest> dodgeAction = dodgingAction(battleInfo, myTank);
+    if(dodgeAction.has_value())
+        return dodgeAction.value();
+    acquireTarget(battleInfo);
     std::optional<ActionRequest> rotateOpt = rotationTowardsTarget(battleInfo);
     if(rotateOpt.has_value())
         return rotateOpt.value();
+    Coordinates myCoords = myTank.getCoords();
+    bool targetIsInDirection = areColinear(myCoords, targetCoords.value(), battleInfo.getRows(), battleInfo.getCols());
+
+    if(myTank.canFire() && targetIsInDirection)
+        return ActionRequest::Shoot;
+    Coordinates coordsInFront = DirectionUtils::nextCoordinate(myTank.getDirection().value(), myCoords, battleInfo.getRows(), battleInfo.getCols());
+    auto& cellInFront = battleInfo.getCell(coordsInFront);
+    bool canMoveForward = cellInFront.isPassableForTank();
+    if(canMoveForward)
+        return ActionRequest::MoveForward;
     if(myTank.canFire())
         return ActionRequest::Shoot;
-    return ActionRequest::GetBattleInfo;
-}
+    return ActionRequest::RotateLeft45;
 
+}
 
 
 void SnipingTank::update(const FullBattleInfo &battleInfo) {
-    targetCoords = getClosestEnemyInLineOfSight(battleInfo);
+    acquireTarget(battleInfo);
 }
 
+
+
 std::optional<ActionRequest> SnipingTank::rotationTowardsTarget(const FullBattleInfo &battleInfo) {
-    if(!targetCoords.has_value())
-        return std::nullopt;
     return rotationTowardsCoords(battleInfo.getMyTank(), targetCoords.value());
 }
+
+void SnipingTank::acquireTarget(const FullBattleInfo &battleInfo) {
+    targetCoords = getExposedCoordinates(battleInfo, battleInfo.getMyTank(), battleInfo.getEnemyTanksCoordinates());
+    if(!targetCoords.has_value())
+        targetCoords = getClosestCoordinates(battleInfo, battleInfo.getEnemyTanksCoordinates());
+}
+
 
 
 

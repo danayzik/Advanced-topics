@@ -1,24 +1,11 @@
 
 ToDo:
-Add proper dodging since tracking is perfect if not alone
+
 make players inherit from another unifying class
-Sniping tank doesn't perform correctly
-Don't take info when 1 tank only is alive
 
 Write about unordered set adding randomness
 
-Sniping tank tries to dodge but doesn't check where to
 
-Add dodging shells for chaser?
-
-
-change TankMode to be in a proper namespace. rename utils.h
-
-Cleanup doulbe check of isTank in fireShell from tank in battle info
-
-rename tankalgo
-
-2nd player
 
 Don't approve getbattleinfo if in preparing reverse . what about in justenteredreverse?
 
@@ -27,23 +14,19 @@ Try catch map error
 
 Allow lowercase letters in input txt, report it as small error. Same with misordering
 
-Deal with GetEntity being const/non const check gameMap functions for const or no const
-
 
 Exit out of backward mode if in backward mode and move != backward
+
 Can go into reverse even when something is behind
 check negative values in map settings
 Add input_errors.txt errors that are fatal
 Questions:
 Without try in main, how can we exit gracefully if map loading fails?
 strict key = value ordering in map? what if i do better and make it key based?
-Check dying at the same time in diff shell steps
-
 
 
 
 Things to clean at the end:
-Rule of 5 for everything
 
 Settings out of order works for me. ask if it's a problem on forums?
 Change map file path to file name, get only the name

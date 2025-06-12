@@ -4,6 +4,7 @@
 class PlayerOne : public Player {
 
 private:
+    static constexpr int getInfoCounterWhenAlone = 4;
     int tankCount = 0;
     int playerIndex;
     size_t rows;

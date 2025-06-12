@@ -4,7 +4,7 @@
 #include "FullBattleInfo.h"
 #include "AlgorithmUtilities.h"
 #include "TankRoleAlgorithm.h"
-class FirstTankAlgorithm : public TankAlgorithm{
+class AdaptiveTankAlgorithm : public TankAlgorithm{
 private:
     FullBattleInfo battleInfo = {};
     int playerIndex;
@@ -20,7 +20,7 @@ public:
 
     ActionRequest getAction() override;
     void updateBattleInfo(BattleInfo& info) override;
-    FirstTankAlgorithm(int playerIndex, int tankIndex) : playerIndex(playerIndex), tankIndex(tankIndex){}
+    AdaptiveTankAlgorithm(int playerIndex, int tankIndex) : playerIndex(playerIndex), tankIndex(tankIndex){}
 
 
 

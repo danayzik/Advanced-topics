@@ -81,10 +81,11 @@ void GameMap::tanksAboutToCollide(){
                 if (action2 != ActionRequest::MoveForward && action2 != ActionRequest::MoveBackward) continue;
                 Direction direction1 = action1 == ActionRequest::MoveForward ? tank1.getDirection() : DirectionUtils::getOppositeDirection(tank1.getDirection());
                 Direction direction2 = action2 == ActionRequest::MoveForward ? tank2.getDirection() : DirectionUtils::getOppositeDirection(tank2.getDirection());
-
+                Coordinates oldCoords1 = tank1.getCoords();
+                Coordinates oldCoords2 = tank2.getCoords();
                 Coordinates newCoords1 = getNewPosition(tank1, direction1);
                 Coordinates newCoords2 = getNewPosition(tank2, direction2);
-                if (newCoords1 == newCoords2) {
+                if (newCoords1 == oldCoords2 && newCoords2 == oldCoords1) {
                     toDelete.insert(tankId1);
                     toDelete.insert(tankId2);
                 }
@@ -108,12 +109,14 @@ void GameMap::shellsAboutToCollide() {
             if(shellId1 != shellId2){
                 auto& shell1 = *entityCast<Shell>(&entityManager.getEntity(shellId1));
                 auto& shell2 = *entityCast<Shell>(&entityManager.getEntity(shellId2));
+                Coordinates oldCoords1 = shell1.getCoords();
+                Coordinates oldCoords2 = shell2.getCoords();
                 Direction direction1 = shell1.getDirection();
                 Direction direction2 = shell2.getDirection();
                 Coordinates newCoords1 = getNewPosition(shell1, direction1);
                 Coordinates newCoords2 = getNewPosition(shell2, direction2);
 
-                if (newCoords1 == newCoords2) {
+                if (newCoords1 == oldCoords2 && newCoords2 == oldCoords1) {
                     toDelete.insert(shellId1);
                     toDelete.insert(shellId2);
                 }
@@ -131,8 +134,7 @@ void GameMap::shellsAboutToCollide() {
 
 //Calculates the position of an entity if it were to move in a direction. Does not move the entity.
 Coordinates GameMap::getNewPosition(const GameEntity& entity, Direction dir) const {
-    Coordinates newCoords = DirectionUtils::nextCoordinate(dir, entity.getCoords(), rows, cols);
-    return newCoords;
+    return DirectionUtils::nextCoordinate(dir, entity.getCoords(), rows, cols);
 }
 
 //Moves the entity in given direction

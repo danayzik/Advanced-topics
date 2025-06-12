@@ -16,8 +16,6 @@ enum class Direction {
 };
 
 struct DirectionUtils {
-
-
     static constexpr double PI = 3.14159265358979323846;
 
     static const std::vector<std::pair<int, int>>& getDirections() {
@@ -89,4 +87,9 @@ struct DirectionUtils {
         return diff > 90 ? 2 : 1;
     }
 
+    static inline Direction rotateDirection(Direction currDirection, int rotation){
+        int newAngle = (DirectionUtils::directionToInt(currDirection) + rotation) % 360;
+        if (newAngle < 0) newAngle += 360;
+        return DirectionUtils::intToDirection(newAngle).value();
+    }
 };

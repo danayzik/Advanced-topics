@@ -4,6 +4,7 @@
 class PlayerTwo : public Player {
 
 private:
+    static constexpr int getInfoCounterWhenAlone = 4;
     int playerIndex;
     size_t rows;
     size_t cols;
@@ -14,9 +15,8 @@ private:
     std::vector<int> tankIndices = {};
     bool seenAllMyTanks = false;
     void updateTankInstructions();
+
 public:
-
-
 
 
     PlayerTwo( int player_index,
@@ -26,4 +26,6 @@ public:
 
     void updateTankWithBattleInfo
             (TankAlgorithm& tank, SatelliteView& satellite_view) override;
+
+
 };

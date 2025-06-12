@@ -1,7 +1,19 @@
 #pragma once
 #include "ActionRequest.h"
 #include <string>
+#include <vector>
+
+
 namespace ActionRequestUtils {
+
+    inline const std::vector<ActionRequest>& getRotationalActions() {
+        static const std::vector<ActionRequest> rotations = {
+                ActionRequest::RotateRight45, ActionRequest::RotateRight90,
+                ActionRequest::RotateLeft45, ActionRequest::RotateLeft90
+        };
+        return rotations;
+    }
+
     inline bool isRotation(ActionRequest action) {
         switch (action) {
             case ActionRequest::RotateLeft45:

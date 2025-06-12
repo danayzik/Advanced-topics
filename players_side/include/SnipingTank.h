@@ -7,8 +7,9 @@ private:
 
     std::optional<Coordinates> targetCoords{};
     std::optional<ActionRequest> rotationTowardsTarget(const FullBattleInfo &battleInfo);
+    inline void acquireTarget(const FullBattleInfo &battleInfo);
 public:
-    explicit SnipingTank(const FullBattleInfo& battleInfo);
+    explicit SnipingTank();
     ActionRequest getAction(const FullBattleInfo& battleInfo) override;
     void update(const FullBattleInfo& battleInfo) override;
 

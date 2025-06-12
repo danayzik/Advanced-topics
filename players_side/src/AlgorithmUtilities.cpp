@@ -43,24 +43,30 @@ bool enemyInLineOfSight(const FullBattleInfo &battleInfo, const ObservedTank& my
     return false;
 }
 
-bool hasShellMovingTowardsTank(const FullBattleInfo &battleInfo, const ObservedTank& tank){
+std::optional<Direction> directionToShellMovingTowardsTank(const FullBattleInfo &battleInfo, const ObservedTank& tank){
+    int tankY = tank.getY();
+    int tankX = tank.getX();
+    int rows = static_cast<int>(battleInfo.getRows());
+    int cols = static_cast<int>(battleInfo.getCols());
     const auto& shellCoordsSet = battleInfo.getShellsCoordinates();
     for(auto& shellCoords : shellCoordsSet){
         const auto& shell = *entityCast<ObservedShell>(battleInfo.getCell(shellCoords).entity.get());
-        std::optional<Direction> shellDirection = shell.getDirection();
-        if(!shellDirection)
+        if(!shell.directionKnown())
             continue;
+        Direction shellDirection = shell.getDirection().value();
         int shellY = shellCoords.y;
         int shellX = shellCoords.x;
-        int tankY = tank.getY();
-        int tankX = tank.getX();
-        Vec2 delta = {tankY - shellY, tankX - shellX};
-        Vec2 dir = Vec2(DirectionUtils::directionToCoordinatesOffset(shellDirection.value()));
+        int dy = (tankY - shellY + rows) % rows;
+        if (dy > rows / 2) dy -= rows;
+        int dx = (tankX - shellX + cols) % cols;
+        if (dx > cols / 2) dx -= cols;
+        Vec2 delta = {dy, dx};
+        Vec2 dir = Vec2(DirectionUtils::directionToCoordinatesOffset(shellDirection));
         int cross = delta.x * dir.y - delta.y * dir.x;
         if (cross == 0)
-            return true;
+            return DirectionUtils::getOppositeDirection(shellDirection);
     }
-    return false;
+    return std::nullopt;
 }
 
 std::optional<ActionRequest> getFirstRotationAction(Direction current, Direction target) {
@@ -103,9 +109,35 @@ bool friendlyInDirectionWithinRange(const FullBattleInfo &battleInfo, Direction 
     return false;
 }
 
+std::optional<Coordinates> getExposedCoordinates(const FullBattleInfo &battleInfo, const ObservedTank& tank, const std::unordered_set<Coordinates, CoordinatesHash>& coordsSet){
+    Coordinates tankCoords = tank.getCoords();
+    auto rows = battleInfo.getRows();
+    auto cols = battleInfo.getCols();
+    for(const auto& coords : coordsSet){
+        if(!areColinear(tankCoords, coords, rows, cols))
+            continue;
+        Direction dirBetween = DirectionUtils::getDirectionBetweenPoints(tankCoords.y, tankCoords.x, coords.y, coords.x);
+        std::array<Direction, 2> possibleDirections = {dirBetween, DirectionUtils::getOppositeDirection(dirBetween)};
+        for(auto dir : possibleDirections){
+            Coordinates nextPos = tankCoords;
+            while(true){
+                nextPos = DirectionUtils::nextCoordinate(dir, nextPos, rows, cols);
+                auto& cell = battleInfo.getCell(nextPos);
+                if(cell.hasEntity() && cell.entity->isWall())
+                    break;
+                if(nextPos == coords)
+                    return coords;
+            }
+
+        }
+    }
+    return std::nullopt;
+}
+
 std::optional<Coordinates> getClosestEnemyInLineOfSight(const FullBattleInfo &battleInfo){
     const auto& enemyCoords = battleInfo.getEnemyTanksCoordinates();
     const ObservedTank& myTank = battleInfo.getMyTank();
+
 
     std::unordered_set<Coordinates, CoordinatesHash> visibleEnemies;
     for (const Coordinates& coord : enemyCoords) {
@@ -116,4 +148,45 @@ std::optional<Coordinates> getClosestEnemyInLineOfSight(const FullBattleInfo &ba
     if(visibleEnemies.empty())
         return std::nullopt;
     return getClosestCoordinates(battleInfo, visibleEnemies);
+}
+
+std::optional<ActionRequest> dodgingAction(const FullBattleInfo &battleInfo, const ObservedTank& tank) {
+    std::optional<Direction> directionToShellMovingTowardsMeOpt = directionToShellMovingTowardsTank(battleInfo, tank);
+    if(!directionToShellMovingTowardsMeOpt.has_value())
+        return std::nullopt;
+    Direction dir = tank.getDirection().value();
+    Direction directionToShell = directionToShellMovingTowardsMeOpt.value();
+    Coordinates myCoords = tank.getCoords();
+    Coordinates coordsInFront = DirectionUtils::nextCoordinate(dir, myCoords, battleInfo.getRows(), battleInfo.getCols());
+    auto& cellInFront = battleInfo.getCell(coordsInFront);
+    bool movingToShell = dir == directionToShell;
+    bool movingAwayFromShell = dir == DirectionUtils::getOppositeDirection(directionToShell);
+
+    bool canMoveForward = cellInFront.isPassableForTank();
+
+    if(canMoveForward && !movingToShell && !movingAwayFromShell)
+        return ActionRequest::MoveForward;
+    const auto& rotations = getRotationalActions();
+    for(auto rotation : rotations){
+        Direction newDirection = DirectionUtils::rotateDirection(dir, rotateActionToAngle(rotation));
+        Coordinates coordsAhead = DirectionUtils::nextCoordinate(newDirection, myCoords, battleInfo.getRows(), battleInfo.getCols());
+        auto& cellAhead = battleInfo.getCell(coordsAhead);
+        if(cellAhead.isPassableForTank())
+            return rotation;
+    }
+    return std::nullopt;
+
+}
+
+bool areColinear(const Coordinates& a, const Coordinates& b, size_t rows, size_t cols) {
+    int height = static_cast<int>(rows);
+    int width = static_cast<int>(cols);
+    int dy = (b.y - a.y + height) % height;
+    if (dy > height / 2) dy -= height;
+    int dx = (b.x - a.x + width) % width;
+    if (dx > width / 2) dx -= width;
+    if (dx == 0 && dy == 0)
+        return true;
+
+    return (dx == 0 || dy == 0 || std::abs(dx) == std::abs(dy));
 }

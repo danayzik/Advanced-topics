@@ -1,18 +1,25 @@
-#include "PlayerOne.h"
+#include "PlayerCommunicationModule.h"
 
 
-void PlayerOne::updateTankWithBattleInfo(TankAlgorithm &tank, SatelliteView &satellite_view) {
+void PlayerCommunicationModule::processSatelliteView(SatelliteView &satellite_view) {
     FullBattleInfo satelliteInfo{rows, cols, numShells, satellite_view, playerIndex};
-
     satelliteInfo.updateFromEarlierInfo(battleInfo);
     battleInfo = satelliteInfo;
+
+}
+
+
+void PlayerCommunicationModule::processBattleInfoPreSending() {
     if(!seenAllMyTanks)
         updateTankInstructions();
     else{
         int getInfoCounter = tankCount == 1 ? getInfoCounterWhenAlone : tankCount;
         battleInfo.setRequestInfoCounter(getInfoCounter);
     }
-    tank.updateBattleInfo(battleInfo);
+
+}
+
+void PlayerCommunicationModule::processBattleInfoPostSending() {
     int index = battleInfo.getTankIndex();
     if(!seenAllMyTanks) {
         if (!contains(tankIndices, index)) {
@@ -25,24 +32,14 @@ void PlayerOne::updateTankWithBattleInfo(TankAlgorithm &tank, SatelliteView &sat
     }
     else{
         checkForDeadTanks();
-        if(shouldCalculateShells(battleInfo.getTankIndex()))
-            battleInfo.assumeEnemyShellsDirections(2);
+        removeIfValIsAfter(tankIndicesThatRecentlyDied, index);
     }
 }
 
-void PlayerOne::updateTankInstructions() {
-    if(tankCount == 0)
-        battleInfo.setRole(TankRole::Chasing);
-    else
-        battleInfo.setRole(TankRole::Sniping);
-    battleInfo.setRequestInfoCounter(static_cast<int>(tankCount)+1);
-
-}
-
-void PlayerOne::checkForDeadTanks() {
+void PlayerCommunicationModule::checkForDeadTanks() {
     int aliveTanks = static_cast<int>(battleInfo.getFriendlyTanksCoordinates().size());
-    bool tankDied = aliveTanks != tankCount;
-    if(tankDied){
+    bool tanksDied = aliveTanks != tankCount;
+    if(tanksDied){
         for (int tankIndex : tankIndices) {
             if(!battleInfo.isFriendlyTankAlive(tankIndex))
                 tankIndicesThatRecentlyDied.push_back(tankIndex);
@@ -51,10 +48,3 @@ void PlayerOne::checkForDeadTanks() {
     }
 }
 
-bool PlayerOne::shouldCalculateShells(int tankIndex) {
-    if(tankCount == 1)
-        return false;
-    bool shouldCalculate = !appearsRightAfter(tankIndicesThatRecentlyDied, tankIndex);
-    removeIfValIsAfter(tankIndicesThatRecentlyDied, tankIndex);
-    return shouldCalculate;
-}

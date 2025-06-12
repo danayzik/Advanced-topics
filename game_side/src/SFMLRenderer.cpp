@@ -57,10 +57,14 @@ void SFMLRenderer::drawEntity(const GameEntity& entity){
     sf::Vector2u originalSize = texture.getSize();
     auto targetWidth = static_cast<float>(cellSize);
     auto targetHeight = static_cast<float>(cellSize);
-    sprite.setScale(
-            {targetWidth / static_cast<float>(originalSize.x),
-            targetHeight / static_cast<float>(originalSize.y)}
-    );
+
+    float xFactor = targetWidth / static_cast<float>(originalSize.x);
+    float yFactor = targetHeight / static_cast<float>(originalSize.y);
+    if(entity.isShell()) {
+        xFactor *= 0.75;
+        yFactor *= 0.75;
+    }
+    sprite.setScale({xFactor,yFactor});
     sf::FloatRect bounds = sprite.getLocalBounds();
     sprite.setOrigin({bounds.size.x / 2.f, bounds.size.y / 2.f});
     if(entity.isTank()){
@@ -75,15 +79,24 @@ void SFMLRenderer::drawEntity(const GameEntity& entity){
 }
 
 
-void SFMLRenderer::drawCell(const Cell& cell, const EntityManager& entityManager){
+void SFMLRenderer::drawCell(const Cell& cell, const EntityManager& entityManager) {
     sf::RectangleShape square(sf::Vector2f(static_cast<float>(cellSize), static_cast<float>(cellSize)));
-    auto xPos = static_cast<float>(cell.x()*cellSize);
-    auto yPos = static_cast<float>(cell.y()*cellSize);
+    auto xPos = static_cast<float>(cell.x() * cellSize);
+    auto yPos = static_cast<float>(cell.y() * cellSize);
     square.setPosition({xPos, yPos});
     square.setFillColor(sf::Color::Black);
     window.draw(square);
-    for(auto entityId : cell.entitySet){
-        drawEntity(entityManager.getEntity(entityId));
+
+    for (auto entityId : cell.entitySet) {
+        const auto& entity = entityManager.getEntity(entityId);
+        if (!entity.isShell())
+            drawEntity(entity);
+    }
+
+    for (auto entityId : cell.entitySet) {
+        const auto& entity = entityManager.getEntity(entityId);
+        if (entity.isShell())
+            drawEntity(entity);
     }
 }
 

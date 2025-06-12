@@ -63,18 +63,14 @@ void FullBattleInfo::updateFromEarlierInfo(FullBattleInfo &earlierInfo) {
                     Coordinates coords = {y, x};
                     bool oldIsMyTank = earlierInfo.friendlyTanksCoordinates.count(coords);
                     bool newIsMyTank = friendlyTanksCoordinates.count(coords);
-                    if(oldIsMyTank ^ newIsMyTank){
-                        if(oldIsMyTank){
-                            friendlyTanksCoordinates.insert(coords);
-                            enemyTanksCoordinates.erase(coords);
-                        }
-                        else{
-                            friendlyTanksCoordinates.erase(coords);
-                            enemyTanksCoordinates.insert(coords);
-                        }
+                    if(!(oldIsMyTank ^ newIsMyTank)){
+                        newCell.setEntity(std::move(oldCell.entity));
                     }
                 }
-                newCell.setEntity(std::move(oldCell.entity));
+                else{
+                    newCell.setEntity(std::move(oldCell.entity));
+                }
+
             }
 
         }
@@ -213,10 +209,6 @@ void FullBattleInfo::moveKnownShells() {
     std::unordered_set<Coordinates, CoordinatesHash> oldShellCoords = shellCoordinates;
     for(auto coord : oldShellCoords){
         auto& cell = getCell(coord);
-
-        if (!cell.hasEntity() || !cell.entity->isShell()) {
-            continue; // Bad tracking of shells
-        }
         auto& shell = *entityCast<ObservedShell>(cell.entity.get());
         if(!shell.directionKnown() || shell.getFiredLastTurn()){
             shell.setAsOld();
@@ -248,16 +240,18 @@ void FullBattleInfo::roundTick() {
     for(const Coordinates& coord : friendlyTanksCoordinates){
         auto& cell = getCell(coord);
         if(!cell.hasEntity())
-            throw std::runtime_error("Coord set don't match grid");
+            throw std::runtime_error("Coord set doesn't match grid");
         entityCast<ObservedTank>(cell.entity.get())->tickUpdate();
     }
+
     for(const Coordinates& coord : enemyTanksCoordinates){
         auto& cell = getCell(coord);
         if(!cell.hasEntity())
-            throw std::runtime_error("Coord set don't match grid");
+            throw std::runtime_error("Coord set doesn't match grid");
 
         entityCast<ObservedTank>(cell.entity.get())->tickUpdate();
     }
+
 }
 
 bool FullBattleInfo::isFriendlyTankAlive(int index) {

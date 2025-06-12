@@ -46,9 +46,12 @@ struct Vec2 {
 };
 
 bool enemyInLineOfSight(const FullBattleInfo &battleInfo, const ObservedTank& myTank, Coordinates targetCoords);
-bool hasShellMovingTowardsTank(const FullBattleInfo &battleInfo, const ObservedTank& tank);
+std::optional<Direction> directionToShellMovingTowardsTank(const FullBattleInfo &battleInfo, const ObservedTank& tank);
 std::optional<ActionRequest> rotationTowardsCoords(const ObservedTank& myTank, Coordinates target);
 std::optional<ActionRequest> getFirstRotationAction(Direction current, Direction target);
 Coordinates getClosestCoordinates(const FullBattleInfo &battleInfo, const std::unordered_set<Coordinates, CoordinatesHash>& coordsSet);
 bool friendlyInDirectionWithinRange(const FullBattleInfo &battleInfo, Direction dir, int range);
 std::optional<Coordinates> getClosestEnemyInLineOfSight(const FullBattleInfo &battleInfo);
+std::optional<ActionRequest> dodgingAction(const FullBattleInfo &battleInfo, const ObservedTank& tank);
+bool areColinear(const Coordinates& a, const Coordinates& b, size_t rows, size_t cols);
+std::optional<Coordinates> getExposedCoordinates(const FullBattleInfo &battleInfo, const ObservedTank& tank, const std::unordered_set<Coordinates, CoordinatesHash>& coordsSet);

@@ -22,4 +22,6 @@ struct Cell {
     inline void eraseEntity(size_t entityID){entitySet.erase(entityID);}
     inline void insertEntity(const GameEntity& entity){entitySet.insert(entity.getEntityId());}
     inline void eraseEntity(const GameEntity& entity){entitySet.erase(entity.getEntityId());}
+
+
 };

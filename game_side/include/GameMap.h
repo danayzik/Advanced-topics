@@ -53,4 +53,10 @@ public:
     friend MapLoader;
     inline bool isTankAlive(size_t entityIndex) const {return entityManager.isTankAlive(entityIndex);}
 
+    GameMap(const GameMap&) = delete;
+    GameMap& operator=(const GameMap&) = delete;
+    GameMap(GameMap&&) = delete;
+    GameMap& operator=(GameMap&&) = delete;
+    ~GameMap() = default;
+
 };

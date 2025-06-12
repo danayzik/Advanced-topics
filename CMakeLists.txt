@@ -30,15 +30,18 @@ set(SOURCES
         players_side/src/FullBattleInfo.cpp
         players_side/src/ObservedCell.cpp
         players_side/src/AlgorithmUtilities.cpp
-        players_side/src/FirstTankAlgorithm.cpp
+        players_side/src/AdaptiveTankAlgorithm.cpp
         players_side/src/ObservedTank.cpp
         players_side/src/PlayerOne.cpp
         players_side/src/PlayerTwo.cpp
+        players_side/src/PlayerCommunicationModule.cpp
         common/src/MyPlayerFactory.cpp
         common/src/MyTankAlgorithmFactory.cpp
         players_side/src/ChasingTank.cpp
         players_side/src/SnipingTank.cpp
         players_side/include/TankRole.h
+        players_side/include/PlayerCommunicationModule.h
+        players_side/src/PlayerCommunicationModule.cpp
 )
 
 
