@@ -4,7 +4,7 @@
 void PlayerCommunicationModule::processSatelliteView(SatelliteView &satellite_view) {
     FullBattleInfo satelliteInfo{rows, cols, numShells, satellite_view, playerIndex};
     satelliteInfo.updateFromEarlierInfo(battleInfo);
-    battleInfo = satelliteInfo;
+    battleInfo = std::move(satelliteInfo);
 
 }
 
