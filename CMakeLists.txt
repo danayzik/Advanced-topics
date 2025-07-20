@@ -21,32 +21,32 @@ endif()
 
 set(SOURCES
         src/main.cpp
-        game_side/src/Tank.cpp
-        game_side/src/MapLoader.cpp
-        game_side/src/GameMap.cpp
-        game_side/src/GameManager.cpp
-        game_side/src/Cell.cpp
-        game_side/src/EntityManager.cpp
-        players_side/src/FullBattleInfo.cpp
-        players_side/src/ObservedCell.cpp
-        players_side/src/AlgorithmUtilities.cpp
-        players_side/src/AdaptiveTankAlgorithm.cpp
-        players_side/src/ObservedTank.cpp
-        players_side/src/PlayerOne.cpp
-        players_side/src/PlayerTwo.cpp
-        players_side/src/PlayerCommunicationModule.cpp
+        GameManager/src/Tank.cpp
+        GameManager/src/MapLoader.cpp
+        GameManager/src/GameMap.cpp
+        GameManager/src/GameManager.cpp
+        GameManager/src/Cell.cpp
+        GameManager/src/EntityManager.cpp
+        Algorithm/src/FullBattleInfo.cpp
+        Algorithm/src/ObservedCell.cpp
+        Algorithm/src/AlgorithmUtilities.cpp
+        Algorithm/src/AdaptiveTankAlgorithm.cpp
+        Algorithm/src/ObservedTank.cpp
+        Algorithm/src/PlayerOne.cpp
+        Algorithm/src/PlayerTwo.cpp
+        Algorithm/src/PlayerCommunicationModule.cpp
         common/src/MyPlayerFactory.cpp
         common/src/MyTankAlgorithmFactory.cpp
-        players_side/src/ChasingTank.cpp
-        players_side/src/SnipingTank.cpp
-        players_side/include/TankRole.h
-        players_side/include/PlayerCommunicationModule.h
-        players_side/src/PlayerCommunicationModule.cpp
+        Algorithm/src/ChasingTank.cpp
+        Algorithm/src/SnipingTank.cpp
+        Algorithm/src/PlayerCommunicationModule.cpp
+        common/AbstractGameManager.h
+
 )
 
 
 if(USE_SFML)
-    list(APPEND SOURCES game_side/src/SFMLRenderer.cpp)
+    list(APPEND SOURCES GameManager/src/SFMLRenderer.cpp)
 endif()
 
 add_executable(tanks_game ${SOURCES})
@@ -58,8 +58,10 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 target_include_directories(tanks_game PRIVATE
         ${CMAKE_SOURCE_DIR}/common
-        ${CMAKE_SOURCE_DIR}/players_side/include
-        ${CMAKE_SOURCE_DIR}/game_side/include
+        ${CMAKE_SOURCE_DIR}/Algorithm/include
+        ${CMAKE_SOURCE_DIR}/GameManager/include
+        ${CMAKE_SOURCE_DIR}/UserCommon
+        ${CMAKE_SOURCE_DIR}/Simulator/include
 )
 
 target_compile_options(tanks_game PRIVATE
