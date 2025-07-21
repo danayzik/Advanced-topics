@@ -1,7 +1,10 @@
 #include "AdaptiveTankAlgorithm.h"
 #include "SnipingTank.h"
 #include "ChasingTank.h"
+#include "TankAlgorithmRegistration.h"
+
 namespace Algorithm_206038929_314620071 {
+    REGISTER_TANK_ALGORITHM(AdaptiveTankAlgorithm)
     void AdaptiveTankAlgorithm::roundTick() {
         roundCounter++;
         if (initialized) {

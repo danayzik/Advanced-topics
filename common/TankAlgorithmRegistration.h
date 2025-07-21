@@ -2,7 +2,7 @@
 #include "TankAlgorithm.h"
 
 struct TankAlgorithmRegistration {
-    TankAlgorithmRegistration(TankAlgorithmFactory);
+    explicit TankAlgorithmRegistration(TankAlgorithmFactory);
 };
 
 #define REGISTER_TANK_ALGORITHM(class_name) \

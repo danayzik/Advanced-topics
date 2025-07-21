@@ -2,7 +2,7 @@
 #include "Player.h"
 
 struct PlayerRegistration {
-    PlayerRegistration(PlayerFactory);
+    explicit PlayerRegistration(PlayerFactory);
 };
 
 #define REGISTER_PLAYER(class_name) \

@@ -49,17 +49,17 @@ public:
     struct BadRegistrationException {
         std::string name;
         bool hasName, hasPlayerFactory, hasTankAlgorithmFactory;
+        BadRegistrationException(std::string name, bool hasName, bool hasPlayerFactory, bool hasTankAlgorithmFactory)
+            : name(name), hasName(hasName),
+              hasPlayerFactory(hasPlayerFactory), hasTankAlgorithmFactory(hasTankAlgorithmFactory) {}
     };
     void validateLastRegistration() {
         const auto& last = algorithms.back();
         bool hasName = (last.name() != "");
         if(!hasName || !last.hasPlayerFactory() || !last.hasTankAlgorithmFactory() ) {
-            throw BadRegistrationException{
-                    .name = last.name(),
-                    .hasName = hasName,
-                    .hasPlayerFactory = last.hasPlayerFactory(),
-                    .hasTankAlgorithmFactory = last.hasTankAlgorithmFactory()
-            };
+            throw BadRegistrationException(last.name(), hasName,
+                                           last.hasPlayerFactory(),
+                                           last.hasTankAlgorithmFactory());
         }
     }
     void removeLast() {

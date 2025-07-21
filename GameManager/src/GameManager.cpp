@@ -1,8 +1,13 @@
 #include "GameManager.h"
 #include <thread>
 #include <iostream>
+#include "GameManagerRegistration.h"
+
+
+
 
 namespace GameManager_206038929_314620071 {
+    REGISTER_GAME_MANAGER(GameManager)
     using namespace std::chrono;
     using namespace ActionRequestUtils;
 

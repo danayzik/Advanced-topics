@@ -6,6 +6,7 @@
 #include "Renderer.h"
 #include "MyPlayerFactory.h"
 #include "MyTankAlgorithmFactory.h"
+#include "AbstractGameManager.h"
 
 namespace GameManager_206038929_314620071 {
     using std::string;
@@ -18,7 +19,7 @@ namespace GameManager_206038929_314620071 {
         NotOver
     };
 
-    class GameManager {
+    class GameManager : public AbstractGameManager{
     private:
         static constexpr int stepsWithNoAmmoLimit = 40;
         static constexpr int stepsPerSecond = 4;
