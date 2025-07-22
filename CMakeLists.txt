@@ -41,6 +41,7 @@ set(SOURCES
         Algorithm/src/SnipingTank.cpp
         Algorithm/src/PlayerCommunicationModule.cpp
         common/AbstractGameManager.h
+        Simulator/src/CommandLineParser.cpp
 
 )
 

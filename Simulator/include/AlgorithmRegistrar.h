@@ -33,6 +33,10 @@ class AlgorithmRegistrar {
             return tankAlgorithmFactory != nullptr;
         }
     };
+private:
+    AlgorithmRegistrar() = default;
+    AlgorithmRegistrar(const AlgorithmRegistrar&) = delete;
+    AlgorithmRegistrar& operator=(const AlgorithmRegistrar&) = delete;
     std::vector<AlgorithmAndPlayerFactories> algorithms;
     static AlgorithmRegistrar registrar;
 public:

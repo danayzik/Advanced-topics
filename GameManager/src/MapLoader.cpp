@@ -13,7 +13,6 @@ namespace GameManager_206038929_314620071 {
     using std::vector;
     using std::string;
 
-
     MapLoader::MapLoader(const std::string &filePath, GameMap &gameMap, GameManager &gameManager) : filePath(filePath),
                                                                                                     gameMap(gameMap),
                                                                                                     gameManager(

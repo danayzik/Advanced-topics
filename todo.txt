@@ -1,6 +1,12 @@
 
 ToDo:
-
+Things in the end:
+Gamemanager registrar private constructor and delete others
+rule of 5 for all
+cmake and make files
+test with other so's
+output files, errors for map/command line.when to exit?
+Remove renderer? or move to simulator
 
 
 sudo apt-get update
