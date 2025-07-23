@@ -25,6 +25,51 @@ void CommandLineParser::scanForMode(int argc, char* argv[]) {
     }
 }
 
+void CommandLineParser::parseComparativeMode(int argc, char *argv[]) {
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
+        if(arg == argumentStrings.verbose){
+            parsedArguments.verbose = true;
+            continue;
+        }
+        if(arg == argumentStrings.comparativeMode)
+            continue;
+        auto splitOpt = splitKeyValue(arg);
+        if(!splitOpt.has_value()){
+            continue;
+        }
+        auto [argKey, value] = splitOpt.value();
+        if (argKey == argumentStrings.gameMap){
+            parsedArguments.mapFileName = value;
+        }else if (argKey == argumentStrings.managersFolder){
+            parsedArguments.managersFolder = value;
+        }else if (argKey == argumentStrings.algo1){
+            parsedArguments.algo1 = value;
+        }else if (argKey == argumentStrings.algo2){
+            parsedArguments.algo2 = value;
+        }else if (argKey == argumentStrings.numThreads){
+            size_t pos = 0;
+            try {
+                parsedArguments.num_threads = std::stoi(value, &pos);
+                if (pos != value.length()) {
+                    throw std::invalid_argument("Invalid integer: extra characters");
+                }
+                if (parsedArguments.num_threads < 0) {
+                    throw std::invalid_argument("Invalid integer: negative value");
+                }
+            }
+            catch (const std::invalid_argument& e) {
+                throw std::invalid_argument("Invalid integer: not a number");
+            } catch (const std::out_of_range& e) {
+                throw std::invalid_argument("Invalid integer: out of range");
+            }
+        }
+
+
+
+    }
+}
+
 ParsedArguments& CommandLineParser::parse(int argc, char* argv[]) {
     ParsedArguments result;
     std::vector<std::string> unknownArgs;
@@ -74,9 +119,13 @@ void CommandLineParser::printUsageAndExit(const std::vector<std::string>& errors
     exit(1);
 }
 
-std::vector<std::string> CommandLineParser::splitKeyValue(const std::string& arg) {
+std::optional<std::pair<std::string, std::string>> CommandLineParser::splitKeyValue(const std::string& arg) {
     auto pos = arg.find('=');
-    return { arg.substr(0, pos), arg.substr(pos + 1) };
+    if(pos != std::string::npos){
+        return std::make_optional(std::make_pair(arg.substr(0, pos), arg.substr(pos + 1)));
+    }
+    return std::nullopt;
+
 }
 
 void CommandLineParser::validateRequiredKeys(const ParsedArguments& args, std::vector<std::string>& errors) {

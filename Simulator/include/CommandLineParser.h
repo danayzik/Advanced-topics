@@ -34,7 +34,7 @@ private:
             "  -comparative game_map=<game_map_filename> game_managers_folder=<game_managers_folder> algorithm1=<algorithm1_so> algorithm2=<algorithm2_so> [num_threads=<num>] [-verbose]\n"
             "  -competition game_maps_folder=<game_maps_folder> game_manager=<game_manager_so> algorithms_folder=<algorithms_folder> [num_threads=<num>] [-verbose]\n";
         const std::string multipleModesError = "Error: Both '-comparative' and '-competition' modes were specified.\nPlease choose exactly one mode.\n";
-        const std::string missingMode = "Error: missing mandatory mode argument\n"
+        const std::string missingMode = "Error: missing mandatory mode argument\n";
     };
 
     struct ParsedArguments {
@@ -55,11 +55,15 @@ private:
     static CommandLineParser parserInstance;
     ParsedArguments parsedArguments;
     void scanForMode(int argc, char* argv[]);
-    std::vector<std::string> splitKeyValue(const std::string& arg);
+    void parseCompetitiveMode(int argc, char* argv[]);
+    void parseComparativeMode(int argc, char* argv[]);
+    std::optional<std::pair<std::string, std::string>>  splitKeyValue(const std::string& arg);
+
     void validateRequiredKeys(const ParsedArguments& args, std::vector<std::string>& errors);
     void validatePaths(const ParsedArguments& args, std::vector<std::string>& errors);
     bool fileExists(const std::string& path);
     bool validFolder(const std::string& path);
+
 
 public:
     static inline CommandLineParser& getParser(){return parserInstance;}
