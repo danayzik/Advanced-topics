@@ -12,10 +12,8 @@ namespace GameManager_206038929_314620071 {
     using namespace ActionRequestUtils;
 
 
-    GameManager::GameManager(PlayerFactory &playerFactory, TankAlgorithmFactory &tankAlgorithmFactory) : playerFactory(
-            playerFactory),
-                                                                                                         tankAlgorithmFactory(
-                                                                                                                 tankAlgorithmFactory) {
+    GameManager::GameManager(PlayerFactory &playerFactory, TankAlgorithmFactory &tankAlgorithmFactory) : playerFactory(playerFactory),
+                                                                                                         tankAlgorithmFactory(tankAlgorithmFactory) {
 #ifdef USE_SFML
         visuals = true;
 #endif
@@ -88,7 +86,7 @@ namespace GameManager_206038929_314620071 {
                 if (!satelliteViewOpt) {
                     satelliteViewOpt = gameMap.getSatelliteView();
                 }
-                satelliteViewOpt.value()->setRequestingTank(tank);
+                satelliteViewOpt.value()->setRequestingTank(tank.getCoords(), tank.getSymbol());
                 (**(players.at(playerIndex - 1))).updateTankWithBattleInfo(tankAlgorithm, **satelliteViewOpt);
 
             }

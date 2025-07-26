@@ -16,4 +16,5 @@ int main(int argc, char* argv[]){
         simulator = std::make_unique<CompetitionSimulator>();
     }
 
+
 }

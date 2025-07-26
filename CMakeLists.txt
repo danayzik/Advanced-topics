@@ -20,7 +20,6 @@ endif()
 
 
 set(SOURCES
-        src/main.cpp
         GameManager/src/Tank.cpp
         GameManager/src/MapLoader.cpp
         GameManager/src/GameMap.cpp
@@ -35,13 +34,12 @@ set(SOURCES
         Algorithm/src/PlayerOne.cpp
         Algorithm/src/PlayerTwo.cpp
         Algorithm/src/PlayerCommunicationModule.cpp
-        common/src/MyPlayerFactory.cpp
-        common/src/MyTankAlgorithmFactory.cpp
         Algorithm/src/ChasingTank.cpp
         Algorithm/src/SnipingTank.cpp
         Algorithm/src/PlayerCommunicationModule.cpp
-        common/AbstractGameManager.h
         Simulator/src/CommandLineParser.cpp
+        Simulator/src/MapLoader.cpp
+        Simulator/src/main.cpp
 
 )
 

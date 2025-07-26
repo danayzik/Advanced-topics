@@ -4,8 +4,6 @@
 #include "ActionRequestUtils.h"
 #include "GameMap.h"
 #include "Renderer.h"
-#include "MyPlayerFactory.h"
-#include "MyTankAlgorithmFactory.h"
 #include "AbstractGameManager.h"
 
 namespace GameManager_206038929_314620071 {
@@ -39,10 +37,10 @@ namespace GameManager_206038929_314620071 {
         std::vector<std::string> outputLine;
         int totalTankCount = 0;
         int playerCount = 0;
-        std::optional<unique_ptr<ConcreteSatelliteView>> satelliteViewOpt = {};
+        std::optional<std::unique_ptr<UserCommon_206038929_314620071::ConcreteSatelliteView>> satelliteViewOpt = {};
         std::array<int, 9> tanksPerPlayer = {};
         std::array<std::optional<std::unique_ptr<Player>>, 9> players = {};
-        std::vector<unique_ptr<TankAlgorithm>> tankAlgorithms = {};
+        std::vector<std::unique_ptr<TankAlgorithm>> tankAlgorithms = {};
         std::vector<std::optional<size_t>> tankEntityIds = {};
         std::string mapFilePath;
 

@@ -12,9 +12,9 @@ using std::string;
 namespace fs = std::filesystem;
 
 bool MapLoader::openFile() {
-    file.open(filePath);
-    if (!file) {
-        std::cerr << "Error opening file: " << filePath << std::endl;
+    mapFile.open(mapFilePath);
+    if (!mapFile) {
+        std::cerr << "Error opening file: " << mapFilePath << std::endl;
         return false;
     }
     return true;
@@ -26,13 +26,13 @@ bool MapLoader::readSettings() {
     size_t value;
 
     long temp;
-    std::getline(file, line);
+    std::getline(mapFile, line);
     auto trim = [](std::string &s) {
         s.erase(std::remove_if(s.begin(), s.end(),
                                [](unsigned char c) { return std::isspace(c); }), s.end());
     };
     for (int i = 0; i < 4; ++i) {
-        if (!std::getline(file, line)) return false;
+        if (!std::getline(mapFile, line)) return false;
         auto pos = line.find('=');
         if (pos == std::string::npos) return false;
         std::string key = line.substr(0, pos);
@@ -68,18 +68,18 @@ bool MapLoader::readSettings() {
 void MapLoader::processMapData() {
     string line;
     size_t y = 0;
-    while (std::getline(file, line) && y < gameMap.rows) {
+    while (std::getline(mapFile, line) && y < map.rows) {
         processRow(line, y);
         y++;
     }
-    for (size_t i = y; i < gameMap.rows; ++i) {
+    for (size_t i = y; i < map.rows; ++i) {
         fillMissingRow(y);
     }
 
 }
 
 void MapLoader::processRow(const string &line, size_t y) {
-    for (size_t x = 0; x < gameMap.cols; ++x) {
+    for (size_t x = 0; x < map.cols; ++x) {
         if (x >= static_cast<size_t>(line.size())) {
             handleMissingCharacter(y, x);
         } else {
@@ -113,12 +113,12 @@ void MapLoader::fillMissingRow(size_t y) {
     errorBuffer << "Missing row " << y << ", filling with empty spaces.\n";
 }
 
-// CONCRETE VIEW TO USER COMMON !!!!!!!!!!!!!!!!!!!
+
 void MapLoader::buildView() {
-    map.view = std::make_unique<GameManager_206038929_314620071::ConcreteSatelliteView>(map.rows, map.cols, std::move(gameMap));
+    map.view = std::make_unique<UserCommon_206038929_314620071::ConcreteSatelliteView>(map.rows, map.cols, std::move(gameMap));
 }
 
-const Map& MapLoader::loadMap(const std::string &mapPath, std::stringstream& simulatorErrorBuffer) {
+Map& MapLoader::loadMap(const std::string &mapPath, std::stringstream& simulatorErrorBuffer) {
     gameMap = {};
     mapFilePath = mapPath;
     mapFileName = fs::path(mapPath).filename().string();

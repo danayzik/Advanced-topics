@@ -7,6 +7,7 @@
 #include "ConcreteSatelliteView.h"
 #include <memory>
 #include <unordered_set>
+
 using std::string;
 
 struct Map{
@@ -72,7 +73,7 @@ public:
 
     ~MapLoader() = default;
 
-    const Map& loadMap(const std::string& mapPath, std::stringstream& simulatorErrorBuffer);
+    Map& loadMap(const std::string& mapPath, std::stringstream& simulatorErrorBuffer);
 
     static MapLoader& getInstance(){return mapLoaderInstance;}
 };

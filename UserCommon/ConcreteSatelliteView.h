@@ -2,8 +2,8 @@
 
 #include "SatelliteView.h"
 #include <vector>
-#include "Entities.h"
-namespace GameManager_206038929_314620071 {
+
+namespace UserCommon_206038929_314620071 {
 
     class ConcreteSatelliteView : public SatelliteView {
     private:
@@ -21,15 +21,14 @@ namespace GameManager_206038929_314620071 {
             return (x < cols && y < rows) ? visibleEntities[y][x] : '&';
         };
 
-        inline void setRequestingTank(Tank &tank) {
+        inline void setRequestingTank(const Coordinates& requestingTankCoords, char requestingTankSymbol) {
             if (lastRequestingTankCoords.has_value()) {
                 Coordinates oldCoords = lastRequestingTankCoords.value();
                 visibleEntities[oldCoords.yAsSizeT()][oldCoords.xAsSizeT()] = lastRequestingTankSymbol;
             }
-            Coordinates coords = tank.getCoords();
-            lastRequestingTankCoords = coords;
-            lastRequestingTankSymbol = tank.getSymbol();
-            visibleEntities[coords.yAsSizeT()][coords.xAsSizeT()] = '%';
+            lastRequestingTankCoords = requestingTankCoords;
+            lastRequestingTankSymbol = requestingTankSymbol;
+            visibleEntities[requestingTankCoords.yAsSizeT()][requestingTankCoords.xAsSizeT()] = '%';
         }
 
         ConcreteSatelliteView(const ConcreteSatelliteView &) = delete;

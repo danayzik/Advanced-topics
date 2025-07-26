@@ -53,12 +53,14 @@ public:
     void removeLast() {
         managers.pop_back();
     }
-    auto begin() const {
-        return managers.begin();
-    }
-    auto end() const {
-        return managers.end();
-    }
+
     std::size_t count() const { return managers.size(); }
     void clear() { managers.clear(); }
+
+    GameManagerEntry& operator[](size_t i){
+        return managers[i];
+    }
+    const GameManagerEntry& operator[](size_t i) const{
+        return managers[i];
+    }
 };
