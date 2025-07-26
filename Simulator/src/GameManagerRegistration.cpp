@@ -2,6 +2,6 @@
 #include "GameManagerRegistrar.h"
 
 GameManagerRegistration::GameManagerRegistration(GameManagerFactory factory) {
-    auto& regsitrar = GameManagerRegistrar::getGameManagerRegistrar();
-    regsitrar.addFactoryToLastEntry(std::move(factory));
+    auto& registrar = GameManagerRegistrar::getGameManagerRegistrar();
+    registrar.addFactoryToLastEntry(std::move(factory));
 }

@@ -11,6 +11,14 @@ class AlgorithmRegistrar {
         PlayerFactory playerFactory;
     public:
         AlgorithmAndPlayerFactories(const std::string& so_name) : so_name(so_name) {}
+        AlgorithmAndPlayerFactories(const AlgorithmAndPlayerFactories& other)
+                : so_name(other.so_name)
+        {
+            if (other.playerFactory)
+                playerFactory = other.playerFactory;
+            if (other.tankAlgorithmFactory)
+                tankAlgorithmFactory = other.tankAlgorithmFactory;
+        }
         void setTankAlgorithmFactory(TankAlgorithmFactory&& factory) {
             assert(tankAlgorithmFactory == nullptr);
             tankAlgorithmFactory = std::move(factory);
@@ -74,6 +82,11 @@ public:
     }
     auto end() const {
         return algorithms.end();
+    }
+    void duplicateFirstEntry() {
+        if (algorithms.empty()) return;
+        AlgorithmAndPlayerFactories copy(algorithms.front());
+        algorithms.push_back(std::move(copy));
     }
     std::size_t count() const { return algorithms.size(); }
     void clear() { algorithms.clear(); }

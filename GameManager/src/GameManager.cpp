@@ -49,7 +49,7 @@ namespace GameManager_206038929_314620071 {
     }
 
 
-//Requests the action from a player, sets the action their tank will actually perform in this round.
+//Requests the action from a tank, sets the action the tank will actually perform in this round.
 //If the action is GetBattleInfo, performs it right away
     void GameManager::getAndSetAction(Tank &tank) {
         TankAlgorithm &tankAlgorithm = *(tankAlgorithms.at(tank.getTankIndex()));

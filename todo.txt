@@ -1,5 +1,8 @@
 
 ToDo:
+
+CHANGE CONCRETE VIEW TO USER COMMON !!!!!!!!!!!!!!!!!!!
+
 Things in the end:
 Gamemanager registrar private constructor and delete others
 rule of 5 for all

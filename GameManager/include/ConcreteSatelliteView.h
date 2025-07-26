@@ -14,7 +14,7 @@ namespace GameManager_206038929_314620071 {
         char lastRequestingTankSymbol = {};
 
     public:
-        ConcreteSatelliteView(size_t rows, size_t cols, std::vector<std::vector<char>> entities)
+        ConcreteSatelliteView(size_t rows, size_t cols, std::vector<std::vector<char>>&& entities)
                 : rows(rows), cols(cols), visibleEntities(std::move(entities)) {}
 
         [[nodiscard]] inline char getObjectAt(size_t x, size_t y) const override {

@@ -4,12 +4,8 @@
 #include <map>
 #include <vector>
 #include <optional>
-
-enum class RunMode {
-    Comparative,
-    Competition,
-    Invalid
-};
+#include "Arguments.h"
+#include <cassert>
 
 
 class CommandLineParser {
@@ -34,22 +30,17 @@ private:
             "  -comparative game_map=<game_map_filename> game_managers_folder=<game_managers_folder> algorithm1=<algorithm1_so> algorithm2=<algorithm2_so> [num_threads=<num>] [-verbose]\n"
             "  -competition game_maps_folder=<game_maps_folder> game_manager=<game_manager_so> algorithms_folder=<algorithms_folder> [num_threads=<num>] [-verbose]\n";
         const std::string multipleModesError = "Error: Both '-comparative' and '-competition' modes were specified.\nPlease choose exactly one mode.\n";
+        const std::string duplicateArgument = "Error: duplicate argument detected\n";
         const std::string missingMode = "Error: missing mandatory mode argument\n";
+        const std::string invalidNumThreads = "Error: invalid num_threads value\n";
+        const std::string unexpectedArgument = "Error: unexpected argument\n";
+        const std::string missingArguments = "Error, the following arguments are missing: ";
+        const std::string badSODDirectory = "Error, the following folder path provided is invalid or contains no directories: ";
+        const std::string missingFile = "Error, the following file path is invalid: ";
     };
 
-    struct ParsedArguments {
-        RunMode mode = RunMode::Invalid;
-        bool verbose = false;
-        std::optional<std::string> mapFileName;
-        std::optional<std::string> managersFolder;
-        std::optional<std::string> algo1;
-        std::optional<std::string> algo2;
-        std::optional<std::string> mapsFolder;
-        std::optional<std::string> managersFileName;
-        std::optional<std::string> algoFolder;
-        int num_threads = 1;
-    };
 
+    bool argumentsParsed = false;
     ArgumentStrings argumentStrings = {};
     ErrorMessages errorMessages = {};
     static CommandLineParser parserInstance;
@@ -57,16 +48,17 @@ private:
     void scanForMode(int argc, char* argv[]);
     void parseCompetitiveMode(int argc, char* argv[]);
     void parseComparativeMode(int argc, char* argv[]);
-    std::optional<std::pair<std::string, std::string>>  splitKeyValue(const std::string& arg);
+    void validateCompetitiveArguments() const;
+    void validateComparativeArguments() const;
 
-    void validateRequiredKeys(const ParsedArguments& args, std::vector<std::string>& errors);
-    void validatePaths(const ParsedArguments& args, std::vector<std::string>& errors);
-    bool fileExists(const std::string& path);
-    bool validFolder(const std::string& path);
+    static std::optional<std::pair<std::string, std::string>>  splitKeyValue(const std::string& arg);
+    static bool fileExists(const std::string& path) ;
+    static bool validSOFolder(const std::string& path) ;
 
 
 public:
     static inline CommandLineParser& getParser(){return parserInstance;}
-    ParsedArguments& parse(int argc, char* argv[]);
-    void printUsageAndExit(const std::vector<std::string>& errors);
+    void parse(int argc, char* argv[]);
+    [[nodiscard]] inline const ParsedArguments& getParsedArguments() const{ assert(argumentsParsed); return parsedArguments;}
+
 };

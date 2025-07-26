@@ -28,7 +28,7 @@ class GameManagerRegistrar {
 
 public:
     static GameManagerRegistrar& getGameManagerRegistrar();
-    void createAlgorithmFactoryEntry(const std::string& name) {
+    void createGameManagerFactoryEntry(const std::string& name) {
         managers.emplace_back(name);
     }
     void addFactoryToLastEntry(GameManagerFactory&& factory) {
