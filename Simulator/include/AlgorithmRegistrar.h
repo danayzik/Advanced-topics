@@ -4,43 +4,47 @@
 #include <cassert>
 #include <string>
 
+class AlgorithmAndPlayerFactories {
+    std::string so_name;
+    TankAlgorithmFactory tankAlgorithmFactory;
+    PlayerFactory playerFactory;
+public:
+    AlgorithmAndPlayerFactories(const std::string& so_name) : so_name(so_name) {}
+    AlgorithmAndPlayerFactories(const AlgorithmAndPlayerFactories& other)
+            : so_name(other.so_name)
+    {
+        if (other.playerFactory)
+            playerFactory = other.playerFactory;
+        if (other.tankAlgorithmFactory)
+            tankAlgorithmFactory = other.tankAlgorithmFactory;
+    }
+    void setTankAlgorithmFactory(TankAlgorithmFactory&& factory) {
+        assert(tankAlgorithmFactory == nullptr);
+        tankAlgorithmFactory = std::move(factory);
+    }
+    void setPlayerFactory(PlayerFactory&& factory) {
+        assert(playerFactory == nullptr);
+        playerFactory = std::move(factory);
+    }
+    const std::string& name() const { return so_name; }
+    std::unique_ptr<Player> createPlayer(int player_index, size_t x, size_t y, size_t max_steps, size_t num_shells) const {
+        return playerFactory(player_index, x, y, max_steps, num_shells);
+    }
+    std::unique_ptr<TankAlgorithm> createTankAlgorithm(int player_index, int tank_index) const {
+        return tankAlgorithmFactory(player_index, tank_index);
+    }
+    bool hasPlayerFactory() const {
+        return playerFactory != nullptr;
+    }
+    bool hasTankAlgorithmFactory() const {
+        return tankAlgorithmFactory != nullptr;
+    }
+    const TankAlgorithmFactory& getTankAlgorithmFactory() const{ return tankAlgorithmFactory;}
+};
+
+
 class AlgorithmRegistrar {
-    class AlgorithmAndPlayerFactories {
-        std::string so_name;
-        TankAlgorithmFactory tankAlgorithmFactory;
-        PlayerFactory playerFactory;
-    public:
-        AlgorithmAndPlayerFactories(const std::string& so_name) : so_name(so_name) {}
-        AlgorithmAndPlayerFactories(const AlgorithmAndPlayerFactories& other)
-                : so_name(other.so_name)
-        {
-            if (other.playerFactory)
-                playerFactory = other.playerFactory;
-            if (other.tankAlgorithmFactory)
-                tankAlgorithmFactory = other.tankAlgorithmFactory;
-        }
-        void setTankAlgorithmFactory(TankAlgorithmFactory&& factory) {
-            assert(tankAlgorithmFactory == nullptr);
-            tankAlgorithmFactory = std::move(factory);
-        }
-        void setPlayerFactory(PlayerFactory&& factory) {
-            assert(playerFactory == nullptr);
-            playerFactory = std::move(factory);
-        }
-        const std::string& name() const { return so_name; }
-        std::unique_ptr<Player> createPlayer(int player_index, size_t x, size_t y, size_t max_steps, size_t num_shells) const {
-            return playerFactory(player_index, x, y, max_steps, num_shells);
-        }
-        std::unique_ptr<TankAlgorithm> createTankAlgorithm(int player_index, int tank_index) const {
-            return tankAlgorithmFactory(player_index, tank_index);
-        }
-        bool hasPlayerFactory() const {
-            return playerFactory != nullptr;
-        }
-        bool hasTankAlgorithmFactory() const {
-            return tankAlgorithmFactory != nullptr;
-        }
-    };
+
 private:
     AlgorithmRegistrar() = default;
     AlgorithmRegistrar(const AlgorithmRegistrar&) = delete;
@@ -48,6 +52,9 @@ private:
     std::vector<AlgorithmAndPlayerFactories> algorithms;
     static AlgorithmRegistrar registrar;
 public:
+
+
+
     static AlgorithmRegistrar& getAlgorithmRegistrar();
     void createAlgorithmFactoryEntry(const std::string& name) {
         algorithms.emplace_back(name);
@@ -77,12 +84,7 @@ public:
     void removeLast() {
         algorithms.pop_back();
     }
-    auto begin() const {
-        return algorithms.begin();
-    }
-    auto end() const {
-        return algorithms.end();
-    }
+
     void duplicateFirstEntry() {
         if (algorithms.empty()) return;
         AlgorithmAndPlayerFactories copy(algorithms.front());
@@ -90,4 +92,10 @@ public:
     }
     std::size_t count() const { return algorithms.size(); }
     void clear() { algorithms.clear(); }
+    AlgorithmAndPlayerFactories& operator[](size_t i){
+        return algorithms[i];
+    }
+    const AlgorithmAndPlayerFactories& operator[](size_t i) const{
+        return algorithms[i];
+    }
 };

@@ -2,6 +2,9 @@
 #include "AlgorithmRegistrar.h"
 #include <filesystem>
 #include "GameManagerRegistrar.h"
+#include <thread>
+#include <algorithm>
+
 namespace fs = std::filesystem;
 // Get rid of .so extension in factory making
 void ComparativeSimulator::loadArguments(const ParsedArguments &arguments) {
@@ -30,7 +33,7 @@ void ComparativeSimulator::loadArguments(const ParsedArguments &arguments) {
     mapInfo = std::move(MapLoader::getInstance().loadMap(mapPath, errorBuffer));
 
     verbose = arguments.verbose;
-    threads = arguments.numThreads;
+    threadCount = arguments.numThreads >= 2 ? arguments.numThreads : 0;
 
     gameManagersFolder = arguments.managersFolder.value();
 
@@ -44,23 +47,94 @@ void ComparativeSimulator::loadArguments(const ParsedArguments &arguments) {
         }
     }
 
-    gameManagerCount = gameManagerRegistrar.count();
+    results.resize(gameManagerRegistrar.count());
 
+}
+
+void ComparativeSimulator::storeGameResult(GameResult &&result, size_t storeIndex) {
+    results[storeIndex] = std::move(result);
+}
+
+void ComparativeSimulator::groupResults() {
+    for (size_t i = 0; i < results.size(); ++i) {
+        const auto& result = results[i];
+        bool crashed = crashedManagersIndices.count(i) > 0;
+        GameResultKey key  = {result, mapInfo.rows, mapInfo.cols, crashed};
+        groups[key].push_back(i);
+    }
+}
+
+void ComparativeSimulator::printOutput() {
+    std::vector<std::vector<size_t>> groupedIndices;
+
+    for (auto& [_, vec] : groups)
+        groupedIndices.push_back(vec);
+    std::sort(groupedIndices.begin(), groupedIndices.end(),
+              [](const std::vector<size_t>& a, const std::vector<size_t>& b) {
+                  return a.size() > b.size();
+              });
+    AlgorithmRegistrar& algorithmRegistrar = AlgorithmRegistrar::getAlgorithmRegistrar();
+    GameManagerRegistrar& gameManagerRegistrar = GameManagerRegistrar::getGameManagerRegistrar();
+    std::ostringstream buffer;
+
+    buffer << mapFileName << "\n";
+    buffer << "algorithm1=" << algorithmRegistrar[0].name() << "\n";
+    buffer << "algorithm2=" << algorithmRegistrar[1].name() << "\n";
+    buffer << "\n";
+    for(auto& indicesVec : groupedIndices){
+        assert(!indicesVec.empty());
+        for (size_t i = 0; i < indicesVec.size(); ++i) {
+            size_t index = indicesVec[i];
+            buffer << gameManagerRegistrar[index].name();
+            if (i < indicesVec.size()-1) buffer << ", ";
+        }
+        buffer << "\n";
+
+        size_t gmIndex = indicesVec.front();
+
+    }
 }
 
 void ComparativeSimulator::run() {
     GameManagerRegistrar& gameManagerRegistrar = GameManagerRegistrar::getGameManagerRegistrar();
+    AlgorithmRegistrar& algorithmRegistrar = AlgorithmRegistrar::getAlgorithmRegistrar();
+    const AlgorithmAndPlayerFactories& algo1 = algorithmRegistrar[0];
+    const AlgorithmAndPlayerFactories& algo2 = algorithmRegistrar[1];
+    const TankAlgorithmFactory& tankAlgorithmFactory1 = algo1.getTankAlgorithmFactory();
+    const TankAlgorithmFactory& tankAlgorithmFactory2 = algo2.getTankAlgorithmFactory();
+
     auto runWorker = [&]() {
         while (true) {
             size_t i = nextIndex.fetch_add(1);
             if (i >= gameManagerRegistrar.count()) break;
 
             const auto& entry = gameManagerRegistrar[i];
+            auto player1 = algo1.createPlayer(1, mapInfo.cols, mapInfo.rows, mapInfo.maxSteps, mapInfo.numShells);
+            auto player2 = algo2.createPlayer(2, mapInfo.cols, mapInfo.rows, mapInfo.maxSteps, mapInfo.numShells);
             auto gm = entry.createGameManager(verbose);
-            gm.get()->run(mapInfo.cols, mapInfo.rows, mapInfo.view.get(), mapFileName, mapInfo.maxSteps, mapInfo.numShells, )
-             // your existing function
-            // store result somewhere thread-safe
+            GameResult result = gm.get()->run(mapInfo.cols, mapInfo.rows,
+                                              *mapInfo.view.get(), mapFileName,
+                                              mapInfo.maxSteps, mapInfo.numShells,
+                                              *player1.get(), algo1.name(),
+                                              *player2.get(), algo2.name(),
+                                              tankAlgorithmFactory1, tankAlgorithmFactory2);
+            storeGameResult(std::move(result), i);
+
+
         }
     };
+
+    std::vector<std::thread> threads;
+
+    for (int i = 0; i < threadCount; ++i)
+        threads.emplace_back(runWorker);
+
+    runWorker();
+
+    for (auto& t : threads)
+        t.join();
+
+    groupResults();
+    //Parse results
 }
 
