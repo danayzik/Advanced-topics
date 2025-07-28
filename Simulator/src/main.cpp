@@ -2,7 +2,7 @@
 #include "ComparativeSimulator.h"
 #include "CompetitionSimulator.h"
 #include "CommandLineParser.h"
-
+#include <iostream>
 int main(int argc, char* argv[]){
 
     std::unique_ptr<Simulator> simulator = nullptr;
@@ -15,6 +15,14 @@ int main(int argc, char* argv[]){
     else{
         simulator = std::make_unique<CompetitionSimulator>();
     }
+    try{
+        simulator->loadArguments(arguments);
+        simulator->run();
+    }
+    catch (const std::exception& e){
+        std::cerr << e.what() << std::endl;
+    }
+
 
 
 }

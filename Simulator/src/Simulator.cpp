@@ -8,7 +8,10 @@
 
 void Simulator::loadSO(const std::string &path) {
     void* handle = dlopen(path.c_str(), RTLD_NOW);
-    if (!handle) throw std::runtime_error("Failed loading so from path: " + path);
+    if (!handle) {
+        errorBuffer << "Failed loading so from path: " << path << "\n";
+        throw std::runtime_error("Failed loading so from path: " + path);
+    }
     handles.push_back(handle);
 }
 

@@ -7,9 +7,9 @@ struct GameResultKey {
     int winner;
     GameResult::Reason reason;
     size_t rounds;
+    std::vector<size_t> remainingTanks;
     bool crashed;
     std::string finalView;
-    std::vector<size_t> remainingTanks;
     bool operator==(const GameResultKey& other) const {
         if (crashed && other.crashed)
             return true;

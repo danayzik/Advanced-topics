@@ -1,13 +1,10 @@
 
 ToDo:
-
+Make Exceptions file
 Comparative:
-
+Reformat registrar and their exceptions
 Make view to string somewhere to avoid code dup, currently in gameresultkey
 Bad algo so -> throw error and exit
-So load fail -> remove from registrar
-Game exception -> write that the game failed to results somehow, don't make thread exit
-finish writing to output file
 write to error file
 change files names to not have .so
 remove createTankAlgo from registrar
