@@ -2,7 +2,8 @@
 #include "AbstractGameManager.h"
 #include <cassert>
 #include <string>
-
+#include <sstream>
+#include "Exceptions.h"
 class GameManagerRegistrar {
     class GameManagerEntry{
         std::string so_name;
@@ -35,21 +36,17 @@ public:
         managers.back().setFactory(std::move(factory));
     }
 
-    struct BadRegistrationException {
-        std::string name;
-        bool hasName, hasFactory;
-        BadRegistrationException(std::string name, bool hasName, bool hasFactory)
-            : name(name), hasName(hasName),
-              hasFactory(hasFactory) {}
-    };
+
     void validateLastRegistration() {
         const auto& last = managers.back();
-        bool hasName = (last.name() != "");
-        if(!hasName || !last.hasFactory() ) {
-            throw BadRegistrationException(last.name(), hasName,
-                                           last.hasFactory());
+        if (!last.hasFactory()) {
+            std::stringstream msg;
+            msg << last.name()
+                << ": has factory: " << last.hasFactory();
+            throw BadRegistrationException(msg.str());
         }
     }
+
     void removeLast() {
         managers.pop_back();
     }

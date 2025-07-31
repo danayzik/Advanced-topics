@@ -40,6 +40,8 @@ set(SOURCES
         Simulator/src/CommandLineParser.cpp
         Simulator/src/MapLoader.cpp
         Simulator/src/main.cpp
+        Simulator/src/CompetitionSimulator.cpp
+        Simulator/src/ComparativeSimulator.cpp
 
 )
 

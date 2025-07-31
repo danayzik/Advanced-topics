@@ -1,15 +1,9 @@
 
 ToDo:
-Make Exceptions file
-Comparative:
-Reformat registrar and their exceptions
-Make view to string somewhere to avoid code dup, currently in gameresultkey
-Bad algo so -> throw error and exit
-write to error file
-change files names to not have .so
-remove createTankAlgo from registrar
-Refactor entries somehow
-
+Refactor comparative
+Fix Playerone/playertwo shit
+delete factories
+Competition sim
 
 Things in the end:
 Gamemanager registrar private constructor and delete others

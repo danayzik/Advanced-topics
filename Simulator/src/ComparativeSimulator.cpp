@@ -4,19 +4,21 @@
 #include "GameManagerRegistrar.h"
 #include <algorithm>
 #include <iostream>
+#include "Exceptions.h"
 
 namespace fs = std::filesystem;
-// Get rid of .so extension in factory making
-void ComparativeSimulator::loadArguments(const ParsedArguments &arguments) {
+
+void ComparativeSimulator::loadMapFile(const std::string &path) {
+    mapFileName = fs::path(path).filename().string();
+    mapInfo = std::move(MapLoader::getInstance().loadMap(path, errorBuffer));
+}
+
+void ComparativeSimulator::loadAlgorithms(const ParsedArguments &arguments) {
     const std::string& algo1 = arguments.algo1.value();
     const std::string& algo2 = arguments.algo2.value();
-    const std::string algo1Name = fs::path(algo1).filename().string();
-    const std::string algo2Name = fs::path(algo2).filename().string();
-    const std::string& mapPath = arguments.mapFileName.value();
-
+    const std::string algo1Name = fs::path(algo1).stem().string();
+    const std::string algo2Name = fs::path(algo2).stem().string();
     AlgorithmRegistrar& algorithmRegistrar = AlgorithmRegistrar::getAlgorithmRegistrar();
-    GameManagerRegistrar& gameManagerRegistrar = GameManagerRegistrar::getGameManagerRegistrar();
-
     algorithmRegistrar.createAlgorithmFactoryEntry(algo1Name);
     loadSO(algo1);
     algorithmRegistrar.validateLastRegistration();
@@ -28,41 +30,38 @@ void ComparativeSimulator::loadArguments(const ParsedArguments &arguments) {
         loadSO(algo2);
         algorithmRegistrar.validateLastRegistration();
     }
+}
 
-
-    mapFileName = fs::path(mapPath).filename().string();
-
-    mapInfo = std::move(MapLoader::getInstance().loadMap(mapPath, errorBuffer));
-
-    verbose = arguments.verbose;
-    threadCount = arguments.numThreads >= 2 ? arguments.numThreads : 0;
-
-    gameManagersFolder = arguments.managersFolder.value();
-
-
+void ComparativeSimulator::loadGameManagers() {
+    GameManagerRegistrar& gameManagerRegistrar = GameManagerRegistrar::getGameManagerRegistrar();
     for (const auto& entry : fs::directory_iterator(gameManagersFolder)) {
         if (entry.is_regular_file() && entry.path().extension() == ".so") {
-            std::string fileName = entry.path().filename().string();
+            std::string fileName = entry.path().stem().string();
             std::string fullPathStr = entry.path().string();
             gameManagerRegistrar.createGameManagerFactoryEntry(fileName);
             try{
                 loadSO(fullPathStr);
                 gameManagerRegistrar.validateLastRegistration();
             }
-            catch (const std::runtime_error& e) {
+            catch (const SharedObjectLoadingException& e) {
                 std::cout << e.what() << std::endl;
             }
-            catch (const AlgorithmRegistrar::BadRegistrationException& e) {
+            catch (const BadRegistrationException& e) {
                 gameManagerRegistrar.removeLast();
                 errorBuffer << "Game manager: " << fullPathStr <<" registration failed\n";
             }
-
-
         }
     }
-
     results.resize(gameManagerRegistrar.count());
+}
 
+
+void ComparativeSimulator::loadArguments(const ParsedArguments &arguments) {
+    Simulator::loadArguments(arguments);
+    gameManagersFolder = arguments.managersFolder.value();
+    loadMapFile(arguments.mapFileName.value());
+    loadAlgorithms(arguments);
+    loadGameManagers();
 }
 
 void ComparativeSimulator::storeGameResult(GameResult &&result, size_t storeIndex) {
@@ -79,7 +78,7 @@ void ComparativeSimulator::groupResults() {
 }
 
 void ComparativeSimulator::printGameResult(const GameResult &result, std::stringstream& buffer) {
-    if (result.winner != 0){
+    if (result.winner == 0){
         switch (result.reason) {
             case GameResult::Reason::MAX_STEPS:
                 buffer << "Tie, reached max steps = " << mapInfo.maxSteps << ", ";
@@ -127,22 +126,14 @@ void ComparativeSimulator::printOutput() {
         buffer << "\n";
         size_t gmIndex = indicesVec.front();
         const GameResult& result = results[gmIndex];
-        std::string finalView;
         if (crashedManagersIndices.count(gmIndex) > 0){
             buffer << "These game managers crashed\n";
         }
         else{
             printGameResult(result, buffer);
-            finalView.reserve((mapInfo.cols + 1) * mapInfo.rows);
-            for (size_t y = 0; y < mapInfo.rows; ++y) {
-                for (size_t x = 0; x < mapInfo.cols; ++x) {
-                    finalView += result.gameState->getObjectAt(x, y);
-                }
-                finalView += '\n';
-            }
-            buffer << finalView;
-        }
 
+            buffer << Map::getStringFromView(*result.gameState, mapInfo.rows, mapInfo.cols);
+        }
     }
     writeResultsToFile(buffer);
 }
@@ -159,11 +150,13 @@ void ComparativeSimulator::writeResultsToFile(const std::stringstream &ss) {
     outFile << ss.str();
 }
 
+
+
 void ComparativeSimulator::run() {
     GameManagerRegistrar& gameManagerRegistrar = GameManagerRegistrar::getGameManagerRegistrar();
     AlgorithmRegistrar& algorithmRegistrar = AlgorithmRegistrar::getAlgorithmRegistrar();
-    const AlgorithmAndPlayerFactories& algo1 = algorithmRegistrar[0];
-    const AlgorithmAndPlayerFactories& algo2 = algorithmRegistrar[1];
+    const auto& algo1 = algorithmRegistrar[0];
+    const auto& algo2 = algorithmRegistrar[1];
     const TankAlgorithmFactory& tankAlgorithmFactory1 = algo1.getTankAlgorithmFactory();
     const TankAlgorithmFactory& tankAlgorithmFactory2 = algo2.getTankAlgorithmFactory();
 
@@ -186,6 +179,7 @@ void ComparativeSimulator::run() {
                 storeGameResult(std::move(result), i);
             }
             catch (...) {
+                std::lock_guard<std::mutex> lock(errorMutex);
                 errorBuffer << "Game manager: " << entry.name() << " crashed\n";
                 crashedManagersIndices.insert(i);
             }
@@ -198,24 +192,11 @@ void ComparativeSimulator::run() {
         threads.emplace_back(runWorker);
 
     runWorker();
-
     for (auto& t : threads)
         t.join();
-
     groupResults();
     printOutput();
 }
 
 
-ComparativeSimulator::~ComparativeSimulator(){
-    if(errorBuffer.str().empty()){
-       return;
-    }
-    std::string fileName = "input_errors.txt";
-    std::ofstream outFile(fileName);
-    if (!outFile) {
-        std::cerr << "Failed to open file: " << fileName << '\n';
-        return;
-    }
-    outFile << errorBuffer.str();
-}
+

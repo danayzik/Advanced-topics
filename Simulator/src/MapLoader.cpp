@@ -5,7 +5,7 @@
 #include <filesystem>
 #include <algorithm>
 #include <cctype>
-
+#include "Exceptions.h"
 
 using std::vector;
 using std::string;
@@ -126,10 +126,10 @@ Map& MapLoader::loadMap(const std::string &mapPath, std::stringstream& simulator
 
 
 
-    if (!openFile()) throw std::invalid_argument("Failed to open map file: " + mapFilePath);
+    if (!openFile()) throw MapLoadingException("Failed to open map file: " + mapFilePath);
 
     if (!readSettings())
-        throw std::invalid_argument("Failed to read settings from map file: " + mapFilePath + "\n" + settingsExamples);
+        throw MapLoadingException("Failed to read settings from map file: " + mapFilePath + "\n" + settingsExamples);
 
     processMapData();
 

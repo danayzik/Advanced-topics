@@ -7,16 +7,10 @@
 #include "ConcreteSatelliteView.h"
 #include <memory>
 #include <unordered_set>
-
+#include "Map.h"
 using std::string;
 
-struct Map{
-    size_t maxSteps;
-    size_t numShells;
-    size_t rows;
-    size_t cols;
-    std::unique_ptr<SatelliteView> view = {};
-};
+
 
 class MapLoader {
 private:
@@ -26,13 +20,12 @@ private:
                                          "NumShells=10\n"
                                          "Rows=27\n"
                                          "Cols=29\n"
-                                         "<Map data>";
+                                         "<Map data>\n";
     std::stringstream errorBuffer;
     std::string mapFilePath;
     std::string mapFileName;
     std::ifstream mapFile;
     std::vector<std::vector<char>> gameMap = {};
-    int tankCount = 0;
 
 
     bool openFile();

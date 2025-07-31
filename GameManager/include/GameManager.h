@@ -3,46 +3,38 @@
 #include <array>
 #include "ActionRequestUtils.h"
 #include "GameMap.h"
-#include "Renderer.h"
 #include "AbstractGameManager.h"
+#include <sstream>
 
 namespace GameManager_206038929_314620071 {
     using std::string;
 
-    enum class GameResult {
-        WinOccurred,
-        DrawFromMaxSteps,
-        DrawFromAllTanksDead,
-        DrawFromNoAmmo,
-        NotOver
-    };
 
     class GameManager : public AbstractGameManager{
     private:
         static constexpr int stepsWithNoAmmoLimit = 40;
-        static constexpr int stepsPerSecond = 4;
-
+        bool verbose = false;
         GameMap gameMap;
-        bool visuals = false;
-        GameResult gameResult = GameResult::NotOver;
-
-        size_t winningPlayer = 0;
-
+        GameResult gameResult = {};
         size_t stepCounter = 0;
         size_t maxSteps = 0;
         size_t numShells = 0;
         bool allTanksOutOfAmmo = false;
         int stepsSinceNoAmmo = 0;
-        std::ofstream outputFile;
-        std::vector<std::string> outputLine;
+        std::stringstream outputStream = {};
+        std::vector<std::string> outputLine = {};
         int totalTankCount = 0;
-        int playerCount = 0;
+        std::string mapName = {};
+        std::array<Player*, 2> players = {};
+        std::array<std::string, 2> playerNames = {};
+        std::array<TankAlgorithmFactory , 2> tankAlgorithmFactories = {};
         std::optional<std::unique_ptr<UserCommon_206038929_314620071::ConcreteSatelliteView>> satelliteViewOpt = {};
-        std::array<int, 9> tanksPerPlayer = {};
-        std::array<std::optional<std::unique_ptr<Player>>, 9> players = {};
+        std::array<int, 2> tanksPerPlayer = {};
         std::vector<std::unique_ptr<TankAlgorithm>> tankAlgorithms = {};
         std::vector<std::optional<size_t>> tankEntityIds = {};
-        std::string mapFilePath;
+
+        void saveGameResult();
+        void writeOutputFile();
 
         void gameLoop();
 
@@ -66,14 +58,13 @@ namespace GameManager_206038929_314620071 {
 
         void registerTank(const Tank &tank);
 
-        void registerPlayer(int playerIndex);
+        void registerAllTanks();
 
         void checkForDeadTanks();
 
         void writeOutputLine();
 
-        PlayerFactory &playerFactory;
-        TankAlgorithmFactory &tankAlgorithmFactory;
+
 
     public:
         GameManager(const GameManager &) = delete;
@@ -84,15 +75,21 @@ namespace GameManager_206038929_314620071 {
 
         GameManager &operator=(GameManager &&) = delete;
 
-        GameManager(PlayerFactory &playerFactory, TankAlgorithmFactory &tankAlgorithmFactory);
+        explicit GameManager(bool verbose): verbose(verbose){}
 
-        void readBoard(const string &mapFile);
 
-        void run();
 
-        ~GameManager();
+        GameResult run(
+            size_t map_width, size_t map_height,
+            const SatelliteView& map,
+            string map_name,
+            size_t max_steps, size_t num_shells,
+            Player& player1, string name1, Player& player2, string name2,
+            TankAlgorithmFactory player1_tank_algo_factory,
+            TankAlgorithmFactory player2_tank_algo_factory) override;
 
-        friend MapLoader;
+
+
 
 
     };

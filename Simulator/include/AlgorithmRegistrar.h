@@ -3,47 +3,48 @@
 #include "Player.h"
 #include <cassert>
 #include <string>
+#include "Exceptions.h"
+#include <sstream>
 
-class AlgorithmAndPlayerFactories {
-    std::string so_name;
-    TankAlgorithmFactory tankAlgorithmFactory;
-    PlayerFactory playerFactory;
-public:
-    AlgorithmAndPlayerFactories(const std::string& so_name) : so_name(so_name) {}
-    AlgorithmAndPlayerFactories(const AlgorithmAndPlayerFactories& other)
-            : so_name(other.so_name)
-    {
-        if (other.playerFactory)
-            playerFactory = other.playerFactory;
-        if (other.tankAlgorithmFactory)
-            tankAlgorithmFactory = other.tankAlgorithmFactory;
-    }
-    void setTankAlgorithmFactory(TankAlgorithmFactory&& factory) {
-        assert(tankAlgorithmFactory == nullptr);
-        tankAlgorithmFactory = std::move(factory);
-    }
-    void setPlayerFactory(PlayerFactory&& factory) {
-        assert(playerFactory == nullptr);
-        playerFactory = std::move(factory);
-    }
-    const std::string& name() const { return so_name; }
-    std::unique_ptr<Player> createPlayer(int player_index, size_t x, size_t y, size_t max_steps, size_t num_shells) const {
-        return playerFactory(player_index, x, y, max_steps, num_shells);
-    }
-    std::unique_ptr<TankAlgorithm> createTankAlgorithm(int player_index, int tank_index) const {
-        return tankAlgorithmFactory(player_index, tank_index);
-    }
-    bool hasPlayerFactory() const {
-        return playerFactory != nullptr;
-    }
-    bool hasTankAlgorithmFactory() const {
-        return tankAlgorithmFactory != nullptr;
-    }
-    const TankAlgorithmFactory& getTankAlgorithmFactory() const{ return tankAlgorithmFactory;}
-};
+
 
 
 class AlgorithmRegistrar {
+    class AlgorithmAndPlayerFactories {
+        std::string so_name;
+        TankAlgorithmFactory tankAlgorithmFactory;
+        PlayerFactory playerFactory;
+    public:
+        AlgorithmAndPlayerFactories(const std::string& so_name) : so_name(so_name) {}
+        AlgorithmAndPlayerFactories(const AlgorithmAndPlayerFactories& other)
+                : so_name(other.so_name)
+        {
+            if (other.playerFactory)
+                playerFactory = other.playerFactory;
+            if (other.tankAlgorithmFactory)
+                tankAlgorithmFactory = other.tankAlgorithmFactory;
+        }
+        void setTankAlgorithmFactory(TankAlgorithmFactory&& factory) {
+            assert(tankAlgorithmFactory == nullptr);
+            tankAlgorithmFactory = std::move(factory);
+        }
+        void setPlayerFactory(PlayerFactory&& factory) {
+            assert(playerFactory == nullptr);
+            playerFactory = std::move(factory);
+        }
+        const std::string& name() const { return so_name; }
+        std::unique_ptr<Player> createPlayer(int player_index, size_t x, size_t y, size_t max_steps, size_t num_shells) const {
+            return playerFactory(player_index, x, y, max_steps, num_shells);
+        }
+
+        bool hasPlayerFactory() const {
+            return playerFactory != nullptr;
+        }
+        bool hasTankAlgorithmFactory() const {
+            return tankAlgorithmFactory != nullptr;
+        }
+        const TankAlgorithmFactory& getTankAlgorithmFactory() const{ return tankAlgorithmFactory;}
+    };
 
 private:
     AlgorithmRegistrar() = default;
@@ -65,20 +66,15 @@ public:
     void addTankAlgorithmFactoryToLastEntry(TankAlgorithmFactory&& factory) {
         algorithms.back().setTankAlgorithmFactory(std::move(factory));
     }
-    struct BadRegistrationException {
-        std::string name;
-        bool hasName, hasPlayerFactory, hasTankAlgorithmFactory;
-        BadRegistrationException(std::string name, bool hasName, bool hasPlayerFactory, bool hasTankAlgorithmFactory)
-            : name(name), hasName(hasName),
-              hasPlayerFactory(hasPlayerFactory), hasTankAlgorithmFactory(hasTankAlgorithmFactory) {}
-    };
+
     void validateLastRegistration() {
         const auto& last = algorithms.back();
-        bool hasName = (last.name() != "");
-        if(!hasName || !last.hasPlayerFactory() || !last.hasTankAlgorithmFactory() ) {
-            throw BadRegistrationException(last.name(), hasName,
-                                           last.hasPlayerFactory(),
-                                           last.hasTankAlgorithmFactory());
+        if (!last.hasPlayerFactory() || !last.hasTankAlgorithmFactory()) {
+            std::stringstream msg;
+            msg << last.name()
+                << ": has player factory: " << last.hasPlayerFactory()
+                << ", has tank algorithm factory: " << last.hasTankAlgorithmFactory();
+            throw BadRegistrationException(msg.str());
         }
     }
     void removeLast() {

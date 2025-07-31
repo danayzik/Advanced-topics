@@ -15,7 +15,7 @@ struct ParsedArguments {
     std::optional<std::string> algo1 = {};
     std::optional<std::string> algo2 = {};
     std::optional<std::string> mapsFolder = {};
-    std::optional<std::string> managersFileName = {};
+    std::optional<std::string> managerFileName = {};
     std::optional<std::string> algoFolder = {};
     int numThreads = 1;
 };

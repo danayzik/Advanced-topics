@@ -3,28 +3,10 @@
 #include "GameMap.h"
 #include "MapLoader.h"
 #include <algorithm>
-#ifdef USE_SFML
-#include "SFMLRenderer.h"
-#endif
-#include "NoopRenderer.h"
 #include "GameEntityUtils.h"
 
 namespace GameManager_206038929_314620071 {
     using namespace EntityUtils;
-
-//This file includes pre-processor commands based on build options.
-//Map is loaded by the Map loader.
-    void GameMap::readBoard(const std::string &mapFilePath, GameManager &gameManager) {
-        MapLoader mapLoader{mapFilePath, *this, gameManager};
-        mapLoader.loadMap();
-#ifdef USE_SFML
-        renderer = std::make_unique<SFMLRenderer>(rows, cols);
-#else
-        renderer = std::make_unique<NoOpRenderer>();
-#endif
-        renderer->initialize();
-        renderer->drawGrid(grid, entityManager);
-    }
 
 
 //Checks the collisions and resolves them for a set of cells.
@@ -64,9 +46,6 @@ namespace GameManager_206038929_314620071 {
         }
     }
 
-    void GameMap::updateVisuals() {
-        renderer->drawGrid(grid, entityManager);
-    }
 
 //Checks if the tanks are about to go past each other, if so destroys them preemptively.
     void GameMap::tanksAboutToCollide() {
@@ -218,12 +197,55 @@ namespace GameManager_206038929_314620071 {
             auto x = shell.getXAsSizeT();
             view[y][x] = shell.getSymbol();
         }
-
-
         return std::make_unique<ConcreteSatelliteView>(rows, cols, std::move(view));
     }
 
+    void GameMap::buildMap(const SatelliteView &view, size_t height, size_t width, size_t numShells) {
+        rows = height;
+        cols = width;
+        grid = vector<vector<Cell>>(rows, vector<Cell>(cols));
+        int tankCount = 0;
+        for (size_t y = 0; y < rows; ++y) {
+            for (size_t x = 0; x < cols; ++x) {
+                grid[y][x].setCoordinates({y, x});
+                handleCell(y, x , view.getObjectAt(x, y), tankCount, numShells);
+            }
+        }
+    }
 
+    void GameMap::handleCell(size_t y, size_t x, char cell, int& tankCount, size_t numShells) {
+        if (cell >= '1' && cell <= '2') {
+            int playerNumber = cell - '0';
+            const Tank &tank = *entityCast<Tank>(
+                    &entityManager.createTank(y, x, playerNumber % 2 == 1 ? Direction::Left : Direction::Right,
+                                              playerNumber, tankCount, numShells)
+            );
+            tankCount++;
+            grid[y][x].entitySet.insert(tank.getEntityId());
+            tankIds.insert(tank.getEntityId());
+            return;
+        }
+        switch (cell) {
+            case ' ':
+                return;
+            case '#': {
+                const GameEntity &entity = entityManager.createWall(y, x);
+                grid[y][x].entitySet.insert(entity.getEntityId());
+                return;
+            }
+            case '@': {
+                const GameEntity &entity = entityManager.createMine(y, x);
+                grid[y][x].entitySet.insert(entity.getEntityId());
+                return;
+            }
+            default:
+                handleBadCharacter(y, x);
+        }
+    }
+
+    void GameMap::handleBadCharacter(size_t y, size_t x) {
+        std::cout << "GameManager_206038929_314620071 got an unexpected character at (" << y << ", " << x << "), filling as space.\n";
+    }
 }
 
 

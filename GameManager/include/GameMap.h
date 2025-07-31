@@ -7,7 +7,6 @@
 #include "Cell.h"
 #include "Direction.h"
 #include "Entities.h"
-#include "Renderer.h"
 #include "EntityManager.h"
 #include "SatelliteView.h"
 #include "ConcreteSatelliteView.h"
@@ -27,7 +26,6 @@ namespace GameManager_206038929_314620071 {
         vector<vector<Cell>> grid = {};
         unordered_set<size_t> shellsIds = {};
         unordered_set<size_t> tankIds = {};
-        std::unique_ptr<Renderer> renderer = {};
         EntityManager entityManager = {};
         size_t rows = 0;
         size_t cols = 0;
@@ -45,11 +43,12 @@ namespace GameManager_206038929_314620071 {
 
         [[nodiscard]] inline const Cell &getCell(size_t y, size_t x) const { return grid[y][x]; }
 
+        static void handleBadCharacter(size_t y, size_t x);
+        void handleCell(size_t y, size_t x, char cell, int& tankCount, size_t numShells);
+
 
     public:
         GameMap() = default;
-
-        void readBoard(const string &mapFilePath, GameManager &gameManager);
 
         bool tankCanMoveInDirection(const Tank &tank, Direction dir) const;
 
@@ -75,9 +74,8 @@ namespace GameManager_206038929_314620071 {
 
         [[nodiscard]] inline size_t getCols() const { return cols; }
 
-        void updateVisuals();
+        [[nodiscard]] inline const unordered_set<size_t>& getTankIds() const { return tankIds;}
 
-        friend MapLoader;
 
         inline bool isTankAlive(size_t entityIndex) const { return entityManager.isTankAlive(entityIndex); }
 
@@ -90,6 +88,9 @@ namespace GameManager_206038929_314620071 {
         GameMap &operator=(GameMap &&) = delete;
 
         ~GameMap() = default;
+
+        void buildMap(const SatelliteView& view, size_t height, size_t width, size_t numShells);
+
 
     };
 }

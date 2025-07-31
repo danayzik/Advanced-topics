@@ -96,9 +96,9 @@ void CommandLineParser::parseCompetitiveMode(int argc, char *argv[]) {
                 throw std::invalid_argument(errorMessages.duplicateArgument);
             parsedArguments.mapsFolder = value;
         }else if (argKey == argumentStrings.managerFile){
-            if(parsedArguments.managersFileName.has_value())
+            if(parsedArguments.managerFileName.has_value())
                 throw std::invalid_argument(errorMessages.duplicateArgument);
-            parsedArguments.managersFileName = value;
+            parsedArguments.managerFileName = value;
         }else if (argKey == argumentStrings.algoFolder){
             if(parsedArguments.algoFolder.has_value())
                 throw std::invalid_argument(errorMessages.duplicateArgument);
@@ -136,7 +136,7 @@ void CommandLineParser::validateComparativeArguments() const {
         throw std::invalid_argument(errorMessages.missingArguments + missingArguments);
     }
     if (!validSOFolder(parsedArguments.managersFolder.value())){
-        throw std::invalid_argument(errorMessages.badSODDirectory + parsedArguments.managersFolder.value() + "\n");
+        throw std::invalid_argument(errorMessages.badDirectory + parsedArguments.managersFolder.value() + "\n");
     }
     if (!fileExists(parsedArguments.algo1.value())){
         throw std::invalid_argument(errorMessages.missingFile + parsedArguments.algo1.value() + "\n");
@@ -153,21 +153,24 @@ void CommandLineParser::validateCompetitiveArguments() const {
     std::string missingArguments = {};
     if (!parsedArguments.mapsFolder.has_value())
         missingArguments += "game_maps_folder=<game_maps_folder>\n";
-    if (!parsedArguments.managersFileName.has_value())
+    if (!parsedArguments.managerFileName.has_value())
         missingArguments += "game_manager=<game_manager_so_filename>\n";
     if (!parsedArguments.algoFolder.has_value())
         missingArguments += "algorithms_folder=<algorithms_folder>\n";
     if (!missingArguments.empty()){
         throw std::invalid_argument(errorMessages.missingArguments + missingArguments);
     }
-    if (!validSOFolder(parsedArguments.mapsFolder.value())){
-        throw std::invalid_argument(errorMessages.badSODDirectory + parsedArguments.mapsFolder.value() + "\n");
+    if (!validSOFolder(parsedArguments.managersFolder.value())){
+        throw std::invalid_argument(errorMessages.badDirectory + parsedArguments.managersFolder.value() + "\n");
+    }
+    if (!validMapsFolder(parsedArguments.mapsFolder.value())){
+        throw std::invalid_argument(errorMessages.badDirectory + parsedArguments.mapsFolder.value() + "\n");
     }
     if (!validSOFolder(parsedArguments.algoFolder.value())){
-        throw std::invalid_argument(errorMessages.badSODDirectory + parsedArguments.algoFolder.value() + "\n");
+        throw std::invalid_argument(errorMessages.badDirectory + parsedArguments.algoFolder.value() + "\n");
     }
-    if (!fileExists(parsedArguments.managersFileName.value())){
-        throw std::invalid_argument(errorMessages.missingFile + parsedArguments.managersFileName.value() + "\n");
+    if (!fileExists(parsedArguments.managerFileName.value())){
+        throw std::invalid_argument(errorMessages.missingFile + parsedArguments.managerFileName.value() + "\n");
     }
 }
 
@@ -216,4 +219,23 @@ bool CommandLineParser::validSOFolder(const std::string& path) {
         return false;
     }
     return false;
+}
+
+bool CommandLineParser::validMapsFolder(const std::string &path) {
+    try {
+        if (!fs::is_directory(path)) return false;
+
+        for (const auto& entry : fs::directory_iterator(path)) {
+            if (entry.is_regular_file()) {
+                const auto& filename = entry.path().filename().string();
+                if (filename.size() > 4 && filename.substr(filename.size() - 4) == ".txt") {
+                    return true;
+                }
+            }
+        }
+    } catch (...) {
+        return false;
+    }
+    return false;
+
 }

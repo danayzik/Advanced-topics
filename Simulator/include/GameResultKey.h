@@ -1,7 +1,7 @@
 #pragma once
 #include "GameResult.h"
 #include <string>
-
+#include "Map.h"
 
 struct GameResultKey {
     int winner;
@@ -22,16 +22,13 @@ struct GameResultKey {
 
     GameResultKey() = default;
 
-    GameResultKey(const GameResult& gameResult, size_t mapRows, size_t mapCols, bool crashed = false) : winner(gameResult.winner), reason(gameResult.reason),
-                                            rounds(gameResult.rounds), remainingTanks(gameResult.remaining_tanks), crashed(crashed){
-        finalView.reserve((mapCols + 1) * mapRows);
-        for (size_t y = 0; y < mapRows; ++y) {
-            for (size_t x = 0; x < mapCols; ++x) {
-                finalView += gameResult.gameState->getObjectAt(x, y);
-            }
-            finalView += '\n';
-        }
-    }
+    GameResultKey(const GameResult& gameResult, size_t mapRows, size_t mapCols, bool crashed = false)
+            : winner(gameResult.winner),
+              reason(gameResult.reason),
+              rounds(gameResult.rounds),
+              remainingTanks(gameResult.remaining_tanks),
+              crashed(crashed),
+              finalView(Map::getStringFromView(*gameResult.gameState, mapRows, mapCols)) {}
 };
 
 namespace std {

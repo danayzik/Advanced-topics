@@ -35,7 +35,7 @@ private:
         const std::string invalidNumThreads = "Error: invalid num_threads value\n";
         const std::string unexpectedArgument = "Error: unexpected argument\n";
         const std::string missingArguments = "Error, the following arguments are missing: ";
-        const std::string badSODDirectory = "Error, the following folder path provided is invalid or contains no directories: ";
+        const std::string badDirectory = "Error, the following folder path provided is invalid or contains no valid files: ";
         const std::string missingFile = "Error, the following file path is invalid: ";
     };
 
@@ -53,7 +53,8 @@ private:
 
     static std::optional<std::pair<std::string, std::string>>  splitKeyValue(const std::string& arg);
     static bool fileExists(const std::string& path) ;
-    static bool validSOFolder(const std::string& path) ;
+    static bool validSOFolder(const std::string& path);
+    static bool validMapsFolder(const std::string& path);
 
 
 public:

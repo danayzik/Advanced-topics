@@ -15,7 +15,7 @@ protected:
     std::string getTimeString();
 
 public:
-    virtual void loadArguments(const ParsedArguments& arguments) = 0;
+    virtual void loadArguments(const ParsedArguments& arguments);
     virtual void run() = 0;
     virtual ~Simulator();
 
