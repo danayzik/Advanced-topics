@@ -9,6 +9,7 @@ struct Map{
     size_t numShells;
     size_t rows;
     size_t cols;
+    std::string mapFileName = {};
     std::unique_ptr<SatelliteView> view = {};
 
 

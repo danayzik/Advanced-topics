@@ -17,6 +17,7 @@ private:
     std::unordered_set<size_t> crashedManagersIndices = {};
     std::unordered_map<GameResultKey, std::vector<size_t>> groups{};
     std::mutex errorMutex{};
+    std::mutex storingResultsMutex = {};
     std::vector<GameResult> results = {};
 
 

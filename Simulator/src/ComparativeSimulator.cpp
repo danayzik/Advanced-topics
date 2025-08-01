@@ -11,6 +11,7 @@ namespace fs = std::filesystem;
 void ComparativeSimulator::loadMapFile(const std::string &path) {
     mapFileName = fs::path(path).filename().string();
     mapInfo = std::move(MapLoader::getInstance().loadMap(path, errorBuffer));
+    mapInfo.mapFileName = mapFileName;
 }
 
 void ComparativeSimulator::loadAlgorithms(const ParsedArguments &arguments) {
@@ -65,6 +66,7 @@ void ComparativeSimulator::loadArguments(const ParsedArguments &arguments) {
 }
 
 void ComparativeSimulator::storeGameResult(GameResult &&result, size_t storeIndex) {
+    std::lock_guard<std::mutex>lock(storingResultsMutex);
     results[storeIndex] = std::move(result);
 }
 
