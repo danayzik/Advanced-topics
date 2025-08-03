@@ -1,26 +1,29 @@
 
 ToDo:
 Refactor comparative
-Fix Playerone/playertwo shit
-delete factories
+return registration into the namespace
 Competition sim
+Move function definitions for registrar to cpp
+remove dlopen error
+delete input_errors.txt before starting
+
+
+Fix remaining tanks being 1 even though it's a draw
+combine logic of writeresultstofile
+check rule of 5
+add bad game result to error and maybe skip that manager
+Check num threads when not given or 1
+
 
 Things in the end:
 Gamemanager registrar private constructor and delete others
 rule of 5 for all
-cmake and make files
+
 test with other so's
-output files, errors for map/command line.when to exit?
-Remove renderer? or move to simulator
 
 
-sudo apt-get update
-sudo apt-get install libx11-dev libxrandr-dev libxcursor-dev libxi-dev
-sudo apt-get install libgl1-mesa-dev
-sudo apt install libx11-dev libxrandr-dev libxcursor-dev libxi-dev libgl1-mesa-dev libudev-dev
-sudo apt install libfreetype6-dev
-sudo apt install libvorbis-dev libogg-dev
-sudo apt install libflac-dev
+
+./simulator_206038929_314620071 -comparative   game_map=map.txt   game_managers_folder=GameManager   algorithm1=Algorithm/Algorithm_206038929_314620071.so   algorithm2=Algorithm/Algorithm_206038929_314620071.so   num_threads=3   -verbose
 
 
 cmake -S . -B build

@@ -1,7 +1,6 @@
 
 #include <sstream>
 #include "GameMap.h"
-#include "MapLoader.h"
 #include <algorithm>
 #include "GameEntityUtils.h"
 

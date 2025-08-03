@@ -102,8 +102,8 @@ void ComparativeSimulator::printGameResult(const GameResult &result, std::string
 }
 
 void ComparativeSimulator::printOutput() {
-    std::vector<std::vector<size_t>> groupedIndices;
 
+    std::vector<std::vector<size_t>> groupedIndices;
     for (auto& [_, vec] : groups)
         groupedIndices.push_back(vec);
     std::sort(groupedIndices.begin(), groupedIndices.end(),
@@ -111,6 +111,8 @@ void ComparativeSimulator::printOutput() {
                   return a.size() > b.size();
               });
     AlgorithmRegistrar& algorithmRegistrar = AlgorithmRegistrar::getAlgorithmRegistrar();
+    assert(algorithmRegistrar.count() > 1);
+
     GameManagerRegistrar& gameManagerRegistrar = GameManagerRegistrar::getGameManagerRegistrar();
     std::stringstream buffer;
 
@@ -122,18 +124,21 @@ void ComparativeSimulator::printOutput() {
         assert(!indicesVec.empty());
         for (size_t i = 0; i < indicesVec.size(); ++i) {
             size_t index = indicesVec[i];
+
+
             buffer << gameManagerRegistrar[index].name();
             if (i < indicesVec.size()-1) buffer << ", ";
         }
         buffer << "\n";
         size_t gmIndex = indicesVec.front();
+
         const GameResult& result = results[gmIndex];
+
         if (crashedManagersIndices.count(gmIndex) > 0){
             buffer << "These game managers crashed\n";
         }
         else{
             printGameResult(result, buffer);
-
             buffer << Map::getStringFromView(*result.gameState, mapInfo.rows, mapInfo.cols);
         }
     }
@@ -150,6 +155,7 @@ void ComparativeSimulator::writeResultsToFile(const std::stringstream &ss) {
         throw std::runtime_error("Failed to open file: " + filePath.string());
     }
     outFile << ss.str();
+    outFile.close();
 }
 
 

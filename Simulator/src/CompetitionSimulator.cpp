@@ -25,7 +25,7 @@ void CompetitionSimulator::loadMaps() {
             std::string fileName = entry.path().stem().string();
             std::string fullPathStr = entry.path().string();
             try{
-                maps.push_back(std::move(MapLoader::getInstance().loadMap(fullPathStr, errorBuffer)));
+                maps.push_back(std::move(mapLoader.loadMap(fullPathStr, errorBuffer)));
                 maps.end()->mapFileName = fileName;
             }
             catch (const std::exception& e) {
@@ -143,6 +143,7 @@ void CompetitionSimulator::writeResultsToFile(const std::stringstream &ss) {
         throw std::runtime_error("Failed to open file: " + filePath.string());
     }
     outFile << ss.str();
+    outFile.close();
 }
 
 

@@ -56,7 +56,7 @@ public:
 
 
 
-    static AlgorithmRegistrar& getAlgorithmRegistrar();
+    static AlgorithmRegistrar& getAlgorithmRegistrar(){return registrar;};
     void createAlgorithmFactoryEntry(const std::string& name) {
         algorithms.emplace_back(name);
     }

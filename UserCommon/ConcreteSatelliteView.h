@@ -2,6 +2,8 @@
 
 #include "SatelliteView.h"
 #include <vector>
+#include "Coordinates.h"
+#include <optional>
 
 namespace UserCommon_206038929_314620071 {
 

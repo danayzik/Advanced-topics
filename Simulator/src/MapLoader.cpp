@@ -10,6 +10,7 @@
 using std::vector;
 using std::string;
 namespace fs = std::filesystem;
+MapLoader MapLoader::mapLoaderInstance;
 
 bool MapLoader::openFile() {
     mapFile.open(mapFilePath);

@@ -4,7 +4,7 @@
 #include <fstream>
 
 namespace fs = std::filesystem;
-
+CommandLineParser CommandLineParser::parserInstance;
 
 void CommandLineParser::scanForMode(int argc, char* argv[]) {
     for (int i = 1; i < argc; ++i) {

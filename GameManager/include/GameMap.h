@@ -18,7 +18,6 @@ namespace GameManager_206038929_314620071 {
 
     class GameManager;
 
-    class MapLoader;
 
 
     class GameMap {

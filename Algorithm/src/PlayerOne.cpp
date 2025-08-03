@@ -1,9 +1,10 @@
 #include "PlayerOne.h"
 #include "PlayerRegistration.h"
-
+using namespace Algorithm_206038929_314620071;
+REGISTER_PLAYER(PlayerOne);
 
 namespace Algorithm_206038929_314620071 {
-    REGISTER_PLAYER(PlayerOne)
+
     void PlayerOne::updateTankWithBattleInfo(TankAlgorithm &tank, SatelliteView &satellite_view) {
         processSatelliteView(satellite_view);
         processBattleInfoPreSending();

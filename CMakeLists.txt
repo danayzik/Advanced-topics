@@ -42,6 +42,8 @@ set(SOURCES
         Simulator/src/main.cpp
         Simulator/src/CompetitionSimulator.cpp
         Simulator/src/ComparativeSimulator.cpp
+        Simulator/src/AlgorithmRegistrar.cpp
+        Simulator/src/GameManagerRegistrar.cpp
 
 )
 

@@ -8,17 +8,24 @@
 #include <filesystem>
 #include <iostream>
 #include <fstream>
+#include "AlgorithmRegistrar.h"
+#include "GameManagerRegistrar.h"
 
 void Simulator::loadSO(const std::string &path) {
-    void* handle = dlopen(path.c_str(), RTLD_NOW);
+    void* handle = dlopen(path.c_str(), RTLD_NOW | RTLD_GLOBAL);
     if (!handle) {
+        const char* err = dlerror();
         errorBuffer << "Failed loading so from path: " << path << "\n";
+        std::cerr << "dlopen failed: " << (err ? err : "Unknown error") << "\n";
         throw SharedObjectLoadingException("Failed loading so from path: " + path);
     }
+
     handles.push_back(handle);
 }
 
 Simulator::~Simulator(){
+    AlgorithmRegistrar::getAlgorithmRegistrar().clear();
+    GameManagerRegistrar::getGameManagerRegistrar().clear();
     for (auto* handle : handles){
         dlclose(handle);
     }
@@ -32,6 +39,7 @@ Simulator::~Simulator(){
         return;
     }
     outFile << errorBuffer.str();
+    outFile.close();
 }
 
 std::string Simulator::getTimeString() {

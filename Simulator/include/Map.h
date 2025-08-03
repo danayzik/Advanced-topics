@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
-#include "SatelliteView.h"
 #include <string>
+#include "ConcreteSatelliteView.h"
 
 
 struct Map{

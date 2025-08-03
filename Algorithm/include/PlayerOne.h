@@ -13,9 +13,7 @@ namespace Algorithm_206038929_314620071 {
 
         PlayerOne(int player_index,
                   size_t x, size_t y,
-                  size_t max_steps, size_t num_shells) : Player(player_index, x, y, max_steps, num_shells),
-                                                         PlayerCommunicationModule(player_index, x, y, max_steps,
-                                                                                   num_shells) {}
+                  size_t max_steps, size_t num_shells) :PlayerCommunicationModule(player_index, x, y, max_steps, num_shells) {}
 
         void updateTankInstructions() override;
 
