@@ -25,6 +25,7 @@ namespace GameManager_206038929_314620071 {
         vector<vector<Cell>> grid = {};
         unordered_set<size_t> shellsIds = {};
         unordered_set<size_t> tankIds = {};
+        std::vector<size_t> tempTankIdsVector = {};
         EntityManager entityManager = {};
         size_t rows = 0;
         size_t cols = 0;
@@ -73,7 +74,7 @@ namespace GameManager_206038929_314620071 {
 
         [[nodiscard]] inline size_t getCols() const { return cols; }
 
-        [[nodiscard]] inline const unordered_set<size_t>& getTankIds() const { return tankIds;}
+        [[nodiscard]] inline std::vector<size_t> stealTempTankIds() { return std::move(tempTankIdsVector);}
 
 
         inline bool isTankAlive(size_t entityIndex) const { return entityManager.isTankAlive(entityIndex); }

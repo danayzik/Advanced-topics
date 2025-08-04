@@ -1,5 +1,5 @@
 2 - A duel in the mine field
-MaxSteps=2000
+MaxSteps=10
 NumShells=10
 Rows= 27
 Cols=29
@@ -16,7 +16,7 @@ Cols=29
 #      @ @ @ @ @ @          #
 #          #   #      ##   ##
 @    @            @         @
-#           @               #
+#           @ 1 2           #
 ## @@            #    #     #
 #     @@@@@                 #
 #       @        @@@@@      #

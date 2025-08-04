@@ -222,6 +222,7 @@ namespace GameManager_206038929_314620071 {
             tankCount++;
             grid[y][x].entitySet.insert(tank.getEntityId());
             tankIds.insert(tank.getEntityId());
+            tempTankIdsVector.push_back(tank.getEntityId());
             return;
         }
         switch (cell) {

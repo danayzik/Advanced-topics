@@ -1,18 +1,15 @@
 
 ToDo:
-Refactor comparative
+Refine algo behaviour
+verify game result given by game manager
+Manager unique output map name
 return registration into the namespace
 Competition sim
 Move function definitions for registrar to cpp
-remove dlopen error
-delete input_errors.txt before starting
-
-
-Fix remaining tanks being 1 even though it's a draw
+refactor registrars to cpp instead of all header
 combine logic of writeresultstofile
 check rule of 5
 add bad game result to error and maybe skip that manager
-Check num threads when not given or 1
 
 
 Things in the end:

@@ -122,6 +122,13 @@ namespace GameManager_206038929_314620071 {
     }
 
     bool GameManager::gameOverCheck() {
+        tanksPerPlayer = {};
+        for (auto &tankEntityIdOpt: tankEntityIds) {
+            if (tankEntityIdOpt) {
+                Tank &tank = gameMap.getTank(tankEntityIdOpt.value());
+                tanksPerPlayer[tank.getPlayerIndex() - 1]++;
+            }
+        }
         if (stepsSinceNoAmmo >= stepsWithNoAmmoLimit) {
             gameResult.reason = GameResult::Reason::ZERO_SHELLS;
             gameResult.winner = 0;
@@ -136,13 +143,6 @@ namespace GameManager_206038929_314620071 {
             gameResult.reason = GameResult::Reason::MAX_STEPS;
             gameResult.winner = 0;
             return true;
-        }
-        tanksPerPlayer = {};
-        for (auto &tankEntityIdOpt: tankEntityIds) {
-            if (tankEntityIdOpt) {
-                Tank &tank = gameMap.getTank(tankEntityIdOpt.value());
-                tanksPerPlayer[tank.getPlayerIndex() - 1]++;
-            }
         }
         for (size_t i = 0; i < tanksPerPlayer.size(); i++) {
             if (tanksPerPlayer[i] == totalTankCount) {
@@ -325,7 +325,7 @@ namespace GameManager_206038929_314620071 {
     }
 
     void GameManager::registerAllTanks() {
-        const auto& tankIds = gameMap.getTankIds();
+        auto tankIds = gameMap.stealTempTankIds();
         for(auto tankId : tankIds){
             const Tank& tank = gameMap.getTank(tankId);
             registerTank(tank);

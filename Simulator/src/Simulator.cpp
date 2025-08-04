@@ -10,13 +10,14 @@
 #include <fstream>
 #include "AlgorithmRegistrar.h"
 #include "GameManagerRegistrar.h"
+#include <cstdio>
 
 void Simulator::loadSO(const std::string &path) {
     void* handle = dlopen(path.c_str(), RTLD_NOW | RTLD_GLOBAL);
     if (!handle) {
         const char* err = dlerror();
         errorBuffer << "Failed loading so from path: " << path << "\n";
-        std::cerr << "dlopen failed: " << (err ? err : "Unknown error") << "\n";
+        errorBuffer << (err ? err : "Unknown error") << "\n";
         throw SharedObjectLoadingException("Failed loading so from path: " + path);
     }
 
@@ -33,6 +34,7 @@ Simulator::~Simulator(){
         return;
     }
     std::string fileName = "input_errors.txt";
+    std::remove(fileName.c_str());
     std::ofstream outFile(fileName);
     if (!outFile) {
         std::cerr << "Failed to open file: " << fileName << '\n';
