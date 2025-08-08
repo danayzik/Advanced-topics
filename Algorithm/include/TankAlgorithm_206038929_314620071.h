@@ -6,7 +6,7 @@
 #include "TankRoleAlgorithm.h"
 
 namespace Algorithm_206038929_314620071 {
-    class AdaptiveTankAlgorithm : public TankAlgorithm {
+    class TankAlgorithm_206038929_314620071 : public TankAlgorithm {
     private:
         FullBattleInfo battleInfo = {};
         int playerIndex;
@@ -26,8 +26,6 @@ namespace Algorithm_206038929_314620071 {
 
         void updateBattleInfo(BattleInfo &info) override;
 
-        AdaptiveTankAlgorithm(int playerIndex, int tankIndex) : playerIndex(playerIndex), tankIndex(tankIndex) {}
-
-
+        TankAlgorithm_206038929_314620071(int playerIndex, int tankIndex) : playerIndex(playerIndex), tankIndex(tankIndex) {}
     };
 }

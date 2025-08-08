@@ -35,4 +35,11 @@ struct Map{
         return finalView;
     }
 
+    Map() = default;
+    Map(const Map&) = delete;
+    Map& operator=(const Map&) = delete;
+    Map(Map&&) = default;
+    Map& operator=(Map&&) = default;
+    ~Map() = default;
+
 };

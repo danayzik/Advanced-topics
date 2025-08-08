@@ -15,7 +15,6 @@ MapLoader MapLoader::mapLoaderInstance;
 bool MapLoader::openFile() {
     mapFile.open(mapFilePath);
     if (!mapFile) {
-        std::cerr << "Error opening file: " << mapFilePath << std::endl;
         return false;
     }
     return true;
@@ -25,7 +24,6 @@ bool MapLoader::readSettings() {
     size_t rows, cols, maxSteps, numShells;
     std::string line;
     size_t value;
-
     long temp;
     std::getline(mapFile, line);
     auto trim = [](std::string &s) {
@@ -98,8 +96,6 @@ void MapLoader::handleCell(char cell, size_t y, size_t x) {
     else{
         handleBadCharacter(y, x);
     }
-
-
 }
 
 void MapLoader::handleBadCharacter(size_t y, size_t x) {
@@ -119,13 +115,11 @@ void MapLoader::buildView() {
     map.view = std::make_unique<UserCommon_206038929_314620071::ConcreteSatelliteView>(map.rows, map.cols, std::move(gameMap));
 }
 
-Map& MapLoader::loadMap(const std::string &mapPath, std::stringstream& simulatorErrorBuffer) {
+Map MapLoader::loadMap(const std::string &mapPath, std::stringstream& simulatorErrorBuffer) {
     gameMap = {};
     mapFilePath = mapPath;
-    mapFileName = fs::path(mapPath).filename().string();
+    map.mapFileName = fs::path(mapPath).filename().string();
     errorBuffer = {};
-
-
 
     if (!openFile()) throw MapLoadingException("Failed to open map file: " + mapFilePath);
 
@@ -139,7 +133,10 @@ Map& MapLoader::loadMap(const std::string &mapPath, std::stringstream& simulator
     if (!errorBuffer.str().empty()) {
         simulatorErrorBuffer << errorBuffer.str();
     }
-    return map;
+    if (mapFile.is_open()) {
+        mapFile.close();
+    }
+    return std::move(map);
 
 }
 

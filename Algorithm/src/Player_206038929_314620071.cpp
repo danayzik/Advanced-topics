@@ -1,11 +1,11 @@
-#include "PlayerOne.h"
+#include "Player_206038929_314620071.h"
 #include "PlayerRegistration.h"
 
 
 
 namespace Algorithm_206038929_314620071 {
-    REGISTER_PLAYER(PlayerOne);
-    void PlayerOne::updateTankWithBattleInfo(TankAlgorithm &tank, SatelliteView &satellite_view) {
+    REGISTER_PLAYER(Player_206038929_314620071);
+    void Player_206038929_314620071::updateTankWithBattleInfo(TankAlgorithm &tank, SatelliteView &satellite_view) {
         processSatelliteView(satellite_view);
         processBattleInfoPreSending();
         tank.updateBattleInfo(battleInfo);
@@ -13,7 +13,7 @@ namespace Algorithm_206038929_314620071 {
     }
 
 
-    void PlayerOne::updateTankInstructions() {
+    void Player_206038929_314620071::updateTankInstructions() {
         if (tankCount == 0)
             battleInfo.setRole(TankRole::Chasing);
         else
@@ -21,7 +21,7 @@ namespace Algorithm_206038929_314620071 {
         battleInfo.setRequestInfoCounter(static_cast<int>(tankCount) + 1);
     }
 
-    void PlayerOne::processBattleInfoPostSending() {
+    void Player_206038929_314620071::processBattleInfoPostSending() {
         int index = battleInfo.getTankIndex();
         if (!seenAllMyTanks) {
             if (!contains(tankIndices, index)) {
@@ -39,7 +39,7 @@ namespace Algorithm_206038929_314620071 {
     }
 
 
-    bool PlayerOne::shouldCalculateShells(int tankIndex) {
+    bool Player_206038929_314620071::shouldCalculateShells(int tankIndex) {
         if (tankCount == 1)
             return false;
         bool shouldCalculate = !appearsRightAfter(tankIndicesThatRecentlyDied, tankIndex);

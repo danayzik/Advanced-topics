@@ -16,6 +16,13 @@ namespace UserCommon_206038929_314620071 {
     };
 
     struct DirectionUtils {
+        DirectionUtils() = delete;
+        DirectionUtils(const DirectionUtils&) = delete;
+        DirectionUtils& operator=(const DirectionUtils&) = delete;
+        DirectionUtils(const DirectionUtils&&) = delete;
+        DirectionUtils& operator=(const DirectionUtils&&) = delete;
+        ~DirectionUtils() = delete;
+
         static constexpr double PI = 3.14159265358979323846;
 
         static const std::vector<std::pair<int, int>> &getDirections() {

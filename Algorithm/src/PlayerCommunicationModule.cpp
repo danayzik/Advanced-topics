@@ -5,7 +5,6 @@ namespace Algorithm_206038929_314620071 {
         FullBattleInfo satelliteInfo{rows, cols, numShells, satellite_view, playerIndex};
         satelliteInfo.updateFromEarlierInfo(battleInfo);
         battleInfo = std::move(satelliteInfo);
-
     }
 
 

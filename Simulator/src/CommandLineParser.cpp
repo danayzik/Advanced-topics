@@ -160,9 +160,6 @@ void CommandLineParser::validateCompetitiveArguments() const {
     if (!missingArguments.empty()){
         throw std::invalid_argument(errorMessages.missingArguments + missingArguments);
     }
-    if (!validSOFolder(parsedArguments.managersFolder.value())){
-        throw std::invalid_argument(errorMessages.badDirectory + parsedArguments.managersFolder.value() + "\n");
-    }
     if (!validMapsFolder(parsedArguments.mapsFolder.value())){
         throw std::invalid_argument(errorMessages.badDirectory + parsedArguments.mapsFolder.value() + "\n");
     }

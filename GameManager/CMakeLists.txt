@@ -9,7 +9,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(SOURCES
-        src/GameManager.cpp
+        src/MyGameManager_206038929_314620071.cpp
         src/Cell.cpp
         src/EntityManager.cpp
         src/GameMap.cpp

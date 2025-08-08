@@ -5,7 +5,7 @@
 #include <string>
 #include "Exceptions.h"
 #include <sstream>
-
+#include <iostream>
 
 
 
@@ -15,21 +15,26 @@ class AlgorithmRegistrar {
         TankAlgorithmFactory tankAlgorithmFactory;
         PlayerFactory playerFactory;
     public:
+        AlgorithmAndPlayerFactories& operator=(const AlgorithmAndPlayerFactories&) = default;
+        AlgorithmAndPlayerFactories(AlgorithmAndPlayerFactories&&) = default;
+        AlgorithmAndPlayerFactories& operator=(AlgorithmAndPlayerFactories&&) = default;
+        AlgorithmAndPlayerFactories(const AlgorithmAndPlayerFactories& other) = default;
+        ~AlgorithmAndPlayerFactories() = default;
+
         AlgorithmAndPlayerFactories(const std::string& so_name) : so_name(so_name) {}
-        AlgorithmAndPlayerFactories(const AlgorithmAndPlayerFactories& other)
-                : so_name(other.so_name)
-        {
-            if (other.playerFactory)
-                playerFactory = other.playerFactory;
-            if (other.tankAlgorithmFactory)
-                tankAlgorithmFactory = other.tankAlgorithmFactory;
-        }
+
         void setTankAlgorithmFactory(TankAlgorithmFactory&& factory) {
-            assert(tankAlgorithmFactory == nullptr);
+            if(tankAlgorithmFactory){
+                std::cout << "Duplicate registration attempted, ignoring\n";
+                return;
+            }
             tankAlgorithmFactory = std::move(factory);
         }
         void setPlayerFactory(PlayerFactory&& factory) {
-            assert(playerFactory == nullptr);
+            if(playerFactory){
+                std::cout << "Duplicate registration attempted, ignoring\n";
+                return;
+            }
             playerFactory = std::move(factory);
         }
         const std::string& name() const { return so_name; }
@@ -48,13 +53,15 @@ class AlgorithmRegistrar {
 
 private:
     AlgorithmRegistrar() = default;
-    AlgorithmRegistrar(const AlgorithmRegistrar&) = delete;
-    AlgorithmRegistrar& operator=(const AlgorithmRegistrar&) = delete;
     std::vector<AlgorithmAndPlayerFactories> algorithms;
     static AlgorithmRegistrar registrar;
 public:
 
-
+    AlgorithmRegistrar(const AlgorithmRegistrar&) = delete;
+    AlgorithmRegistrar& operator=(const AlgorithmRegistrar&) = delete;
+    AlgorithmRegistrar(AlgorithmRegistrar&&) = delete;
+    AlgorithmRegistrar& operator=(AlgorithmRegistrar&&) = delete;
+    ~AlgorithmRegistrar() = default;
 
     static AlgorithmRegistrar& getAlgorithmRegistrar(){return registrar;};
     void createAlgorithmFactoryEntry(const std::string& name) {
@@ -67,25 +74,15 @@ public:
         algorithms.back().setTankAlgorithmFactory(std::move(factory));
     }
 
-    void validateLastRegistration() {
-        const auto& last = algorithms.back();
-        if (!last.hasPlayerFactory() || !last.hasTankAlgorithmFactory()) {
-            std::stringstream msg;
-            msg << last.name()
-                << ": has player factory: " << last.hasPlayerFactory()
-                << ", has tank algorithm factory: " << last.hasTankAlgorithmFactory();
-            throw BadRegistrationException(msg.str());
-        }
-    }
+    void validateLastRegistration();
+
     void removeLast() {
         algorithms.pop_back();
     }
 
-    void duplicateFirstEntry() {
-        if (algorithms.empty()) return;
-        AlgorithmAndPlayerFactories copy(algorithms.front());
-        algorithms.push_back(std::move(copy));
-    }
+    void duplicateFirstEntry();
+
+
     std::size_t count() const { return algorithms.size(); }
     void clear() { algorithms.clear(); }
     AlgorithmAndPlayerFactories& operator[](size_t i){

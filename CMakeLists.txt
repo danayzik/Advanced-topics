@@ -20,30 +20,9 @@ endif()
 
 
 set(SOURCES
-        GameManager/src/Tank.cpp
-        GameManager/src/MapLoader.cpp
-        GameManager/src/GameMap.cpp
-        GameManager/src/GameManager.cpp
-        GameManager/src/Cell.cpp
-        GameManager/src/EntityManager.cpp
-        Algorithm/src/FullBattleInfo.cpp
-        Algorithm/src/ObservedCell.cpp
-        Algorithm/src/AlgorithmUtilities.cpp
-        Algorithm/src/AdaptiveTankAlgorithm.cpp
-        Algorithm/src/ObservedTank.cpp
-        Algorithm/src/PlayerOne.cpp
-        Algorithm/src/PlayerTwo.cpp
-        Algorithm/src/PlayerCommunicationModule.cpp
-        Algorithm/src/ChasingTank.cpp
-        Algorithm/src/SnipingTank.cpp
-        Algorithm/src/PlayerCommunicationModule.cpp
-        Simulator/src/CommandLineParser.cpp
-        Simulator/src/MapLoader.cpp
-        Simulator/src/main.cpp
-        Simulator/src/CompetitionSimulator.cpp
-        Simulator/src/ComparativeSimulator.cpp
-        Simulator/src/AlgorithmRegistrar.cpp
-        Simulator/src/GameManagerRegistrar.cpp
+        GameManager/src/*.cpp
+        Algorithm/src/*.cpp
+        Simulator/src/*.cpp
 
 )
 

@@ -109,8 +109,7 @@ namespace Algorithm_206038929_314620071 {
         void rotate(int rotationAmount);
 
         [[nodiscard]] inline std::unique_ptr<ObservedEntity> clone() const override {
-            auto copy = std::make_unique<ObservedTank>(*this);
-            return copy;
+            return std::make_unique<ObservedTank>(*this);
         }
 
         inline void setDirection(Direction dir) { assumedDirection = dir; };

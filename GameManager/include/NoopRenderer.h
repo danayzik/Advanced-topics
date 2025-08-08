@@ -1,5 +1,6 @@
 #pragma once
 #include "Renderer.h"
+//This file is unused currently.
 namespace GameManager_206038929_314620071 {
     class NoOpRenderer : public Renderer {
     public:

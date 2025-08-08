@@ -25,12 +25,12 @@ void CompetitionSimulator::loadMaps() {
             std::string fileName = entry.path().stem().string();
             std::string fullPathStr = entry.path().string();
             try{
-                maps.push_back(std::move(mapLoader.loadMap(fullPathStr, errorBuffer)));
+                maps.push_back(mapLoader.loadMap(fullPathStr, errorBuffer));
                 maps.end()->mapFileName = fileName;
             }
             catch (const std::exception& e) {
-                std::cout << "Failed loading map file: " << fullPathStr << "\n" << e.what();
-                errorBuffer << "Failed loading map file: " << fullPathStr << "\n" << e.what();
+                std::cout << "Failed loading map file: " << fullPathStr << "\n" << e.what() << "\n";
+                errorBuffer << "Failed loading map file: " << fullPathStr << "\n" << e.what() << "\n";
             }
         }
     }
@@ -97,8 +97,11 @@ void CompetitionSimulator::storeGameResult(const GameResult &gameResult, size_t 
     int winner = gameResult.winner;
     const auto& algoRegistrar = AlgorithmRegistrar::getAlgorithmRegistrar();
 
-    if (winner < 0 || winner > 2){
-        errorBuffer << "Invalid game result between algorithm indexed " << algoRegistrar[algo1Index].name() << " and " << algoRegistrar[algo2Index].name() << "\n";
+    if (!validGameResult(gameResult)){
+        errorBuffer << "Invalid game result between algorithms indexed "
+        << algoRegistrar[algo1Index].name() << " and "
+        << algoRegistrar[algo2Index].name() << ". Result not counted"
+        << "\n";
         return;
     }
     if (winner == 0){
@@ -130,21 +133,9 @@ void CompetitionSimulator::printOutput() {
     for(auto& nameScorePair : scores){
         buffer << nameScorePair.first << " " << nameScorePair.second << "\n";
     }
-    writeResultsToFile(buffer);
+    writeResultsToFile(buffer, "competition_", algorithmsFolder);
 }
 
-void CompetitionSimulator::writeResultsToFile(const std::stringstream &ss) {
-    std::string timeStr = getTimeString();
-    std::string filename = "competition_" + timeStr + ".txt";
-    std::filesystem::path filePath = std::filesystem::path(algorithmsFolder) / filename;
-
-    std::ofstream outFile(filePath);
-    if (!outFile) {
-        throw std::runtime_error("Failed to open file: " + filePath.string());
-    }
-    outFile << ss.str();
-    outFile.close();
-}
 
 
 void CompetitionSimulator::run() {

@@ -10,7 +10,7 @@ namespace GameManager_206038929_314620071 {
     using std::string;
 
 
-    class GameManager : public AbstractGameManager{
+    class MyGameManager_206038929_314620071 : public AbstractGameManager{
     private:
         static constexpr int stepsWithNoAmmoLimit = 40;
         bool verbose = false;
@@ -67,15 +67,15 @@ namespace GameManager_206038929_314620071 {
 
 
     public:
-        GameManager(const GameManager &) = delete;
+        MyGameManager_206038929_314620071(const MyGameManager_206038929_314620071 &) = delete;
 
-        GameManager &operator=(const GameManager &) = delete;
+        MyGameManager_206038929_314620071 &operator=(const MyGameManager_206038929_314620071 &) = delete;
 
-        GameManager(GameManager &&) = delete;
+        MyGameManager_206038929_314620071(MyGameManager_206038929_314620071 &&) = delete;
 
-        GameManager &operator=(GameManager &&) = delete;
+        MyGameManager_206038929_314620071 &operator=(MyGameManager_206038929_314620071 &&) = delete;
 
-        explicit GameManager(bool verbose): verbose(verbose){}
+        explicit MyGameManager_206038929_314620071(bool verbose): verbose(verbose){}
 
 
 

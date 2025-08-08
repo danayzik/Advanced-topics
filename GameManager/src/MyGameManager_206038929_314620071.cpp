@@ -1,4 +1,4 @@
-#include "GameManager.h"
+#include "MyGameManager_206038929_314620071.h"
 #include <iostream>
 #include <utility>
 #include "GameManagerRegistration.h"
@@ -7,13 +7,15 @@
 
 
 namespace GameManager_206038929_314620071 {
-    REGISTER_GAME_MANAGER(GameManager)
+    REGISTER_GAME_MANAGER(MyGameManager_206038929_314620071)
+
+
     using namespace ActionRequestUtils;
 
 
 
 //Returns whether the tank can perform the requested action
-    bool GameManager::isLegaLAction(ActionRequest action, const Tank &tank) const {
+    bool MyGameManager_206038929_314620071::isLegaLAction(ActionRequest action, const Tank &tank) const {
         TankMode mode = tank.getMode();
         bool preparingReverse = mode == PreparingReverse || mode == JustEnteredReverse;
         if (action != ActionRequest::MoveForward && preparingReverse) {
@@ -37,9 +39,15 @@ namespace GameManager_206038929_314620071 {
 
 //Requests the action from a tank, sets the action the tank will actually perform in this round.
 //If the action is GetBattleInfo, performs it right away
-    void GameManager::getAndSetAction(Tank &tank) {
+    void MyGameManager_206038929_314620071::getAndSetAction(Tank &tank) {
         TankAlgorithm &tankAlgorithm = *(tankAlgorithms.at(tank.getTankIndex()));
-        ActionRequest actionRequest = tankAlgorithm.getAction();
+        ActionRequest actionRequest;
+        try{
+            actionRequest = tankAlgorithm.getAction();
+        }
+        catch (...){
+            actionRequest = ActionRequest::DoNothing;
+        }
         TankMode mode = tank.getMode();
         int playerIndex = tank.getPlayerIndex();
         bool justEnteredReverse = mode == JustEnteredReverse;
@@ -84,7 +92,7 @@ namespace GameManager_206038929_314620071 {
     }
 
 //Performs the action set by "getAndSetAction()". If the action is moving, GameMap moves the tank.
-    void GameManager::actionStep() {
+    void MyGameManager_206038929_314620071::actionStep() {
         for (size_t i = 0; i < tankAlgorithms.size(); i++) {
             auto &tankEntityIDopt = tankEntityIds.at(i);
             if (!tankEntityIDopt) {
@@ -121,7 +129,7 @@ namespace GameManager_206038929_314620071 {
 
     }
 
-    bool GameManager::gameOverCheck() {
+    bool MyGameManager_206038929_314620071::gameOverCheck() {
         tanksPerPlayer = {};
         for (auto &tankEntityIdOpt: tankEntityIds) {
             if (tankEntityIdOpt) {
@@ -129,7 +137,7 @@ namespace GameManager_206038929_314620071 {
                 tanksPerPlayer[tank.getPlayerIndex() - 1]++;
             }
         }
-        if (stepsSinceNoAmmo >= stepsWithNoAmmoLimit) {
+        if (stepsSinceNoAmmo > stepsWithNoAmmoLimit) {
             gameResult.reason = GameResult::Reason::ZERO_SHELLS;
             gameResult.winner = 0;
             return true;
@@ -139,7 +147,7 @@ namespace GameManager_206038929_314620071 {
             gameResult.winner = 0;
             return true;
         }
-        if (stepCounter >= maxSteps) {
+        if (stepCounter > maxSteps) {
             gameResult.reason = GameResult::Reason::MAX_STEPS;
             gameResult.winner = 0;
             return true;
@@ -154,7 +162,7 @@ namespace GameManager_206038929_314620071 {
     }
 
 
-    void GameManager::getAndSetActionsForAllTanks() {
+    void MyGameManager_206038929_314620071::getAndSetActionsForAllTanks() {
         for (size_t i = 0; i < tankAlgorithms.size(); i++) {
             auto &tankEntityIdOpt = tankEntityIds.at(i);
             if (!tankEntityIdOpt) {
@@ -166,7 +174,7 @@ namespace GameManager_206038929_314620071 {
         }
     }
 
-    void GameManager::tankStep() {
+    void MyGameManager_206038929_314620071::tankStep() {
         getAndSetActionsForAllTanks();
         gameMap.tanksAboutToCollide();
         actionStep();
@@ -175,19 +183,17 @@ namespace GameManager_206038929_314620071 {
     }
 
 //Contains delay only if visuals are on, for viewing experience.
-    void GameManager::shellStep() {
+    void MyGameManager_206038929_314620071::shellStep() {
         gameMap.shellsAboutToCollide();
         gameMap.moveShells();
         gameMap.checkCollisions();
         checkForDeadTanks();
     }
 
-    void GameManager::roundTick() {
+    void MyGameManager_206038929_314620071::roundTick() {
         stepCounter++;
         outputLine = {};
         satelliteViewOpt = std::nullopt;
-        if (allTanksOutOfAmmo)
-            stepsSinceNoAmmo++;
         allTanksOutOfAmmo = true;
         for (auto tankIdOpt: tankEntityIds) {
             if (tankIdOpt) {
@@ -198,24 +204,34 @@ namespace GameManager_206038929_314620071 {
                 }
             }
         }
+        if (allTanksOutOfAmmo)
+            stepsSinceNoAmmo++;
     }
 
 //Main game flow
-    void GameManager::gameLoop() {
+    void MyGameManager_206038929_314620071::gameLoop() {
         while (!gameOverCheck()) {
             roundTick();
+            if (gameOverCheck()) {
+                stepCounter--;
+                break;
+            }
             tankStep();
-            if (gameOverCheck())
+            if (gameOverCheck()) {
+                stepCounter--;
                 break;
+            }
             shellStep();
-            if (gameOverCheck())
+            if (gameOverCheck()) {
+                stepCounter--;
                 break;
+            }
             shellStep();
             writeOutputLine();
         }
     }
 
-    void GameManager::saveGameResult() {
+    void MyGameManager_206038929_314620071::saveGameResult() {
         gameResult.gameState = gameMap.getSatelliteView();
         for (auto count : tanksPerPlayer) {
             assert(count >= 0);
@@ -226,17 +242,17 @@ namespace GameManager_206038929_314620071 {
 
     }
 
-    void GameManager::logAction(ActionRequest action) {
+    void MyGameManager_206038929_314620071::logAction(ActionRequest action) {
         outputLine.push_back(actionToString(action));
     }
 
-    GameResult GameManager::run(size_t map_width, size_t map_height,
-                          const SatelliteView& map,
-                          string map_name,
-                          size_t max_steps, size_t num_shells,
-                          Player& player1, string name1, Player& player2, string name2,
-                          TankAlgorithmFactory player1_tank_algo_factory,
-                          TankAlgorithmFactory player2_tank_algo_factory) {
+    GameResult MyGameManager_206038929_314620071::run(size_t map_width, size_t map_height,
+                                                      const SatelliteView& map,
+                                                      string map_name,
+                                                      size_t max_steps, size_t num_shells,
+                                                      Player& player1, string name1, Player& player2, string name2,
+                                                      TankAlgorithmFactory player1_tank_algo_factory,
+                                                      TankAlgorithmFactory player2_tank_algo_factory) {
         tankAlgorithmFactories[0] = std::move(player1_tank_algo_factory);
         tankAlgorithmFactories[1] = std::move(player2_tank_algo_factory);
         playerNames[0] = std::move(name1);
@@ -256,10 +272,10 @@ namespace GameManager_206038929_314620071 {
     }
 
 
-    void GameManager::writeOutputFile() {
+    void MyGameManager_206038929_314620071::writeOutputFile() {
         std::ofstream outputFile = {};
 
-        outputFile.open("output_" + mapName);
+        outputFile.open("Manager_206038929_314620071_Players_" + playerNames[0] + "_" + playerNames[1] + "_map_" + mapName);
         if (!outputLine.empty())
             writeOutputLine();
         if(gameResult.winner != 0){
@@ -293,7 +309,7 @@ namespace GameManager_206038929_314620071 {
     }
 
 
-    void GameManager::checkForDeadTanks() {
+    void MyGameManager_206038929_314620071::checkForDeadTanks() {
         for (size_t i = 0; i < tankAlgorithms.size(); i++) {
             auto &tankEntityIdOpt = tankEntityIds.at(i);
             if (!tankEntityIdOpt) {
@@ -307,7 +323,7 @@ namespace GameManager_206038929_314620071 {
         }
     }
 
-    void GameManager::writeOutputLine() {
+    void MyGameManager_206038929_314620071::writeOutputLine() {
         for (size_t i = 0; i < outputLine.size(); ++i) {
             outputStream << outputLine[i];
             if (i + 1 < outputLine.size()) outputStream << ", ";
@@ -315,7 +331,7 @@ namespace GameManager_206038929_314620071 {
         outputStream << '\n';
     }
 
-    void GameManager::registerTank(const Tank &tank) {
+    void MyGameManager_206038929_314620071::registerTank(const Tank &tank) {
         int playerIndex = tank.getPlayerIndex();
         int tankIndex = tank.getTankIndex();
         size_t tankId = tank.getEntityId();
@@ -324,7 +340,7 @@ namespace GameManager_206038929_314620071 {
         tankEntityIds.emplace_back(tankId);
     }
 
-    void GameManager::registerAllTanks() {
+    void MyGameManager_206038929_314620071::registerAllTanks() {
         auto tankIds = gameMap.stealTempTankIds();
         for(auto tankId : tankIds){
             const Tank& tank = gameMap.getTank(tankId);

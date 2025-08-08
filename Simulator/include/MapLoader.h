@@ -23,7 +23,6 @@ private:
                                          "<Map data>\n";
     std::stringstream errorBuffer;
     std::string mapFilePath;
-    std::string mapFileName;
     std::ifstream mapFile;
     std::vector<std::vector<char>> gameMap = {};
 
@@ -66,7 +65,7 @@ public:
 
     ~MapLoader() = default;
 
-    Map& loadMap(const std::string& mapPath, std::stringstream& simulatorErrorBuffer);
+    Map loadMap(const std::string& mapPath, std::stringstream& simulatorErrorBuffer);
 
     static MapLoader& getInstance(){return mapLoaderInstance;}
 };

@@ -13,7 +13,6 @@ namespace GameManager_206038929_314620071 {
         Coordinates coords;
         int health;
 
-
     public:
         inline virtual ~GameEntity() = default;
 

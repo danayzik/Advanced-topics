@@ -3,7 +3,7 @@
 #include "FullBattleInfo.h"
 #include "PlayerCommunicationModule.h"
 namespace Algorithm_206038929_314620071 {
-    class PlayerOne : public Player, public PlayerCommunicationModule {
+    class Player_206038929_314620071 : public Player, public PlayerCommunicationModule {
 
     private:
 
@@ -11,9 +11,9 @@ namespace Algorithm_206038929_314620071 {
 
     public:
 
-        PlayerOne(int player_index,
-                  size_t x, size_t y,
-                  size_t max_steps, size_t num_shells) :PlayerCommunicationModule(player_index, x, y, max_steps, num_shells) {}
+        Player_206038929_314620071(int player_index,
+                                   size_t x, size_t y,
+                                   size_t max_steps, size_t num_shells) :PlayerCommunicationModule(player_index, x, y, max_steps, num_shells) {}
 
         void updateTankInstructions() override;
 

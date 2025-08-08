@@ -11,6 +11,7 @@ int main(int argc, char* argv[]){
         parser.parse(argc, argv);
     }
     catch (const std::exception& e){
+        std::cerr << "Critical error encountered! can't continue.\n";
         std::cerr << e.what() << std::endl;
         return 1;
     }

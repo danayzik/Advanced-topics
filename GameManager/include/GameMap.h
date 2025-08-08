@@ -16,8 +16,6 @@ namespace GameManager_206038929_314620071 {
     using std::vector;
     using std::string;
 
-    class GameManager;
-
 
 
     class GameMap {

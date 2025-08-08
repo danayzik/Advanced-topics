@@ -4,7 +4,9 @@
 #include <string>
 #include <sstream>
 #include "Exceptions.h"
+#include <iostream>
 class GameManagerRegistrar {
+private:
     class GameManagerEntry{
         std::string so_name;
         GameManagerFactory factory;
@@ -12,7 +14,10 @@ class GameManagerRegistrar {
     public:
         GameManagerEntry(const std::string& so_name) : so_name(so_name) {}
         void setFactory(GameManagerFactory&& gameManagerFactory) {
-            assert(factory == nullptr);
+            if(factory){
+                std::cout << "Duplicate registration attempted, ignoring\n";
+                return;
+            }
             factory = std::move(gameManagerFactory);
         }
         const std::string& name() const { return so_name; }
@@ -26,9 +31,17 @@ class GameManagerRegistrar {
     };
     std::vector<GameManagerEntry> managers;
     static GameManagerRegistrar registrar;
+    GameManagerRegistrar() = default;
 
 public:
+    GameManagerRegistrar(const GameManagerRegistrar&) = delete;
+    GameManagerRegistrar& operator=(const GameManagerRegistrar&) = delete;
+    GameManagerRegistrar(GameManagerRegistrar&&) = delete;
+    GameManagerRegistrar& operator=(GameManagerRegistrar&&) = delete;
+    ~GameManagerRegistrar() = default;
+
     static GameManagerRegistrar& getGameManagerRegistrar(){return registrar;};
+
     void createGameManagerFactoryEntry(const std::string& name) {
         managers.emplace_back(name);
     }
@@ -36,16 +49,8 @@ public:
         managers.back().setFactory(std::move(factory));
     }
 
+    void validateLastRegistration();
 
-    void validateLastRegistration() {
-        const auto& last = managers.back();
-        if (!last.hasFactory()) {
-            std::stringstream msg;
-            msg << last.name()
-                << ": has factory: " << last.hasFactory();
-            throw BadRegistrationException(msg.str());
-        }
-    }
 
     void removeLast() {
         managers.pop_back();

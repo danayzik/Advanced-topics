@@ -1,26 +1,40 @@
 
 ToDo:
+Hunt problem with 3rd running command
+Make more of my algo duplicates after fix
+
+
 Refine algo behaviour
-verify game result given by game manager
-Manager unique output map name
-return registration into the namespace
-Competition sim
-Move function definitions for registrar to cpp
-refactor registrars to cpp instead of all header
-combine logic of writeresultstofile
-check rule of 5
-add bad game result to error and maybe skip that manager
+Check if my algo counts on game manager tracking correctly
+Make all my tanks sniping, turn them to chasers when i'm ahead
+write in readme about donothing when algo encounters error
+Remove player_index from full battle info?
+and from player decision
+
+Change coordinates of things in battleinfo to pointers
+hunt down seg fault that happens rarely
+
+Fix GetDirectionbetween points consider whats it used for
+
+Prints in:
+
+
 
 
 Things in the end:
-Gamemanager registrar private constructor and delete others
-rule of 5 for all
+
+
 
 test with other so's
 
 
 
-./simulator_206038929_314620071 -comparative   game_map=map.txt   game_managers_folder=GameManager   algorithm1=Algorithm/Algorithm_206038929_314620071.so   algorithm2=Algorithm/Algorithm_206038929_314620071.so   num_threads=3   -verbose
+./simulator_206038929_314620071 -comparative   game_map=Maps/input_a.txt  game_managers_folder=GameManager   algorithm1=Algorithm/Algorithm_206038929_314620071.so   algorithm2=Algorithm/Algorithm_206038929_314620071.so   num_threads=3   -verbose
+./simulator_206038929_314620071 -comparative   game_map=Maps/input_a.txt   game_managers_folder=Managers  algorithm1=Algos/Algorithm_209399021_208239152.so  algorithm2=Algos/Algorithm_209399021_208239152.so   num_threads=3   -verbose
+./simulator_206038929_314620071 -comparative   game_map=Maps/input_a.txt   game_managers_folder=Managers algorithm1=Algos/Algorithm_206038929_314620071.so   algorithm2=Algos/Algorithm_322213836_212054837.so num_threads=3   -verbose
+
+./simulator_206038929_314620071 -competition   game_maps_folder=Maps   game_manager=Managers/GameManager_206038929_314620071.so algorithms_folder=Algos num_threads=3 -verbose
+
 
 
 cmake -S . -B build

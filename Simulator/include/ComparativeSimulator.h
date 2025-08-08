@@ -26,10 +26,15 @@ private:
     void loadMapFile(const std::string& path);
     void printGameResult(const GameResult& result, std::stringstream& buffer);
     void storeGameResult(GameResult&& result, size_t storeIndex);
-    void writeResultsToFile(const std::stringstream &ss);
     void groupResults();
     void printOutput();
 public:
+    ComparativeSimulator() = default;
+    ComparativeSimulator(const ComparativeSimulator&) = delete;
+    ComparativeSimulator& operator=(const ComparativeSimulator&) = delete;
+    ComparativeSimulator(ComparativeSimulator&&) = delete;
+    ComparativeSimulator& operator=(ComparativeSimulator&&) = delete;
+
     void loadArguments(const ParsedArguments& arguments) override;
     void run() override;
     ~ComparativeSimulator() override = default;

@@ -2,6 +2,7 @@
 #include "Renderer.h"
 #include "SFML/Graphics.hpp"
 #include <vector>
+//This file is unused currently.
 namespace GameManager_206038929_314620071 {
     class SFMLRenderer : public Renderer {
     private:

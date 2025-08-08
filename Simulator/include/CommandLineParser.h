@@ -55,9 +55,15 @@ private:
     static bool fileExists(const std::string& path) ;
     static bool validSOFolder(const std::string& path);
     static bool validMapsFolder(const std::string& path);
-
+    CommandLineParser() = default;
 
 public:
+    CommandLineParser(const CommandLineParser&) = delete;
+    CommandLineParser& operator=(const CommandLineParser&) = delete;
+    CommandLineParser(CommandLineParser&&) = delete;
+    CommandLineParser& operator=(CommandLineParser&&) = delete;
+    ~CommandLineParser() = default;
+
     static inline CommandLineParser& getParser(){return parserInstance;}
     void parse(int argc, char* argv[]);
     [[nodiscard]] inline const ParsedArguments& getParsedArguments() const{ assert(argumentsParsed); return parsedArguments;}

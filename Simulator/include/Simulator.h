@@ -12,7 +12,9 @@ protected:
     bool verbose = false;
     void loadSO(const std::string& path);
     std::stringstream errorBuffer;
-    std::string getTimeString();
+    static std::string getTimeString();
+    static bool validGameResult(const GameResult& result);
+    static void writeResultsToFile(const std::stringstream &resultStream, const std::string& filePrefix, const std::string& folder);
 
 public:
     virtual void loadArguments(const ParsedArguments& arguments);

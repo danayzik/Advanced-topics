@@ -1,7 +1,7 @@
 #include "SFMLRenderer.h"
 #include "EntityManager.h"
 #include "GameEntityUtils.h"
-
+//This file is unused currently.
 namespace GameManager_206038929_314620071 {
     using namespace EntityUtils;
 

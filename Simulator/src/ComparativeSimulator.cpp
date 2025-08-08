@@ -10,7 +10,7 @@ namespace fs = std::filesystem;
 
 void ComparativeSimulator::loadMapFile(const std::string &path) {
     mapFileName = fs::path(path).filename().string();
-    mapInfo = std::move(MapLoader::getInstance().loadMap(path, errorBuffer));
+    mapInfo = MapLoader::getInstance().loadMap(path, errorBuffer);
     mapInfo.mapFileName = mapFileName;
 }
 
@@ -75,6 +75,7 @@ void ComparativeSimulator::groupResults() {
         const auto& result = results[i];
         bool crashed = crashedManagersIndices.count(i) > 0;
         GameResultKey key  = {result, mapInfo.rows, mapInfo.cols, crashed};
+        std::cout << result.rounds << std::endl;
         groups[key].push_back(i);
     }
 }
@@ -135,28 +136,17 @@ void ComparativeSimulator::printOutput() {
         const GameResult& result = results[gmIndex];
 
         if (crashedManagersIndices.count(gmIndex) > 0){
-            buffer << "These game managers crashed\n";
+            buffer << "These game managers crashed or returned an invalid result\n";
         }
         else{
             printGameResult(result, buffer);
             buffer << Map::getStringFromView(*result.gameState, mapInfo.rows, mapInfo.cols);
         }
     }
-    writeResultsToFile(buffer);
+    writeResultsToFile(buffer, "comparative_results_", gameManagersFolder);
 }
 
-void ComparativeSimulator::writeResultsToFile(const std::stringstream &ss) {
-    std::string timeStr = getTimeString();
-    std::string filename = "comparative_results_" + timeStr + ".txt";
-    std::filesystem::path filePath = std::filesystem::path(gameManagersFolder) / filename;
 
-    std::ofstream outFile(filePath);
-    if (!outFile) {
-        throw std::runtime_error("Failed to open file: " + filePath.string());
-    }
-    outFile << ss.str();
-    outFile.close();
-}
 
 
 
@@ -184,7 +174,17 @@ void ComparativeSimulator::run() {
                                                   *player1.get(), algo1.name(),
                                                   *player2.get(), algo2.name(),
                                                   tankAlgorithmFactory1, tankAlgorithmFactory2);
-                storeGameResult(std::move(result), i);
+
+                if (validGameResult(result)) {
+                    storeGameResult(std::move(result), i);
+                }
+                else{
+                    std::lock_guard<std::mutex> lock(errorMutex);
+                    errorBuffer << "Game manager: " << entry.name() << " returned an invalid result\n";
+                    crashedManagersIndices.insert(i);
+                }
+
+
             }
             catch (...) {
                 std::lock_guard<std::mutex> lock(errorMutex);

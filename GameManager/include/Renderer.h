@@ -2,6 +2,7 @@
 #include "Cell.h"
 #include "Entities.h"
 #include "vector"
+//This file is unused currently.
 namespace GameManager_206038929_314620071 {
     class Renderer {
 

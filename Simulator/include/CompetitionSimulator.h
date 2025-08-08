@@ -23,8 +23,15 @@ private:
     void storeGameResult(const GameResult& gameResult, size_t algo1Index, size_t algo2Index);
     std::pair<size_t, size_t> fetchIndicesToRun();
     void printOutput();
-    void writeResultsToFile(const std::stringstream &ss);
+
 public:
+    CompetitionSimulator() = default;
+    CompetitionSimulator(const CompetitionSimulator&) = delete;
+    CompetitionSimulator& operator=(const CompetitionSimulator&) = delete;
+    CompetitionSimulator(CompetitionSimulator&&) = delete;
+    CompetitionSimulator& operator=(CompetitionSimulator&&) = delete;
+    ~CompetitionSimulator() override = default;
+
     void loadArguments(const ParsedArguments& arguments) override;
     void run() override;
 

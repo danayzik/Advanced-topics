@@ -7,7 +7,7 @@ Extra work added to this project for which we're requesting a bonus:
    The game supports 0-9 players, the player indices are defined by their tanks in the map text file. See bonus_input.txt
    for reference. Please note that this feature is on by default, meaning if a char between '3' and '9' is used, it is
    not treated as an invalid character that we should ignore, but it makes a tank for that player index.
-   The extra player will be instances of the PlayerOne and PlayerTwo classes, depending on the index mod 2.
+   The extra player will be instances of the Player_206038929_314620071 and PlayerTwo classes, depending on the index mod 2.
 
 
 2) Visuals:

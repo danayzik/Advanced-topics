@@ -1,4 +1,4 @@
-#include "AdaptiveTankAlgorithm.h"
+#include "TankAlgorithm_206038929_314620071.h"
 #include "SnipingTank.h"
 #include "ChasingTank.h"
 #include "TankAlgorithmRegistration.h"
@@ -6,15 +6,15 @@
 
 
 namespace Algorithm_206038929_314620071 {
-    REGISTER_TANK_ALGORITHM(AdaptiveTankAlgorithm);
-    void AdaptiveTankAlgorithm::roundTick() {
+    REGISTER_TANK_ALGORITHM(TankAlgorithm_206038929_314620071);
+    void TankAlgorithm_206038929_314620071::roundTick() {
         roundCounter++;
         if (initialized) {
             battleInfo.roundTick();
         }
     }
 
-    void AdaptiveTankAlgorithm::updateBattleInfo(BattleInfo &info) {
+    void TankAlgorithm_206038929_314620071::updateBattleInfo(BattleInfo &info) {
         auto &newInfo = dynamic_cast<FullBattleInfo &>(info);
         if (!initialized) {
             battleInfo = newInfo;
@@ -39,7 +39,7 @@ namespace Algorithm_206038929_314620071 {
     }
 
 
-    ActionRequest AdaptiveTankAlgorithm::requestAction(ActionRequest action) {
+    ActionRequest TankAlgorithm_206038929_314620071::requestAction(ActionRequest action) {
         auto &myTank = battleInfo.getMyTank();
         switch (action) { //I know all algos currently never request backwards, add handling and tracking to it if needed
             case ActionRequest::DoNothing:
@@ -59,7 +59,7 @@ namespace Algorithm_206038929_314620071 {
     }
 
 
-    ActionRequest AdaptiveTankAlgorithm::getAction() {
+    ActionRequest TankAlgorithm_206038929_314620071::getAction() {
         roundTick();
         if (!initialized) {
             return ActionRequest::GetBattleInfo;

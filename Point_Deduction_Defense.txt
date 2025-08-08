@@ -3,7 +3,7 @@ Please read this before you do.
 
 1) Adhering to the exercise api:
    Honestly, it just wasn't very clear what we were exactly supposed to do. I hope I follow the instructions correctly.
-   Please note that if you want to use a different factory with my GameManager, you need to the construction of these objects in main.cpp
+   Please note that if you want to use a different factory with my MyGameManager_206038929_314620071, you need to the construction of these objects in main.cpp
    Also note, that they cannot be passed in the constructor as temporary objects like in the example main.cpp we were given as this
    does not work.
 
@@ -31,10 +31,10 @@ Please read this before you do.
    so you should be fine.
 
 
-6) Similarity between PlayerOne and PlayerTwo:
+6) Similarity between Player_206038929_314620071 and PlayerTwo:
    You may want to deduct points because these classes are very similar, so please let me highlight the differences:
-   PlayerOne tries to calculate direction of shells, PlayerTwo does not.
-   PlayerOne tank composition is made out of 1 chasing tank and the rest are snipers.
+   Player_206038929_314620071 tries to calculate direction of shells, PlayerTwo does not.
+   Player_206038929_314620071 tank composition is made out of 1 chasing tank and the rest are snipers.
    PlayerTwo tank composition is made out of 2 sniping tanks and the rest are chasing.
    What makes them function differently is mostly the tank composition, so the differences are in how they make their tanks act.
    It is also very easy to make new fairly naive tank algorithms, i was just a bit too lazy to make more just for variety.

@@ -8,7 +8,17 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
-file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
+set(SOURCES
+        src/AlgorithmUtilities.cpp
+        src/ChasingTank.cpp
+        src/FullBattleInfo.cpp
+        src/ObservedCell.cpp
+        src/ObservedTank.cpp
+        src/Player_206038929_314620071.cpp
+        src/PlayerCommunicationModule.cpp
+        src/SnipingTank.cpp
+        src/TankAlgorithm_206038929_314620071.cpp
+)
 
 
 add_library(Algorithm_206038929_314620071 SHARED ${SOURCES})

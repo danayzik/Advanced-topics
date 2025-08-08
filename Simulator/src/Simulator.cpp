@@ -20,7 +20,6 @@ void Simulator::loadSO(const std::string &path) {
         errorBuffer << (err ? err : "Unknown error") << "\n";
         throw SharedObjectLoadingException("Failed loading so from path: " + path);
     }
-
     handles.push_back(handle);
 }
 
@@ -30,11 +29,12 @@ Simulator::~Simulator(){
     for (auto* handle : handles){
         dlclose(handle);
     }
-    if(errorBuffer.str().empty()){
-        return;
-    }
     std::string fileName = "input_errors.txt";
     std::remove(fileName.c_str());
+    if(errorBuffer.str().empty()){
+        std::cout << "No errors were logged\n";
+        return;
+    }
     std::ofstream outFile(fileName);
     if (!outFile) {
         std::cerr << "Failed to open file: " << fileName << '\n';
@@ -42,16 +42,38 @@ Simulator::~Simulator(){
     }
     outFile << errorBuffer.str();
     outFile.close();
+    std::cout << "Written error log to " << fileName << "\n";
 }
 
 std::string Simulator::getTimeString() {
     auto now = std::chrono::system_clock::now();
     std::chrono::duration<double> ts = now.time_since_epoch();
     constexpr size_t NUM_DIGITS = 9;
-    size_t NUM_DIGITS_P = std::pow(10, NUM_DIGITS);
+    constexpr size_t NUM_DIGITS_P = 1000000000ULL;
     std::ostringstream oss;
     oss << std::setw(NUM_DIGITS) << std::setfill('0') << size_t(ts.count() * NUM_DIGITS_P) % NUM_DIGITS_P;
     return oss.str();
+}
+
+void Simulator::writeResultsToFile(const std::stringstream &resultStream, const std::string &filePrefix,
+                                   const std::string &folder) {
+    std::string timeStr = getTimeString();
+    std::string filename = filePrefix + timeStr + ".txt";
+    std::filesystem::path filePath = std::filesystem::path(folder) / filename;
+    std::ofstream outFile(filePath);
+    if (!outFile) {
+        throw std::runtime_error("Failed to open file: " + filePath.string());
+    }
+    outFile << resultStream.str();
+    outFile.close();
+    std::cout << "Output written to " << filePath.string() << "\n";
+}
+
+bool Simulator::validGameResult(const GameResult &result) {
+    bool validWinner = result.winner >= 0 && result.winner <= 2;
+    bool validRemainingTanksVec = (result.reason == GameResult::MAX_STEPS || result.winner != 0 ) ? result.remaining_tanks.size() == 2 : true;
+    bool validGameState = result.gameState != nullptr;
+    return validWinner && validGameState && validRemainingTanksVec;
 }
 
 void Simulator::loadArguments(const ParsedArguments &arguments) {
