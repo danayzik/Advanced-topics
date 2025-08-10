@@ -29,7 +29,7 @@ namespace Algorithm_206038929_314620071 {
             return ActionRequest::MoveForward;
         if (myTank.canFire())
             return ActionRequest::Shoot;
-        return ActionRequest::RotateLeft45;
+        return ActionRequest::GetBattleInfo;
 
     }
 
@@ -38,15 +38,21 @@ namespace Algorithm_206038929_314620071 {
         acquireTarget(battleInfo);
     }
 
+    int SnipingTank::getDistanceFromTarget(const FullBattleInfo &battleInfo) const {
+        assert(targetCoords.has_value());
+        return battleInfo.getMyTankCoords().distanceToOtherCoord(targetCoords.value(), battleInfo.getRows(), battleInfo.getCols());
+    }
+
 
     std::optional<ActionRequest> SnipingTank::rotationTowardsTarget(const FullBattleInfo &battleInfo) {
         return rotationTowardsCoords(battleInfo.getMyTank(), targetCoords.value());
     }
 
     void SnipingTank::acquireTarget(const FullBattleInfo &battleInfo) {
-        targetCoords = getExposedCoordinates(battleInfo, battleInfo.getMyTank(), battleInfo.getEnemyTanksCoordinates());
+        auto enemyCoords = battleInfo.getEnemyTanksCoordinates();
+        targetCoords = getExposedCoordinates(battleInfo, battleInfo.getMyTank(), enemyCoords);
         if (!targetCoords.has_value())
-            targetCoords = getClosestCoordinates(battleInfo, battleInfo.getEnemyTanksCoordinates());
+            targetCoords = getClosestCoordinates(battleInfo, enemyCoords);
     }
 
 }

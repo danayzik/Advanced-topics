@@ -15,7 +15,6 @@ set(SOURCES
         src/ObservedCell.cpp
         src/ObservedTank.cpp
         src/Player_206038929_314620071.cpp
-        src/PlayerCommunicationModule.cpp
         src/SnipingTank.cpp
         src/TankAlgorithm_206038929_314620071.cpp
 )

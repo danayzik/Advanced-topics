@@ -21,12 +21,12 @@ void CompetitionSimulator::loadGameManager(const std::string &gameManagerSoPath)
 void CompetitionSimulator::loadMaps() {
     auto& mapLoader = MapLoader::getInstance();
     for (const auto& entry : fs::directory_iterator(mapsFolder)) {
-        if (entry.is_regular_file() && entry.path().extension() == ".txt") {
+        if (entry.is_regular_file()) {
             std::string fileName = entry.path().stem().string();
             std::string fullPathStr = entry.path().string();
             try{
                 maps.push_back(mapLoader.loadMap(fullPathStr, errorBuffer));
-                maps.end()->mapFileName = fileName;
+                maps.back().mapFileName = fileName;
             }
             catch (const std::exception& e) {
                 std::cout << "Failed loading map file: " << fullPathStr << "\n" << e.what() << "\n";
@@ -53,8 +53,8 @@ void CompetitionSimulator::loadAlgorithms() {
             }
             catch (const SharedObjectLoadingException& e) {
                 scores.pop_back();
-                std::cout << "Failed loading algo so: " << fullPathStr << "\n" << e.what();
-                errorBuffer << "Failed loading algo so: " << fullPathStr << "\n" << e.what();
+                algorithmRegistrar.removeLast();
+                std::cout <<  e.what() << "\n";
             }
             catch (const BadRegistrationException& e) {
                 scores.pop_back();
@@ -148,21 +148,24 @@ void CompetitionSimulator::run() {
         while (true) {
             auto [mapToRunIndex, algoToRun] = fetchIndicesToRun();
             if (mapToRunIndex >= k) break;
-            const auto &algoEntryOne = algorithmRegistrar[algoToRun];
             size_t secondAlgoToRunIndex = (algoToRun+1+(mapToRunIndex%(n-1))) % n;
+
+            const auto &algoEntryOne = algorithmRegistrar[algoToRun];
             const auto &algoEntryTwo = algorithmRegistrar[secondAlgoToRunIndex];
             const auto& mapToRun = maps[mapToRunIndex];
+
             auto player1 = algoEntryOne.createPlayer(1, mapToRun.cols, mapToRun.rows, mapToRun.maxSteps, mapToRun.numShells);
-            auto player2 = algoEntryOne.createPlayer(2, mapToRun.cols, mapToRun.rows, mapToRun.maxSteps, mapToRun.numShells);
+            auto player2 = algoEntryTwo.createPlayer(2, mapToRun.cols, mapToRun.rows, mapToRun.maxSteps, mapToRun.numShells);
             auto gm = gmEntry.createGameManager(verbose);
             try {
-                const GameResult result = gm.get()->run(mapToRun.cols, mapToRun.rows,
+                GameResult result = gm.get()->run(mapToRun.cols, mapToRun.rows,
                                                   *mapToRun.view.get(), mapToRun.mapFileName,
                                                   mapToRun.maxSteps, mapToRun.numShells,
                                                   *player1.get(), algoEntryOne.name(),
                                                   *player2.get(), algoEntryTwo.name(),
                                                   algoEntryOne.getTankAlgorithmFactory(), algoEntryTwo.getTankAlgorithmFactory());
                 storeGameResult(std::move(result), algoToRun, secondAlgoToRunIndex);
+
             }
             catch (...) {
                 std::lock_guard<std::mutex> lock(errorMutex);

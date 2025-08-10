@@ -18,7 +18,7 @@ void Simulator::loadSO(const std::string &path) {
         const char* err = dlerror();
         errorBuffer << "Failed loading so from path: " << path << "\n";
         errorBuffer << (err ? err : "Unknown error") << "\n";
-        throw SharedObjectLoadingException("Failed loading so from path: " + path);
+        throw SharedObjectLoadingException("Failed loading so from path: " + path + "\n");
     }
     handles.push_back(handle);
 }

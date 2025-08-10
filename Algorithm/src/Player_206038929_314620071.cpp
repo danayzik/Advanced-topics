@@ -13,11 +13,17 @@ namespace Algorithm_206038929_314620071 {
     }
 
 
+    void Player_206038929_314620071::processSatelliteView(SatelliteView &satellite_view) {
+        FullBattleInfo satelliteInfo{rows, cols, numShells, satellite_view, playerIndex};
+        satelliteInfo.updateFromEarlierInfo(battleInfo);
+        battleInfo = std::move(satelliteInfo);
+    }
+
     void Player_206038929_314620071::updateTankInstructions() {
-        if (tankCount == 0)
-            battleInfo.setRole(TankRole::Chasing);
-        else
+        if (tankCount <= 0)
             battleInfo.setRole(TankRole::Sniping);
+        else
+            battleInfo.setRole(TankRole::Chasing);
         battleInfo.setRequestInfoCounter(static_cast<int>(tankCount) + 1);
     }
 
@@ -31,18 +37,22 @@ namespace Algorithm_206038929_314620071 {
                 seenAllMyTanks = true;
             }
         } else {
-            checkForDeadTanks();
-            if (shouldCalculateShells(battleInfo.getTankIndex()))
-                battleInfo.assumeEnemyShellsDirections(2);
-            removeIfValIsAfter(tankIndicesThatRecentlyDied, index);
+
+            battleInfo.assumeEnemyShellsDirections(2);
         }
     }
 
 
-    bool Player_206038929_314620071::shouldCalculateShells(int tankIndex) {
-        if (tankCount == 1)
-            return false;
-        bool shouldCalculate = !appearsRightAfter(tankIndicesThatRecentlyDied, tankIndex);
-        return shouldCalculate;
+
+    void Player_206038929_314620071::processBattleInfoPreSending() {
+        if (!seenAllMyTanks)
+            updateTankInstructions();
+        else {
+            tankCount = static_cast<int>(battleInfo.getFriendlyTanks().size());
+            int getInfoCounter = tankCount == 1 ? getInfoCounterWhenAlone : tankCount;
+            battleInfo.setRequestInfoCounter(getInfoCounter);
+        }
     }
+
+
 }

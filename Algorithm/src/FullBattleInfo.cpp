@@ -1,8 +1,9 @@
 #include "FullBattleInfo.h"
+#include <algorithm>
 namespace Algorithm_206038929_314620071{
 
     using namespace EntityUtils;
-
+    using diffEntities = std::vector<unique_ptr<ObservedEntity>>::difference_type;
     FullBattleInfo::FullBattleInfo() : rows(0), cols(0), startingShells(0), observedCells{}, playerIndex(0) {}
 
     FullBattleInfo::FullBattleInfo(size_t rows, size_t cols, size_t startingShells, int playerIndex) : rows(rows),
@@ -22,40 +23,46 @@ namespace Algorithm_206038929_314620071{
                                                       observedCells(rows, std::vector<ObservedCell>(cols)),
                                                       playerIndex(playerIndex) {
         Direction myTankDirection = playerIndex % 2 == 1 ? Direction::Left : Direction::Right;
+        std::unique_ptr<ObservedTank> tankPtr;
+        std::unique_ptr<ObservedShell> shellPtr;
         for (size_t y = 0; y < rows; ++y) {
             for (size_t x = 0; x < cols; ++x) {
                 char symbol = satelliteView.getObjectAt(x, y);
-                if (symbol >= '1' && symbol <= '9') {
+                ObservedCell& cell = observedCells[y][x];
+                if (symbol >= '1' && symbol <= '2') {
                     int playerNumber = symbol - '0';
                     bool friendly = playerNumber == playerIndex;
-                    observedCells[y][x].setEntity(std::make_unique<ObservedTank>(y, x, playerNumber, startingShells,
-                                                                                 playerNumber % 2 == 1 ? Direction::Left
-                                                                                                       : Direction::Right));
+                    tankPtr = std::make_unique<ObservedTank>(y, x, playerNumber, startingShells,
+                                                                  playerNumber % 2 == 1 ? Direction::Left
+                                                                                        : Direction::Right);
                     if (friendly)
-                        friendlyTanksCoordinates.insert({y, x});
+                        friendlyTanks.push_back(tankPtr.get());
                     else
-                        enemyTanksCoordinates.insert({y, x});
+                        enemyTanks.push_back(tankPtr.get());
+                    cell.addEntity(std::move(tankPtr));
+
                     continue;
                 }
                 switch (symbol) {
                     case '%':
-                        myTankCoords = {y, x};
-                        observedCells[y][x].setEntity(
-                                std::make_unique<ObservedTank>(myTankCoords, playerIndex, startingShells,
-                                                               myTankDirection));
-                        friendlyTanksCoordinates.insert(myTankCoords);
+                        tankPtr = std::make_unique<ObservedTank>(y, x, playerIndex, startingShells,
+                                                                      myTankDirection);
+                        friendlyTanks.push_back(tankPtr.get());
+                        cell.addEntity(std::move(tankPtr));
+                        myTank = entityCast<ObservedTank>(cell.getLastEntityPtr());
                         break;
                     case '@':
-                        observedCells[y][x].setMine();
+                        cell.setMine();
                         break;
                     case '#':
-                        observedCells[y][x].setEntity(std::make_unique<ObservedWall>(y, x));
+                        cell.addEntity(std::make_unique<ObservedWall>(y, x));
                         break;
                     case ' ':
                         break;
                     case '*':
-                        observedCells[y][x].setEntity(std::make_unique<ObservedShell>(y, x));
-                        shellCoordinates.insert({y, x});
+                        shellPtr = std::make_unique<ObservedShell>(y, x);
+                        shells.push_back(shellPtr.get());
+                        cell.addEntity(std::move(shellPtr));
                         break;
                     default:
                         throw std::runtime_error("Out of bounds or incorrect symbol");
@@ -64,185 +71,126 @@ namespace Algorithm_206038929_314620071{
         }
     }
 
+
+    //Earlier info is invalidated after this update
+    //Updates information about shells and mines from previous information
     void FullBattleInfo::updateFromEarlierInfo(FullBattleInfo &earlierInfo) {
-        requestInfoCountdown = earlierInfo.requestInfoCountdown;
-        for (size_t y = 0; y < rows; ++y) {
-            for (size_t x = 0; x < cols; ++x) {
-                auto &oldCell = earlierInfo.getCell(y, x);
-                auto &newCell = getCell(y, x);
-                bool bothHaveEntities = oldCell.hasEntity() && newCell.hasEntity();
-                if (oldCell.hasMine && newCell.hasEntity() && newCell.entity->getType() == EntityType::Shell) {
-                    newCell.setMine();
-                }
-                if (bothHaveEntities && (oldCell.entity->getType() == newCell.entity->getType())) {
-                    if (oldCell.entity->getType() == EntityType::Tank) {
-                        Coordinates coords = {y, x};
-                        bool oldIsMyTank = earlierInfo.friendlyTanksCoordinates.count(coords);
-                        bool newIsMyTank = friendlyTanksCoordinates.count(coords);
-                        if (!(oldIsMyTank ^ newIsMyTank)) {
-                            newCell.setEntity(std::move(oldCell.entity));
-                        }
-                    } else {
-                        newCell.setEntity(std::move(oldCell.entity));
-                    }
-
-                }
-
+        for (auto*& shell : shells){
+            Coordinates coords = shell->getCoords();
+            auto& oldShellCell = earlierInfo.getCell(coords);
+            auto& newShellCell = getCell(coords);
+            if (oldShellCell.hasMine())
+                newShellCell.setMine();
+            auto oldShellIndex = oldShellCell.findShellIndex();
+            auto newShellIndex = newShellCell.indexOf(shell);
+            assert(newShellIndex);
+            if (oldShellIndex) {
+                newShellCell.getEntities()[*newShellIndex] = std::move(oldShellCell.getEntities()[*oldShellIndex]);
+                auto* newPtr = entityCast<ObservedShell>(newShellCell.getEntities()[*newShellIndex].get());
+                shell = newPtr;
+                auto& oldEntities = oldShellCell.getEntities();
+                oldEntities.erase(oldEntities.begin() + static_cast<diffEntities>(*oldShellIndex));
             }
-        }
-
-    }
-
-    void FullBattleInfo::moveEntity(Coordinates from, Coordinates to) {
-
-        auto &sourceCell = getCell(from);
-        ObservedEntity &entity = *sourceCell.entity;
-        auto &targetCell = getCell(to);
-        if (myTankCoords == to) {
-            sourceCell.clearEntity();
-            shellCoordinates.erase(from);
-            friendlyTanksCoordinates.erase(from);
-            enemyTanksCoordinates.erase(from);
-            return;
-        }
-        if (targetCell.hasEntity() && to != myTankCoords) {
-            EntityType type = targetCell.entity->getType();
-            switch (type) {
-                case EntityType::Shell:
-                    shellCoordinates.erase(to);
-                    break;
-                case EntityType::Tank:
-                    friendlyTanksCoordinates.erase(to);
-                    enemyTanksCoordinates.erase(to);
-                    break;
-                default:
-                    break;
-            }
-        }
-        if (from == myTankCoords)
-            myTankCoords = to;
-        entity.setCoords(to);
-        EntityType entityType = entity.getType();
-        targetCell.setEntity(std::move(sourceCell.entity));
-        switch (entityType) {
-            case EntityType::Shell:
-                shellCoordinates.erase(from);
-                shellCoordinates.insert(to);
-                break;
-            case EntityType::Tank:
-                if (dynamic_cast<ObservedTank &>(entity).ownedByPlayer(playerIndex)) {
-                    friendlyTanksCoordinates.erase(from);
-                    friendlyTanksCoordinates.insert(to);
-                } else {
-                    enemyTanksCoordinates.erase(from);
-                    enemyTanksCoordinates.insert(to);
-                }
-
-                break;
-            default:
-                break;
-
         }
     }
 
     void FullBattleInfo::fireShellFromTank(ObservedTank &tank) {
-
+        tank.fire();
         if (!tank.directionKnown())
             return;
         Direction dir = tank.getDirection().value();
         Coordinates coords = tank.getCoords();
         Coordinates newCoords = DirectionUtils::nextCoordinate(dir, coords, rows, cols);
         auto &cell = getCell(newCoords);
-        if (cell.hasEntity() && (cell.entity->isWall() || cell.entity->isTank())) {
-            if (cell.entity->isTank()) {
-                cell.clearEntity();
-                if (newCoords != myTankCoords)
-                    friendlyTanksCoordinates.erase(newCoords);
-                enemyTanksCoordinates.erase(newCoords);
-            }
+        if (!cell.isPassableForShell()) {
             return;
         }
         newCoords = DirectionUtils::nextCoordinate(dir, newCoords, rows, cols);
         auto &nextCell = getCell(newCoords);
-        if (nextCell.hasEntity() && (nextCell.entity->isWall() || nextCell.entity->isTank())) {
-            if (nextCell.entity->isTank()) {
-                nextCell.clearEntity();
-                if (newCoords != myTankCoords)
-                    friendlyTanksCoordinates.erase(newCoords);
-                enemyTanksCoordinates.erase(newCoords);
-            }
+        if (!nextCell.isPassableForShell()) {
             return;
         }
-        nextCell.setEntity(std::make_unique<ObservedShell>(newCoords, dir, true));
-        shellCoordinates.insert(newCoords);
+        auto ptr = std::make_unique<ObservedShell>(newCoords, dir, true);
+        shells.push_back(ptr.get());
+        nextCell.addEntity(std::move(ptr));
     }
 
+    //Tank info is invalidated after this
     void FullBattleInfo::updateFromTankInfo(FullBattleInfo &tankInfo) {
         tankIndex = tankInfo.getTankIndex();
-        auto tankCoords = tankInfo.getMyTankCoords();
+        auto* oldMyTank = &tankInfo.getMyTank();
+        auto& newCell = getCell(myTank->getCoords());
+        oldMyTank->setCoords(myTank->getCoords());
+        auto newIndex = newCell.indexOf(myTank);
+        auto& oldCell = tankInfo.getCell(oldMyTank->getCoords());
+        auto oldIndex = oldCell.indexOf(oldMyTank);
+        assert(oldIndex);
+        assert(newIndex);
+        newCell.getEntities()[*newIndex] = std::move(oldCell.getEntities()[*oldIndex]);
+        auto it = std::find(friendlyTanks.begin(), friendlyTanks.end(), myTank);
+        if (it != friendlyTanks.end())
+            friendlyTanks.erase(it);
+        friendlyTanks.push_back(oldMyTank);
+        myTank = oldMyTank;
+        auto& oldEntities = oldCell.getEntities();
+        oldEntities.erase(oldEntities.begin() + static_cast<diffEntities>(*oldIndex));
 
-        auto &tankCell = getCell(tankCoords);
-        if (tankCell.hasEntity() && tankCell.entity->getType() == EntityType::Tank) {
-            tankCell.setEntity(std::move(tankInfo.getCell(tankCoords).entity));
-        } else {
-            throw std::runtime_error("Didn't follow your tank correctly");
-        }
-        auto &shellCoordsFromTankInfo = tankInfo.getShellsCoordinates();
-        for (auto coord: shellCoordsFromTankInfo) {
-            auto &shellPotentialCell = getCell(coord);
-            if (shellPotentialCell.hasEntity() && shellPotentialCell.entity->isShell()) {
-                auto &shell = *entityCast<ObservedShell>(shellPotentialCell.entity.get());
-                auto &shellFromTankInfo = *entityCast<ObservedShell>(tankInfo.getCell(coord).entity.get());
-                if (shellFromTankInfo.directionKnown()) {
-                    shell.setDirection(shellFromTankInfo.getDirection().value());
-
-                }
-            }
-        }
-
+        updateFromEarlierInfo(tankInfo);
     }
 
 
     void FullBattleInfo::moveMyTankForward() {
-        auto &myTank = getMyTank();
-        Coordinates oldCoords = myTank.getCoords();
-        Coordinates newCoords = DirectionUtils::nextCoordinate(myTank.getDirection().value(), myTankCoords, rows, cols);
-        moveEntity(oldCoords, newCoords);
-
-
+        Coordinates oldCoords = myTank->getCoords();
+        Coordinates newCoords = DirectionUtils::nextCoordinate(myTank->getDirection().value(), myTank->getCoords(), rows, cols);
+        auto& oldCell = getCell(oldCoords);
+        auto& newCell = getCell(newCoords);
+        auto oldIndexOpt = oldCell.indexOf(myTank);
+        assert(oldIndexOpt);
+        auto& oldEntities = oldCell.getEntities();
+        newCell.addEntity(std::move(oldEntities[*oldIndexOpt]));
+        oldEntities.erase(oldEntities.begin() + static_cast<diffEntities>(*oldIndexOpt));
+        myTank->setCoords(newCoords);
     }
 
     void FullBattleInfo::setTankIndex(int index) {
         tankIndex = index;
-        auto &myTank = getMyTank();
-        myTank.setIndex(index);
+        myTank->setIndex(index);
     }
 
     void FullBattleInfo::moveKnownShells() {
-        std::unordered_set<Coordinates, CoordinatesHash> oldShellCoords = shellCoordinates;
-        for (auto coord: oldShellCoords) {
-            auto &cell = getCell(coord);
-            auto &shell = *entityCast<ObservedShell>(cell.entity.get());
-            if (!shell.directionKnown() || shell.getFiredLastTurn()) {
-                shell.setAsOld();
+        std::vector<ObservedShell*> ptrToRemove{};
+        for (auto shell: shells) {
+            if (!shell->directionKnown() || shell->getFiredLastTurn()) {
+                shell->setAsOld();
                 continue;
             }
-
-            Coordinates newPos = coord;
+            auto &cell = getCell(shell->getCoords());
+            Coordinates newPos = shell->getCoords();
             bool destroyed = false;
             for (int step = 0; step < 2; ++step) {
-                newPos = DirectionUtils::nextCoordinate(shell.getDirection().value(), newPos, rows, cols);
+                newPos = DirectionUtils::nextCoordinate(shell->getDirection().value(), newPos, rows, cols);
                 auto &nextCell = getCell(newPos);
-                if (nextCell.hasEntity() && nextCell.entity->isWall()) {
-                    cell.clearEntity();
-                    shellCoordinates.erase(coord);
+                if (!nextCell.isPassableForShell()) {
                     destroyed = true;
+                    cell.removeEntity(shell);
+                    ptrToRemove.push_back(shell);
                     break;
                 }
             }
             if (!destroyed) {
-                moveEntity(coord, newPos);
+                auto& targetCell = getCell(newPos);
+                auto oldIndexOpt = cell.indexOf(shell);
+                assert(oldIndexOpt);
+                auto& entities = cell.getEntities();
+                targetCell.addEntity(std::move(entities[*oldIndexOpt]));
+                entities.erase(entities.begin() + static_cast<diffEntities>(*oldIndexOpt));
+                shell->setCoords(newPos);
             }
+        }
+        for (auto* shellPtr : ptrToRemove){
+            auto it = std::find(shells.begin(), shells.end(), shellPtr);
+            if (it != shells.end())
+                shells.erase(it);
         }
 
     }
@@ -250,38 +198,16 @@ namespace Algorithm_206038929_314620071{
     void FullBattleInfo::roundTick() {
         requestInfoCountdown--;
         moveKnownShells();
-        for (const Coordinates &coord: friendlyTanksCoordinates) {
-            auto &cell = getCell(coord);
-            if (!cell.hasEntity())
-                throw std::runtime_error("Coord set doesn't match grid");
-            entityCast<ObservedTank>(cell.entity.get())->tickUpdate();
-        }
-
-        for (const Coordinates &coord: enemyTanksCoordinates) {
-            auto &cell = getCell(coord);
-            if (!cell.hasEntity())
-                throw std::runtime_error("Coord set doesn't match grid");
-
-            entityCast<ObservedTank>(cell.entity.get())->tickUpdate();
-        }
-
+        myTank->tickUpdate();
     }
 
-    bool FullBattleInfo::isFriendlyTankAlive(int index) {
-        return std::any_of(friendlyTanksCoordinates.begin(), friendlyTanksCoordinates.end(),
-                           [&](const auto &coord) {
-                               const auto &cell = getCell(coord);
-                               const auto &tank = *entityCast<ObservedTank>(cell.entity.get());
-                               return tank.getIndex() == index;
-                           });
-    }
 
     void FullBattleInfo::assumeEnemyShellsDirections(int distanceFromTank) {
         const auto &directions = DirectionUtils::getDirections();
-        for (const auto &coord: shellCoordinates) {
-            auto &shell = *entityCast<ObservedShell>(getCell(coord).entity.get());
-            if (shell.directionKnown())
+        for (auto* shell: shells) {
+            if (shell->directionKnown())
                 continue;
+            Coordinates coord = shell->getCoords();
             for (auto [dy, dx]: directions) {
                 Coordinates nextPos = coord;
                 bool blocked = false;
@@ -289,18 +215,102 @@ namespace Algorithm_206038929_314620071{
                 for (int step = 0; step < distanceFromTank; ++step) {
                     nextPos = DirectionUtils::nextCoordinate(dir, nextPos, rows, cols);
                     auto &nextCell = getCell(nextPos);
-                    if (nextCell.hasEntity() && nextCell.entity->isWall()) {
+                    if (!nextCell.isPassableForShell()) {
                         blocked = true;
                         break;
                     }
                 }
-                if (!blocked && enemyTanksCoordinates.count(nextPos)) {
-                    shell.setDirection(DirectionUtils::getOppositeDirection(dir));
+                bool enemyAtNextPos = std::any_of(enemyTanks.begin(), enemyTanks.end(),
+                                                  [&](ObservedTank* t) { return t->getCoords() == nextPos;});
+                if (!blocked && enemyAtNextPos) {
+                    shell->setDirection(DirectionUtils::getOppositeDirection(dir));
                     break;
                 }
             }
-
         }
     }
 
+    std::unordered_set<Coordinates, CoordinatesHash> FullBattleInfo::getEnemyTanksCoordinates() const{
+        std::unordered_set<Coordinates, CoordinatesHash> enemyCoords{};
+        for (auto* enemyTank : enemyTanks){
+            enemyCoords.insert(enemyTank->getCoords());
+        }
+        return enemyCoords;
+    }
+
+    void FullBattleInfo::cloneCell(const FullBattleInfo &other, size_t y, size_t x) {
+        auto& src = other.getCell(y, x);
+        auto& dest = getCell(y, x);
+        dest.clearAllEntities();
+        if (src.hasMine())
+            dest.setMine();
+        for (const auto& entity : src.getEntities()) {
+            auto ptr = entity->clone();
+            switch (ptr->getType()) {
+                case EntityType::Shell:
+                    shells.push_back(entityCast<ObservedShell>(ptr.get()));
+                    break;
+                case EntityType::Tank: {
+                    auto* tankPtr = entityCast<ObservedTank>(ptr.get());
+                    if (playerIndex == tankPtr->getPlayerIndex()) {
+                        friendlyTanks.push_back(tankPtr);
+                    } else {
+                        enemyTanks.push_back(tankPtr);
+                    }
+                    if (Coordinates{y, x} == other.getMyTankCoords())
+                        myTank = tankPtr;
+                    break;
+                }
+                default:
+                    break;
+            }
+            dest.getEntities().push_back(std::move(ptr));
+        }
+    }
+
+    FullBattleInfo::FullBattleInfo(const FullBattleInfo& other)
+            : BattleInfo(other),
+              rows(other.rows),
+              cols(other.cols),
+              startingShells(other.startingShells),
+              playerIndex(other.playerIndex),
+              tankIndex(other.tankIndex),
+              roleToPlay(other.roleToPlay),
+              requestInfoCountdown(other.requestInfoCountdown)
+    {
+        observedCells.resize(rows);
+        for (size_t y = 0; y < rows; ++y) {
+            observedCells[y].resize(cols);
+            for (size_t x = 0; x < cols; ++x) {
+                cloneCell(other, y, x);
+            }
+        }
+    }
+
+    FullBattleInfo& FullBattleInfo::operator=(const FullBattleInfo& other) {
+        if (this != &other) {
+
+            rows = other.rows;
+            cols = other.cols;
+            startingShells = other.startingShells;
+            playerIndex = other.playerIndex;
+            tankIndex = other.tankIndex;
+            roleToPlay = other.roleToPlay;
+            requestInfoCountdown = other.requestInfoCountdown;
+            shells.clear();
+            enemyTanks.clear();
+            friendlyTanks.clear();
+            bool resizeNeeded = observedCells.size() != rows;
+            if (resizeNeeded) observedCells.resize(rows);
+            for (size_t y = 0; y < rows; ++y) {
+                for (size_t x = 0; x < cols; ++x) {
+                    if (resizeNeeded) {
+                        observedCells[y].resize(cols);
+                    }
+                    cloneCell(other, y, x);
+                }
+            }
+        }
+        return *this;
+    }
 }

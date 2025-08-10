@@ -37,24 +37,25 @@ void CommandLineParser::parseComparativeMode(int argc, char *argv[]) {
             continue;
         auto splitOpt = splitKeyValue(arg);
         if(!splitOpt.has_value()){
-            throw std::invalid_argument(errorMessages.unexpectedArgument);
+            throw std::invalid_argument(errorMessages.unexpectedArgument + arg + "\n");
         }
         auto [argKey, value] = splitOpt.value();
+        const std::string dupError = errorMessages.duplicateArgument + argKey + "\n";
         if (argKey == argumentStrings.gameMap){
             if(parsedArguments.mapFileName.has_value())
-                throw std::invalid_argument(errorMessages.duplicateArgument);
+                throw std::invalid_argument(dupError);
             parsedArguments.mapFileName = value;
         }else if (argKey == argumentStrings.managersFolder){
             if(parsedArguments.managersFolder.has_value())
-                throw std::invalid_argument(errorMessages.duplicateArgument);
+                throw std::invalid_argument(dupError);
             parsedArguments.managersFolder = value;
         }else if (argKey == argumentStrings.algo1){
             if(parsedArguments.algo1.has_value())
-                throw std::invalid_argument(errorMessages.duplicateArgument);
+                throw std::invalid_argument(dupError);
             parsedArguments.algo1 = value;
         }else if (argKey == argumentStrings.algo2){
             if(parsedArguments.algo2.has_value())
-                throw std::invalid_argument(errorMessages.duplicateArgument);
+                throw std::invalid_argument(dupError);
             parsedArguments.algo2 = value;
         }else if (argKey == argumentStrings.numThreads){
             size_t pos = 0;
@@ -70,7 +71,7 @@ void CommandLineParser::parseComparativeMode(int argc, char *argv[]) {
                 throw std::invalid_argument(errorMessages.invalidNumThreads);
             }
         }else{
-            throw std::invalid_argument(errorMessages.unexpectedArgument);
+            throw std::invalid_argument(errorMessages.unexpectedArgument + argKey + "\n");
         }
     }
 }
@@ -88,20 +89,21 @@ void CommandLineParser::parseCompetitiveMode(int argc, char *argv[]) {
             continue;
         auto splitOpt = splitKeyValue(arg);
         if(!splitOpt.has_value()){
-            throw std::invalid_argument(errorMessages.unexpectedArgument);
+            throw std::invalid_argument(errorMessages.unexpectedArgument + arg + "\n");
         }
         auto [argKey, value] = splitOpt.value();
+        const std::string dupError = errorMessages.duplicateArgument + argKey + "\n";
         if (argKey == argumentStrings.mapsFolder){
             if(parsedArguments.mapsFolder.has_value())
-                throw std::invalid_argument(errorMessages.duplicateArgument);
+                throw std::invalid_argument(dupError);
             parsedArguments.mapsFolder = value;
         }else if (argKey == argumentStrings.managerFile){
             if(parsedArguments.managerFileName.has_value())
-                throw std::invalid_argument(errorMessages.duplicateArgument);
+                throw std::invalid_argument(dupError);
             parsedArguments.managerFileName = value;
         }else if (argKey == argumentStrings.algoFolder){
             if(parsedArguments.algoFolder.has_value())
-                throw std::invalid_argument(errorMessages.duplicateArgument);
+                throw std::invalid_argument(dupError);
             parsedArguments.algoFolder = value;
         }else if (argKey == argumentStrings.numThreads){
             size_t pos = 0;
@@ -117,7 +119,7 @@ void CommandLineParser::parseCompetitiveMode(int argc, char *argv[]) {
                 throw std::invalid_argument(errorMessages.invalidNumThreads);
             }
         }else{
-            throw std::invalid_argument(errorMessages.unexpectedArgument);
+            throw std::invalid_argument(errorMessages.unexpectedArgument + argKey + "\n");
         }
     }
 }
@@ -224,10 +226,7 @@ bool CommandLineParser::validMapsFolder(const std::string &path) {
 
         for (const auto& entry : fs::directory_iterator(path)) {
             if (entry.is_regular_file()) {
-                const auto& filename = entry.path().filename().string();
-                if (filename.size() > 4 && filename.substr(filename.size() - 4) == ".txt") {
-                    return true;
-                }
+                return true;
             }
         }
     } catch (...) {

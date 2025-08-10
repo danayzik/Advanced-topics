@@ -50,12 +50,12 @@ namespace Algorithm_206038929_314620071{
         int tankX = tank.getX();
         int rows = static_cast<int>(battleInfo.getRows());
         int cols = static_cast<int>(battleInfo.getCols());
-        const auto &shellCoordsSet = battleInfo.getShellsCoordinates();
-        for (auto &shellCoords: shellCoordsSet) {
-            const auto &shell = *entityCast<ObservedShell>(battleInfo.getCell(shellCoords).entity.get());
-            if (!shell.directionKnown())
+        const auto &shells = battleInfo.getShells();
+        for (auto* shell: shells) {
+            auto shellCoords = shell->getCoords();
+            if (!shell->directionKnown())
                 continue;
-            Direction shellDirection = shell.getDirection().value();
+            Direction shellDirection = shell->getDirection().value();
             int shellY = shellCoords.y;
             int shellX = shellCoords.x;
             int dy = (tankY - shellY + rows) % rows;
@@ -89,6 +89,7 @@ namespace Algorithm_206038929_314620071{
         size_t rows = battleInfo.getRows();
         size_t cols = battleInfo.getCols();
         Coordinates myTankCoords = battleInfo.getMyTankCoords();
+        assert(!coordsSet.empty());
         closest = &(*std::min_element(
                 coordsSet.begin(),
                 coordsSet.end(),
@@ -101,13 +102,20 @@ namespace Algorithm_206038929_314620071{
     }
 
     bool friendlyInDirectionWithinRange(const FullBattleInfo &battleInfo, Direction dir, int range) {
-        const auto &friendlyTanks = battleInfo.getFriendlyTanksCoordinates();
+        const auto &friendlyTanks = battleInfo.getFriendlyTanks();
         Coordinates myTankCoords = battleInfo.getMyTankCoords();
         Coordinates newPos = myTankCoords;
+        std::vector<Coordinates> friendlyTankCoordinates{};
+        for(auto* tank : friendlyTanks){
+            friendlyTankCoordinates.push_back(tank->getCoords());
+        }
+
         for (int i = 0; i < range; ++i) {
             newPos = DirectionUtils::nextCoordinate(dir, newPos, battleInfo.getRows(), battleInfo.getCols());
-            if (friendlyTanks.count(newPos))
-                return true;
+            for (const auto &coord : friendlyTankCoordinates) {
+                if (coord == newPos)
+                    return true;
+            }
         }
         return false;
     }
@@ -129,22 +137,19 @@ namespace Algorithm_206038929_314620071{
                 while (true) {
                     nextPos = DirectionUtils::nextCoordinate(dir, nextPos, rows, cols);
                     auto &cell = battleInfo.getCell(nextPos);
-                    if (cell.hasEntity() && cell.entity->isWall())
+                    if (!cell.isPassableForShell())
                         break;
                     if (nextPos == coords)
                         return coords;
                 }
-
             }
         }
         return std::nullopt;
     }
 
     std::optional<Coordinates> getClosestEnemyInLineOfSight(const FullBattleInfo &battleInfo) {
-        const auto &enemyCoords = battleInfo.getEnemyTanksCoordinates();
+        auto enemyCoords = battleInfo.getEnemyTanksCoordinates();
         const ObservedTank &myTank = battleInfo.getMyTank();
-
-
         std::unordered_set<Coordinates, CoordinatesHash> visibleEnemies;
         for (const Coordinates &coord: enemyCoords) {
             if (enemyInLineOfSight(battleInfo, myTank, coord)) {

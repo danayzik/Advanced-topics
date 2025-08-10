@@ -246,6 +246,17 @@ namespace GameManager_206038929_314620071 {
     void GameMap::handleBadCharacter(size_t y, size_t x) {
         std::cout << "GameManager_206038929_314620071 got an unexpected character at (" << y << ", " << x << "), filling as space.\n";
     }
+
+    void GameMap::cleanUp() {
+        grid.clear();
+        grid.shrink_to_fit();
+        shellsIds.clear();
+        tankIds.clear();
+        tempTankIdsVector.clear();
+        rows = 0;
+        cols = 0;
+        entityManager.cleanUp();
+    }
 }
 
 

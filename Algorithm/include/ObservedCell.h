@@ -4,19 +4,29 @@
 
 namespace Algorithm_206038929_314620071 {
 
-    struct ObservedCell {
-        bool hasMine = false;
-        std::unique_ptr<ObservedEntity> entity;
+    class ObservedCell {
+    private:
 
-        inline void clearMine() { hasMine = false; }
+        bool mine = false;
+        std::vector<std::unique_ptr<ObservedEntity>> entities;
 
-        inline void setMine() { hasMine = true; }
+    public:
+        inline void clearMine() { mine = false; }
 
-        inline void clearEntity() { entity = nullptr; }
+        inline void setMine() { mine = true; }
 
-        void setEntity(std::unique_ptr<ObservedEntity> e) {
-            entity = std::move(e);
+        void removeEntity(ObservedEntity* ptrToRemove);
+
+        inline void clearAllEntities(){entities.clear();}
+
+        void addEntity(std::unique_ptr<ObservedEntity> e) {
+            entities.push_back(std::move(e));
         }
+
+        inline ObservedEntity* getLastEntityPtr(){
+            return entities.empty() ? nullptr : entities.back().get();
+        }
+
 
         ObservedCell() = default;
 
@@ -30,11 +40,23 @@ namespace Algorithm_206038929_314620071 {
 
         ObservedCell &operator=(ObservedCell &&) noexcept = default;
 
+        std::optional<size_t> findShellIndex();
+
+        [[nodiscard]] std::vector<std::unique_ptr<ObservedEntity>>& getEntities() { return entities;}
+
+        [[nodiscard]] const std::vector<std::unique_ptr<ObservedEntity>>& getEntities() const { return entities;}
+
         [[nodiscard]] bool isPassableForTank() const;
 
         [[nodiscard]] bool isPassableForShell() const;
 
-        [[nodiscard]] bool hasEntity() const { return entity != nullptr; }
+        [[nodiscard]] bool hasShell() const;
+
+        [[nodiscard]] bool hasMine() const{return mine;}
+
+        [[nodiscard]] bool hasEntity() const{return !entities.empty();}
+
+        [[nodiscard]] std::optional<size_t> indexOf(ObservedEntity* ptr);
 
     };
 }

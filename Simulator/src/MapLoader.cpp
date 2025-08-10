@@ -41,7 +41,6 @@ bool MapLoader::readSettings() {
         try {
             temp = std::stol(val);
             if (temp < 0) {
-                std::cerr << "Negative numbers in the map settings are not allowed" << std::endl;
                 return false;
             }
             value = static_cast<size_t>(temp);
@@ -120,24 +119,35 @@ Map MapLoader::loadMap(const std::string &mapPath, std::stringstream& simulatorE
     mapFilePath = mapPath;
     map.mapFileName = fs::path(mapPath).filename().string();
     errorBuffer = {};
+    std::string titleString = map.mapFileName + " errors:\n";
+    errorBuffer << titleString;
 
-    if (!openFile()) throw MapLoadingException("Failed to open map file: " + mapFilePath);
 
-    if (!readSettings())
+    if (!openFile()) {
+        cleanUp(simulatorErrorBuffer, titleString);
+        throw MapLoadingException("Failed to open map file: " + mapFilePath);
+    }
+
+    if (!readSettings()) {
+        cleanUp(simulatorErrorBuffer, titleString);
         throw MapLoadingException("Failed to read settings from map file: " + mapFilePath + "\n" + settingsExamples);
-
+    }
     processMapData();
 
     buildView();
 
-    if (!errorBuffer.str().empty()) {
+    cleanUp(simulatorErrorBuffer, titleString);
+    return std::move(map);
+
+}
+
+void MapLoader::cleanUp(std::stringstream& simulatorErrorBuffer, const std::string& titleString) {
+    if (errorBuffer.str() != titleString) {
         simulatorErrorBuffer << errorBuffer.str();
     }
     if (mapFile.is_open()) {
         mapFile.close();
     }
-    return std::move(map);
-
 }
 
 

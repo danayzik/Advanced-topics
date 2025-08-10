@@ -28,7 +28,7 @@ namespace UserCommon_206038929_314620071 {
         [[nodiscard]] inline int distanceToOtherCoord(Coordinates coord, size_t rows, size_t cols) const {
             int intRows = static_cast<int>(rows);
             int intCols = static_cast<int>(cols);
-            int dy = std::min(std::abs(coord.y - y), intRows - abs(coord.y - y));
+            int dy = std::min(std::abs(coord.y - y), intRows - std::abs(coord.y - y));
             int dx = std::min(std::abs(coord.x - x), intCols - std::abs(coord.x - x));
             return std::max(dy, dx);
         }

@@ -64,6 +64,8 @@ namespace GameManager_206038929_314620071 {
 
         void writeOutputLine();
 
+        void cleanUp();
+
 
 
     public:
@@ -87,9 +89,6 @@ namespace GameManager_206038929_314620071 {
             Player& player1, string name1, Player& player2, string name2,
             TankAlgorithmFactory player1_tank_algo_factory,
             TankAlgorithmFactory player2_tank_algo_factory) override;
-
-
-
 
 
     };

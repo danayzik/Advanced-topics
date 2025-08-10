@@ -73,4 +73,12 @@ namespace GameManager_206038929_314620071 {
     void EntityManager::destroyEntity(GameEntity &entity) {
         destroyEntity(entity.getEntityId());
     }
+
+    void EntityManager::cleanUp() {
+        generations = 0;
+        entities.clear();
+        entities.shrink_to_fit();
+        freeIndicesList.clear();
+        freeIndicesList.shrink_to_fit();
+    }
 }

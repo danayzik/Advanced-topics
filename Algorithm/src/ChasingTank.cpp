@@ -7,7 +7,8 @@ namespace Algorithm_206038929_314620071{
 
 
     void ChasingTank::update(const FullBattleInfo &battleInfo) {
-        closestTarget = getClosestCoordinates(battleInfo, battleInfo.getEnemyTanksCoordinates());
+        auto enemyCoords = battleInfo.getEnemyTanksCoordinates();
+        closestTarget = getClosestCoordinates(battleInfo, enemyCoords);
         calculateGridPathsFromTarget(battleInfo);
     }
 
@@ -16,7 +17,8 @@ namespace Algorithm_206038929_314620071{
         size_t rows = battleInfo.getRows();
         size_t cols = battleInfo.getCols();
         Coordinates myTankCoords = battleInfo.getMyTankCoords();
-        Coordinates closest = getClosestCoordinates(battleInfo, battleInfo.getEnemyTanksCoordinates());
+        auto enemyCoords = battleInfo.getEnemyTanksCoordinates();
+        Coordinates closest = getClosestCoordinates(battleInfo, enemyCoords);
         size_t currY = myTank.getYAsSizeT();
         size_t currX = myTank.getXAsSizeT();
         int dist = myTankCoords.distanceToOtherCoord(closest, rows, cols);
@@ -33,6 +35,10 @@ namespace Algorithm_206038929_314620071{
         return advancingActionOpt.value();
     }
 
+    int ChasingTank::getDistanceFromTarget(const Algorithm_206038929_314620071::FullBattleInfo &battleInfo) const {
+        return battleInfo.getMyTankCoords().distanceToOtherCoord(closestTarget, battleInfo.getRows(), battleInfo.getCols());
+    }
+
 
 
 
@@ -41,6 +47,11 @@ namespace Algorithm_206038929_314620071{
         const auto& grid = battleInfo.getGrid();
         int cols = static_cast<int>(battleInfo.getCols());
         int rows = static_cast<int>(battleInfo.getRows());
+        assert(rows > 0 && cols > 0);
+        assert(closestTarget.x >= 0 && closestTarget.x < cols);
+        assert(closestTarget.y >= 0 && closestTarget.y < rows);
+        assert(gridGraph.size() == static_cast<size_t>(rows));
+        assert(gridGraph[0].size() == static_cast<size_t>(cols));
         int targetX =  closestTarget.x;
         int targetY =  closestTarget.y;
         std::priority_queue<HeapNode> pq;

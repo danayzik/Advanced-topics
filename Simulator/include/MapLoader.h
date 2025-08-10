@@ -43,6 +43,8 @@ private:
 
     void handleBadCharacter(size_t y, size_t x);
 
+    void cleanUp(std::stringstream& simulatorErrorBuffer, const std::string& titleString);
+
     static MapLoader mapLoaderInstance;
 
     Map map;

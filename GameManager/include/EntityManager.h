@@ -57,5 +57,7 @@ namespace GameManager_206038929_314620071 {
 
         EntityManager &operator=(EntityManager &&) = delete;
 
+        void cleanUp();
+
     };
 }

@@ -87,6 +87,8 @@ namespace GameManager_206038929_314620071 {
 
         ~GameMap() = default;
 
+        void cleanUp();
+
         void buildMap(const SatelliteView& view, size_t height, size_t width, size_t numShells);
 
 

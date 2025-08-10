@@ -45,6 +45,7 @@ void ComparativeSimulator::loadGameManagers() {
                 gameManagerRegistrar.validateLastRegistration();
             }
             catch (const SharedObjectLoadingException& e) {
+                gameManagerRegistrar.removeLast();
                 std::cout << e.what() << std::endl;
             }
             catch (const BadRegistrationException& e) {
@@ -75,7 +76,6 @@ void ComparativeSimulator::groupResults() {
         const auto& result = results[i];
         bool crashed = crashedManagersIndices.count(i) > 0;
         GameResultKey key  = {result, mapInfo.rows, mapInfo.cols, crashed};
-        std::cout << result.rounds << std::endl;
         groups[key].push_back(i);
     }
 }
@@ -99,6 +99,7 @@ void ComparativeSimulator::printGameResult(const GameResult &result, std::string
         buffer << "Player " << result.winner << " won with " << result.remaining_tanks[result.winner-1] << " tanks still alive";
     }
     buffer << "\n";
+    buffer << result.rounds << "\n";
 
 }
 
@@ -140,7 +141,7 @@ void ComparativeSimulator::printOutput() {
         }
         else{
             printGameResult(result, buffer);
-            buffer << Map::getStringFromView(*result.gameState, mapInfo.rows, mapInfo.cols);
+            buffer << Map::getStringFromView(*result.gameState, mapInfo.rows, mapInfo.cols) << "\n";
         }
     }
     writeResultsToFile(buffer, "comparative_results_", gameManagersFolder);

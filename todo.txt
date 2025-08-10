@@ -1,41 +1,29 @@
 
 ToDo:
-Hunt problem with 3rd running command
-Make more of my algo duplicates after fix
 
 
-Refine algo behaviour
-Check if my algo counts on game manager tracking correctly
-Make all my tanks sniping, turn them to chasers when i'm ahead
 write in readme about donothing when algo encounters error
-Remove player_index from full battle info?
-and from player decision
 
-Change coordinates of things in battleinfo to pointers
-hunt down seg fault that happens rarely
-
-Fix GetDirectionbetween points consider whats it used for
-
-Prints in:
-
-
-
-
-Things in the end:
+write about my threading model in readme
+Write in readme about recovered and unrecovered errors
+Write README
+Write known issues:
+Dlclose only at end and not when not needed
+GameManagers are not reused
+Chasing tank doesn't try to dodge
+My algo takes a fair amount of compute
 
 
 
-test with other so's
 
 
+./simulator_206038929_314620071 -comparative   game_map=Maps/input_a.txt  game_managers_folder=GameManager   algorithm1=Algorithm/Algorithm_206038929_314620071.so   algorithm2=Algorithm/Algorithm_206038929_314620071.so    -verbose
+./simulator_206038929_314620071 -comparative   game_map=Maps/input_a.txt   game_managers_folder=Managers  algorithm1=Algos/Algorithm_206038929_314620071.so  algorithm2=Algos/Algorithm_322213836_212054837.so     -verbose
+./simulator_206038929_314620071 -comparative   game_map=Maps/input_i.txt   game_managers_folder=Managers algorithm1=Algos/Algorithm_206038929_314620071.so   algorithm2=Algos/Algorithm_209399021_208239152.so  -verbose num_threads=4
 
-./simulator_206038929_314620071 -comparative   game_map=Maps/input_a.txt  game_managers_folder=GameManager   algorithm1=Algorithm/Algorithm_206038929_314620071.so   algorithm2=Algorithm/Algorithm_206038929_314620071.so   num_threads=3   -verbose
-./simulator_206038929_314620071 -comparative   game_map=Maps/input_a.txt   game_managers_folder=Managers  algorithm1=Algos/Algorithm_209399021_208239152.so  algorithm2=Algos/Algorithm_209399021_208239152.so   num_threads=3   -verbose
-./simulator_206038929_314620071 -comparative   game_map=Maps/input_a.txt   game_managers_folder=Managers algorithm1=Algos/Algorithm_206038929_314620071.so   algorithm2=Algos/Algorithm_322213836_212054837.so num_threads=3   -verbose
+./simulator_206038929_314620071 -competition   game_maps_folder=Maps   game_manager=Managers/GameManager_206038929_314620071.so algorithms_folder=Algos num_threads=5
 
-./simulator_206038929_314620071 -competition   game_maps_folder=Maps   game_manager=Managers/GameManager_206038929_314620071.so algorithms_folder=Algos num_threads=3 -verbose
-
-
+cd /mnt/c/Users/danay/clionprojects/advanced-topics
 
 cmake -S . -B build
 cmake --build build

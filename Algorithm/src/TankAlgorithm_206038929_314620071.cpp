@@ -17,8 +17,9 @@ namespace Algorithm_206038929_314620071 {
     void TankAlgorithm_206038929_314620071::updateBattleInfo(BattleInfo &info) {
         auto &newInfo = dynamic_cast<FullBattleInfo &>(info);
         if (!initialized) {
-            battleInfo = newInfo;
             newInfo.setTankIndex(tankIndex);
+            battleInfo = newInfo;
+            algo = std::make_unique<SnipingTank>();
             switch (battleInfo.getRole()) {
                 case TankRole::Sniping:
                     algo = std::make_unique<SnipingTank>();
@@ -34,6 +35,18 @@ namespace Algorithm_206038929_314620071 {
             newInfo.updateFromTankInfo(battleInfo);
             battleInfo = newInfo;
             algo->update(battleInfo);
+            if (algo->getDistanceFromTarget(battleInfo) < 3){
+                if(algo->getRole() == TankRole::Chasing){
+                    algo = std::make_unique<SnipingTank>();
+                    algo->update(battleInfo);
+                }
+            }
+            else{
+                if(algo->getRole() == TankRole::Sniping){
+                    algo = std::make_unique<ChasingTank>(battleInfo);
+                    algo->update(battleInfo);
+                }
+            }
         }
 
     }
@@ -48,7 +61,6 @@ namespace Algorithm_206038929_314620071 {
                 battleInfo.moveMyTankForward();
                 break;
             case ActionRequest::Shoot:
-                myTank.fire();
                 battleInfo.fireShellFromTank(myTank);
                 break;
             default:

@@ -10,6 +10,10 @@ namespace Algorithm_206038929_314620071 {
 
         virtual void update(const FullBattleInfo &battleInfo) = 0;
 
+        [[nodiscard]] virtual int getDistanceFromTarget(const FullBattleInfo &battleInfo) const = 0;
+
+        [[nodiscard]] virtual TankRole getRole() const = 0;
+
         virtual ~TankRoleAlgorithm() = default;
     };
 }

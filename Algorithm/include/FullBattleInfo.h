@@ -20,19 +20,17 @@ namespace Algorithm_206038929_314620071 {
         size_t rows;
         size_t cols;
         size_t startingShells;
-        std::vector<std::vector<ObservedCell>> observedCells;
-        Coordinates myTankCoords = {};
-        std::unordered_set<Coordinates, CoordinatesHash> shellCoordinates;
-        std::unordered_set<Coordinates, CoordinatesHash> friendlyTanksCoordinates;
-        std::unordered_set<Coordinates, CoordinatesHash> enemyTanksCoordinates;
-        int playerIndex;
+        std::vector<std::vector<ObservedCell>> observedCells = {};
+        ObservedTank* myTank = {};
+        std::vector<ObservedShell*> shells = {};
+        std::vector<ObservedTank*> enemyTanks = {};
+        std::vector<ObservedTank*> friendlyTanks = {};
+        int playerIndex{};
         int tankIndex{};
         TankRole roleToPlay{};
         int requestInfoCountdown = 0;
-
         void moveKnownShells();
 
-        void moveEntity(Coordinates from, Coordinates to);
 
 
     public:
@@ -43,12 +41,13 @@ namespace Algorithm_206038929_314620071 {
         FullBattleInfo(size_t rows, size_t cols, size_t startingShells, const SatelliteView &satelliteView,
                        int playerIndex);
 
+        FullBattleInfo(const FullBattleInfo& other);
+
+        FullBattleInfo& operator=(const FullBattleInfo& other);
+
 
         ~FullBattleInfo() override = default;
 
-        FullBattleInfo(const FullBattleInfo &other) = default;
-
-        FullBattleInfo &operator=(const FullBattleInfo &other) = default;
 
         FullBattleInfo &operator=(FullBattleInfo &&other) noexcept = default;
 
@@ -64,17 +63,28 @@ namespace Algorithm_206038929_314620071 {
 
         void fireShellFromTank(ObservedTank &tank);
 
+        [[nodiscard]] ObservedTank& getMyTank() { return *myTank; }
+        [[nodiscard]] const ObservedTank& getMyTank() const { return *myTank; }
+
+        [[nodiscard]] std::vector<ObservedShell*>& getShells() { return shells; }
+        [[nodiscard]] const std::vector<ObservedShell*>& getShells() const { return shells; }
+
+        [[nodiscard]] std::vector<ObservedTank*>& getEnemyTanks() { return enemyTanks; }
+        [[nodiscard]] const std::vector<ObservedTank*>& getEnemyTanks() const { return enemyTanks; }
+
+        [[nodiscard]] std::vector<ObservedTank*>& getFriendlyTanks() { return friendlyTanks; }
+        [[nodiscard]] const std::vector<ObservedTank*>& getFriendlyTanks() const { return friendlyTanks; }
+
+
         [[nodiscard]] inline size_t getRows() const { return rows; }
 
         [[nodiscard]] inline size_t getCols() const { return cols; }
 
         [[nodiscard]] inline size_t getStartingShells() const { return startingShells; }
 
-        [[nodiscard]] inline const ObservedCell &
-        getCell(Coordinates coords) const { return observedCells[coords.yAsSizeT()][coords.xAsSizeT()]; }
+        [[nodiscard]] inline const ObservedCell &getCell(Coordinates coords) const { return observedCells[coords.yAsSizeT()][coords.xAsSizeT()]; }
 
-        [[nodiscard]] inline ObservedCell &
-        getCell(Coordinates coords) { return observedCells[coords.yAsSizeT()][coords.xAsSizeT()]; }
+        [[nodiscard]] inline ObservedCell &getCell(Coordinates coords) { return observedCells[coords.yAsSizeT()][coords.xAsSizeT()]; }
 
         [[nodiscard]] inline const ObservedCell &getCell(size_t y, size_t x) const { return observedCells[y][x]; }
 
@@ -84,35 +94,11 @@ namespace Algorithm_206038929_314620071 {
 
         [[nodiscard]] inline std::vector<std::vector<ObservedCell>> &getGrid() { return observedCells; }
 
-        [[nodiscard]] inline const std::unordered_set<Coordinates, CoordinatesHash> &
-        getShellsCoordinates() const { return shellCoordinates; }
-
-        [[nodiscard]] inline std::unordered_set<Coordinates, CoordinatesHash> &
-        getShellsCoordinates() { return shellCoordinates; }
-
-        [[nodiscard]] inline const ObservedTank &getMyTank() const {
-            return *entityCast<ObservedTank>(getCell(myTankCoords).entity.get());
-        }
-
-        [[nodiscard]] inline ObservedTank &getMyTank() {
-            return *entityCast<ObservedTank>(getCell(myTankCoords).entity.get());
-        }
-
-        [[nodiscard]] inline Coordinates getMyTankCoords() const { return myTankCoords; }
-
-        [[nodiscard]] inline const std::unordered_set<Coordinates, CoordinatesHash> &
-        getEnemyTanksCoordinates() const { return enemyTanksCoordinates; }
-
-        [[nodiscard]] inline std::unordered_set<Coordinates, CoordinatesHash> &
-        getEnemyTanksCoordinates() { return enemyTanksCoordinates; }
-
-        [[nodiscard]] inline const std::unordered_set<Coordinates, CoordinatesHash> &
-        getFriendlyTanksCoordinates() const { return friendlyTanksCoordinates; }
-
-        [[nodiscard]] inline std::unordered_set<Coordinates, CoordinatesHash> &
-        getFriendlyTanksCoordinates() { return friendlyTanksCoordinates; }
+        [[nodiscard]] inline Coordinates getMyTankCoords() const { return myTank->getCoords(); }
 
         [[nodiscard]] inline int getTankIndex() const { return tankIndex; }
+
+        [[nodiscard]] std::unordered_set<Coordinates, CoordinatesHash> getEnemyTanksCoordinates() const;
 
         void setTankIndex(int index);
 
@@ -124,8 +110,9 @@ namespace Algorithm_206038929_314620071 {
 
         inline void setRequestInfoCounter(int turns) { requestInfoCountdown = turns; }
 
-        bool isFriendlyTankAlive(int index);
 
         void assumeEnemyShellsDirections(int distanceFromTank);
+
+        void cloneCell(const FullBattleInfo& other, size_t y, size_t x);
     };
 }

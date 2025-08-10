@@ -25,11 +25,11 @@ private:
     };
 
     struct ErrorMessages{
-        const std::string ProperUsageMessage =
+        const std::string properUsageMessage =
             "Example of proper usage:\n"
-            "  -comparative game_map=<game_map_filename> game_managers_folder=<game_managers_folder> algorithm1=<algorithm1_so> algorithm2=<algorithm2_so> [num_threads=<num>] [-verbose]\n"
-            "  -competition game_maps_folder=<game_maps_folder> game_manager=<game_manager_so> algorithms_folder=<algorithms_folder> [num_threads=<num>] [-verbose]\n";
-        const std::string multipleModesError = "Error: Both '-comparative' and '-competition' modes were specified.\nPlease choose exactly one mode.\n";
+            "./simulator -comparative game_map=<game_map_filename> game_managers_folder=<game_managers_folder> algorithm1=<algorithm1_so> algorithm2=<algorithm2_so> [num_threads=<num>] [-verbose]\n"
+            "./simulator -competition game_maps_folder=<game_maps_folder> game_manager=<game_manager_so> algorithms_folder=<algorithms_folder> [num_threads=<num>] [-verbose]\n";
+        const std::string multipleModesError = "Error: more than one mode was specified.\nPlease choose exactly one mode.\n";
         const std::string duplicateArgument = "Error: duplicate argument detected\n";
         const std::string missingMode = "Error: missing mandatory mode argument\n";
         const std::string invalidNumThreads = "Error: invalid num_threads value\n";
@@ -57,12 +57,15 @@ private:
     static bool validMapsFolder(const std::string& path);
     CommandLineParser() = default;
 
+
 public:
     CommandLineParser(const CommandLineParser&) = delete;
     CommandLineParser& operator=(const CommandLineParser&) = delete;
     CommandLineParser(CommandLineParser&&) = delete;
     CommandLineParser& operator=(CommandLineParser&&) = delete;
     ~CommandLineParser() = default;
+
+    const std::string& usageMessage(){return errorMessages.properUsageMessage;}
 
     static inline CommandLineParser& getParser(){return parserInstance;}
     void parse(int argc, char* argv[]);

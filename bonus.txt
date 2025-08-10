@@ -1,54 +1,23 @@
 
-Caching technique for satelliteView
-
 Extra work added to this project for which we're requesting a bonus:
 
-1) Supporting 9 players:
-   The game supports 0-9 players, the player indices are defined by their tanks in the map text file. See bonus_input.txt
-   for reference. Please note that this feature is on by default, meaning if a char between '3' and '9' is used, it is
-   not treated as an invalid character that we should ignore, but it makes a tank for that player index.
-   The extra player will be instances of the Player_206038929_314620071 and PlayerTwo classes, depending on the index mod 2.
+1) Extensive error recovery and documentation. Please see the README.md file for specific information on what types
+   of errors are recovered successfully. Any recovered error will appear in input_errors.txt inside the running directory.
 
+2) Little/granular locking. With my threading model, threads are able to quickly fetch the information of the game they
+   need to run, with no collisions with other threads. See line 164 in Simulator/ComparativeSimulator.cpp
 
-2) Visuals:
-   As with ex 1, visuals are supported, but they have also been extended to allow for 9 players.
-   Each player index has their own tank color. Please see the game_side\assets directory.
-   Please see the ReadMe instructions to compile with or without visuals.
-   I'm requesting a bonus due to supporting this extension.
+3) Custom exceptions for different error types, as can be seen in Simulator/Exceptions.h
 
+4) With comparative mode, if a game manager crashed or returned an invalid game result, he is grouped with his kind
+   and added to the list of results. This is in addition to the requested output format.
 
- 3) Players controlling an adaptive tank algorithm:
-    The players handle the battle info passing and parsing, but they also set the "Role" of each tank.
-    Each TankAlgorithm actually holds a unique ptr to a "TankRoleAlgorithm" which decides on its behaviour.
-    The player controls when a tank algorithm should ask for info again.
-    This communication happens only on turns the algorithm requests info as expected.
+5) Mostly clean code style, architecture and class design. I worked really hard for everything to be fairly intuitive
+   and structured
 
-4) Players calculating shell directions and keeping an updated view of entities:
-   The PlayerCommunicationModule, makes it so the players make each of their tanks request BattleInfo 1by1 in consecutive turns
-   except for the first turn which is used for role assigning and counting the tanks of the player, and except for
-   when a single tank is alive, in that case it defaults to asking for info every 4 turns.
-   The player tries to get a map update per turn so it can accurately predict what tank fired what shell and therefore infer
-   the shell's direction. The tanks then get this information and move the shells in their info every turn.
-   This information is used for dodging incoming shells(Currently only used by the SnipingTank algorithm, but that's a matter of choice)
+6) Helped a lot of my peers with their questions in the whatsapp group, I know you can't confirm this to be true,
+   and you probably don't really care, but I might as well ask for another point :)
 
-5) A very useful "AlgorithmUtilities" and "DirectionUtilities" 'libraries':
-   These can be found in players_side\src\AlgorithmUtilities.cpp and common\Direction.h
-   The contained functions over a variety of mathematical operations to extract certain features from the observed game state held by the tank algorithms.
-   This also makes it very easy to craft new algorithms.
-
-
-6) Chasing algorithm using a modified version of Djikstra:
-   *A bonus for this was requested in ex1, but it was not given because it wasn't a criteria for a bonus back then.
-   Instead of using BFS for shortest path search, I've implemented a modified version of Dijkstra's algorithm
-   That takes into account the number of rotations needed to travel a specific path, which end up costing 'time'.
-   This algorithm is located in players_side/src/ChasingTank.cpp. Function declared line 26
-
-
-   Note that a basic Dijkstra does not work as the cost for an 'edge' changes depending on your current facing direction.
-   My algorithm avoids that problem creatively. Please refer to the pdf file for a full explanation on it.
-
-7) Satellite view caching:
-   When a tank requests GetBattleInfo, the satellite view is created and saved for when another tank asks for info in that same turn.
-   Then, only the symbol for the current tank that requested is swapped with '%' and the old '%' symbol is swapped with the appropriate number.
-   This saves time by not generating the Satellite view again.
-   Between turns, this is reset.
+7) Not a bonus, but Amir mentioned that if we submit assignment 2 and 3 on time, he'll consider removing the point deduction
+   from the late submission on assignment 1. We hereby request a removal of that 2 point deduction, raising our grade
+   from 99 to 101.
