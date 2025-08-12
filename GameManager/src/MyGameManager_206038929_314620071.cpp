@@ -132,19 +132,6 @@ namespace GameManager_206038929_314620071 {
 
     bool MyGameManager_206038929_314620071::gameOverCheck() {
         tanksPerPlayer = {};
-        for (auto &tankEntityIdOpt: tankEntityIds) {
-            if (tankEntityIdOpt) {
-                Tank &tank = gameMap.getTank(tankEntityIdOpt.value());
-                tanksPerPlayer[tank.getPlayerIndex() - 1]++;
-            }
-        }
-        for (size_t i = 0; i < tanksPerPlayer.size(); i++) {
-            if (tanksPerPlayer[i] == totalTankCount) {
-                gameResult.reason = GameResult::Reason::ALL_TANKS_DEAD;
-                gameResult.winner = static_cast<int>(i) + 1;
-                return true;
-            }
-        }
         if (totalTankCount == 0) {
             gameResult.reason = GameResult::Reason::ALL_TANKS_DEAD;
             gameResult.winner = 0;
@@ -159,6 +146,19 @@ namespace GameManager_206038929_314620071 {
             gameResult.reason = GameResult::Reason::MAX_STEPS;
             gameResult.winner = 0;
             return true;
+        }
+        for (auto &tankEntityIdOpt: tankEntityIds) {
+            if (tankEntityIdOpt) {
+                Tank &tank = gameMap.getTank(tankEntityIdOpt.value());
+                tanksPerPlayer[tank.getPlayerIndex() - 1]++;
+            }
+        }
+        for (size_t i = 0; i < tanksPerPlayer.size(); i++) {
+            if (tanksPerPlayer[i] == totalTankCount) {
+                gameResult.reason = GameResult::Reason::ALL_TANKS_DEAD;
+                gameResult.winner = static_cast<int>(i) + 1;
+                return true;
+            }
         }
 
         return false;
@@ -253,6 +253,7 @@ namespace GameManager_206038929_314620071 {
                                                       Player& player1, string name1, Player& player2, string name2,
                                                       TankAlgorithmFactory player1_tank_algo_factory,
                                                       TankAlgorithmFactory player2_tank_algo_factory) {
+        gameResult = {};
         tankAlgorithmFactories[0] = std::move(player1_tank_algo_factory);
         tankAlgorithmFactories[1] = std::move(player2_tank_algo_factory);
         playerNames[0] = std::move(name1);
@@ -268,6 +269,7 @@ namespace GameManager_206038929_314620071 {
         saveGameResult();
         if(verbose)
             writeOutputFile();
+        cleanUp();
         return std::move(gameResult);
     }
 
@@ -350,7 +352,6 @@ namespace GameManager_206038929_314620071 {
     }
 
     void MyGameManager_206038929_314620071::cleanUp() {
-        gameResult = {};
         stepCounter = 0;
         maxSteps = 0;
         numShells = 0;

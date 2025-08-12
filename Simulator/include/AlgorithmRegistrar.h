@@ -6,7 +6,7 @@
 #include "Exceptions.h"
 #include <sstream>
 #include <iostream>
-
+#include "Logger.h"
 
 
 class AlgorithmRegistrar {
@@ -26,19 +26,24 @@ class AlgorithmRegistrar {
         void setTankAlgorithmFactory(TankAlgorithmFactory&& factory) {
             if(tankAlgorithmFactory){
                 std::cout << "Duplicate registration attempted, ignoring\n";
+                LOG(LogLevel::WARN, std::string("Attempted algorithm factory registration for so: ") + so_name + "\nThis factory was already registered.");
                 return;
             }
+            LOG(LogLevel::INFO, "Registering algorithm factory for so: " + so_name);
             tankAlgorithmFactory = std::move(factory);
         }
         void setPlayerFactory(PlayerFactory&& factory) {
             if(playerFactory){
                 std::cout << "Duplicate registration attempted, ignoring\n";
+                LOG(LogLevel::WARN, std::string("Attempted player factory registration for so: ") + so_name + "\nThis factory was already registered.");
                 return;
             }
+            LOG(LogLevel::INFO, std::string("Registering player factory for so: ") + so_name);
             playerFactory = std::move(factory);
         }
         const std::string& name() const { return so_name; }
         std::unique_ptr<Player> createPlayer(int player_index, size_t x, size_t y, size_t max_steps, size_t num_shells) const {
+            LOG(LogLevel::INFO, std::string("Creating player from so: ") + so_name);
             return playerFactory(player_index, x, y, max_steps, num_shells);
         }
 
@@ -65,6 +70,7 @@ public:
 
     static AlgorithmRegistrar& getAlgorithmRegistrar(){return registrar;};
     void createAlgorithmFactoryEntry(const std::string& name) {
+        LOG(LogLevel::INFO, std::string("Creating a spot for factories from so: ") + name);
         algorithms.emplace_back(name);
     }
     void addPlayerFactoryToLastEntry(PlayerFactory&& factory) {
@@ -77,6 +83,7 @@ public:
     void validateLastRegistration();
 
     void removeLast() {
+        LOG(LogLevel::INFO, "Removing last Tank&Player factories entry");
         algorithms.pop_back();
     }
 
@@ -84,7 +91,10 @@ public:
 
 
     std::size_t count() const { return algorithms.size(); }
-    void clear() { algorithms.clear(); }
+    void clear() {
+        LOG(LogLevel::INFO, "Clearing Algorithm registrar");
+        algorithms.clear();
+    }
     AlgorithmAndPlayerFactories& operator[](size_t i){
         return algorithms[i];
     }

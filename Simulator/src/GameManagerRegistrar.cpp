@@ -1,5 +1,5 @@
 #include "GameManagerRegistrar.h"
-
+#include "Logger.h"
 GameManagerRegistrar GameManagerRegistrar::registrar;
 
 
@@ -11,4 +11,5 @@ void GameManagerRegistrar::validateLastRegistration() {
             << ": has factory: " << last.hasFactory();
         throw BadRegistrationException(msg.str());
     }
+    LOG(LogLevel::INFO, std::string("Successfully validated registration for ") + last.name());
 }

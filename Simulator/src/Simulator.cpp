@@ -13,19 +13,24 @@
 #include <cstdio>
 
 void Simulator::loadSO(const std::string &path) {
+    LOG(LogLevel::INFO, std::string("Attempting to load so: ") + path);
     void* handle = dlopen(path.c_str(), RTLD_NOW | RTLD_GLOBAL);
     if (!handle) {
         const char* err = dlerror();
         errorBuffer << "Failed loading so from path: " << path << "\n";
         errorBuffer << (err ? err : "Unknown error") << "\n";
+        LOG(LogLevel::ERROR, std::string("Failed to load so: ") + path);
         throw SharedObjectLoadingException("Failed loading so from path: " + path + "\n");
     }
+    LOG(LogLevel::INFO, "Loaded successfully");
     handles.push_back(handle);
 }
 
 Simulator::~Simulator(){
+    LOG(LogLevel::INFO, "Cleaning up simulator:");
     AlgorithmRegistrar::getAlgorithmRegistrar().clear();
     GameManagerRegistrar::getGameManagerRegistrar().clear();
+    LOG(LogLevel::INFO, "Cleaning up so handles");
     for (auto* handle : handles){
         dlclose(handle);
     }
@@ -61,6 +66,7 @@ void Simulator::writeResultsToFile(const std::stringstream &resultStream, const 
     std::string filename = filePrefix + timeStr + ".txt";
     std::filesystem::path filePath = std::filesystem::path(folder) / filename;
     std::ofstream outFile(filePath);
+    LOG(LogLevel::INFO, std::string("Writing output to: ") + filePath.string());
     if (!outFile) {
         throw std::runtime_error("Failed to open file: " + filePath.string());
     }

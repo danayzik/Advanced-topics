@@ -3,6 +3,7 @@
 #include "CompetitionSimulator.h"
 #include "CommandLineParser.h"
 #include <iostream>
+#include "Logger.h"
 int main(int argc, char* argv[]){
 
     std::unique_ptr<Simulator> simulator;
@@ -16,6 +17,7 @@ int main(int argc, char* argv[]){
         std::cerr << parser.usageMessage();
         return 1;
     }
+    LOG(LogLevel::INFO, "All command line arguments parsed successfully");
 
     const ParsedArguments& arguments = parser.getParsedArguments();
     if (arguments.mode == RunMode::Comparative){
@@ -32,7 +34,6 @@ int main(int argc, char* argv[]){
         std::cerr << "Critical error encountered! can't continue.\n";
         std::cerr << e.what() << std::endl;
     }
-
-
+    LOG(LogLevel::INFO, "Process finished.");
 
 }

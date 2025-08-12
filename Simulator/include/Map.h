@@ -2,6 +2,8 @@
 #include <memory>
 #include <string>
 #include "ConcreteSatelliteView.h"
+#include "Logger.h"
+#include <typeinfo>
 
 
 struct Map{
@@ -11,6 +13,8 @@ struct Map{
     size_t cols;
     std::string mapFileName = {};
     std::unique_ptr<SatelliteView> view = {};
+
+
 
 
     [[nodiscard]] std::unique_ptr<SatelliteView> getViewCopy() const{
@@ -24,6 +28,7 @@ struct Map{
     }
 
     static std::string getStringFromView(SatelliteView& view, size_t rows, size_t cols){
+        LOG(LogLevel::INFO, std::string("Turning SatelliteView to string, view's dynamic type: ") +  Logger::demangle(typeid(view).name()));
         std::string finalView;
         finalView.reserve((cols + 1) * rows);
         for (size_t y = 0; y < rows; ++y) {

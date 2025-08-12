@@ -7,9 +7,11 @@
 #include <thread>
 #include <cassert>
 #include <algorithm>
+#include "Logger.h"
 namespace fs = std::filesystem;
 
 void CompetitionSimulator::loadGameManager(const std::string &gameManagerSoPath) {
+    LOG(LogLevel::INFO, std::string("Attempting to load game manager from: ") + gameManagerSoPath);
     const std::string managerName = fs::path(gameManagerSoPath).stem().string();
     managerFileName = managerName;
     auto& managerRegistrar = GameManagerRegistrar::getGameManagerRegistrar();
@@ -19,6 +21,7 @@ void CompetitionSimulator::loadGameManager(const std::string &gameManagerSoPath)
 }
 
 void CompetitionSimulator::loadMaps() {
+    LOG(LogLevel::INFO, std::string("Attempting to load maps from: ") + mapsFolder);
     auto& mapLoader = MapLoader::getInstance();
     for (const auto& entry : fs::directory_iterator(mapsFolder)) {
         if (entry.is_regular_file()) {
@@ -37,9 +40,11 @@ void CompetitionSimulator::loadMaps() {
     if (maps.empty()){
         throw NotEnoughValidMaps("No valid maps loaded for competition\n");
     }
+    LOG(LogLevel::INFO, std::string("Successfully loaded ") + std::to_string(maps.size()) + " maps");
 }
 
 void CompetitionSimulator::loadAlgorithms() {
+    LOG(LogLevel::INFO, std::string("Attempting to load algorithms from ") + algorithmsFolder);
     AlgorithmRegistrar& algorithmRegistrar = AlgorithmRegistrar::getAlgorithmRegistrar();
     for (const auto& entry : fs::directory_iterator(algorithmsFolder)) {
         if (entry.is_regular_file() && entry.path().extension() == ".so") {
@@ -67,11 +72,13 @@ void CompetitionSimulator::loadAlgorithms() {
     if (algorithmRegistrar.count() < 2){
         throw NotEnoughValidAlgorithms("Less than 2 valid algorithms loaded for competition\n");
     }
+    LOG(LogLevel::INFO, std::string("Successfully loaded ") + std::to_string(algorithmRegistrar.count()) + " algorithms");
     assert(scores.size() == algorithmRegistrar.count());
 
 }
 
 void CompetitionSimulator::loadArguments(const ParsedArguments &arguments) {
+    LOG(LogLevel::INFO, "Loading parsed arguments into the competition simulator");
     Simulator::loadArguments(arguments);
     mapsFolder = arguments.mapsFolder.value();
     algorithmsFolder = arguments.algoFolder.value();
@@ -116,6 +123,7 @@ void CompetitionSimulator::storeGameResult(const GameResult &gameResult, size_t 
 
 
 void CompetitionSimulator::sortScores() {
+    LOG(LogLevel::INFO, "Sorting algorithms by scores");
     std::sort(scores.begin(), scores.end(), [](const auto& a, const auto& b) {
         if (a.second != b.second)
             return a.second > b.second;
@@ -124,9 +132,8 @@ void CompetitionSimulator::sortScores() {
 }
 
 void CompetitionSimulator::printOutput() {
-
+    LOG(LogLevel::INFO, "Starting to write formatted output to buffer");
     std::stringstream buffer;
-
     buffer << "game_maps_folder=" << mapsFolder << "\n";
     buffer << "game_manager=" << managerFileName << "\n";
     buffer << "\n";
@@ -139,6 +146,7 @@ void CompetitionSimulator::printOutput() {
 
 
 void CompetitionSimulator::run() {
+    LOG(LogLevel::INFO, "Starting competition simulator run");
     const GameManagerRegistrar& gameManagerRegistrar = GameManagerRegistrar::getGameManagerRegistrar();
     const AlgorithmRegistrar& algorithmRegistrar = AlgorithmRegistrar::getAlgorithmRegistrar();
     const auto& gmEntry = gameManagerRegistrar[0];
@@ -158,12 +166,14 @@ void CompetitionSimulator::run() {
             auto player2 = algoEntryTwo.createPlayer(2, mapToRun.cols, mapToRun.rows, mapToRun.maxSteps, mapToRun.numShells);
             auto gm = gmEntry.createGameManager(verbose);
             try {
+                LOG(LogLevel::INFO, std::string("Starting game between: ") + algoEntryOne.name() + " and " + algoEntryTwo.name() + " on map: " + mapToRun.mapFileName);
                 GameResult result = gm.get()->run(mapToRun.cols, mapToRun.rows,
                                                   *mapToRun.view.get(), mapToRun.mapFileName,
                                                   mapToRun.maxSteps, mapToRun.numShells,
                                                   *player1.get(), algoEntryOne.name(),
                                                   *player2.get(), algoEntryTwo.name(),
                                                   algoEntryOne.getTankAlgorithmFactory(), algoEntryTwo.getTankAlgorithmFactory());
+                LOG(LogLevel::INFO, std::string("Finished game between: ") + algoEntryOne.name() + " and " + algoEntryTwo.name() + " on map: " + mapToRun.mapFileName);
                 storeGameResult(std::move(result), algoToRun, secondAlgoToRunIndex);
 
             }
@@ -179,7 +189,7 @@ void CompetitionSimulator::run() {
     std::vector<std::thread> threads;
     for (int i = 0; i < threadCount; ++i)
         threads.emplace_back(runWorker);
-
+    LOG(LogLevel::INFO, std::string("Created ") + std::to_string(threadCount) + " threads");
     runWorker();
     for (auto& t : threads)
         t.join();

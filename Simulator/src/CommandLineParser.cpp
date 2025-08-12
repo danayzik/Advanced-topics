@@ -2,21 +2,24 @@
 #include <iostream>
 #include <filesystem>
 #include <fstream>
-
+#include "Logger.h"
 namespace fs = std::filesystem;
 CommandLineParser CommandLineParser::parserInstance;
 
 void CommandLineParser::scanForMode(int argc, char* argv[]) {
+    LOG(LogLevel::INFO, "Scanning arguments for mode");
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
         if (arg == argumentStrings.comparativeMode){
             if(parsedArguments.mode != RunMode::Invalid)
                 throw std::invalid_argument(errorMessages.multipleModesError);
+            LOG(LogLevel::INFO, "Simulator mode set to comparative");
             parsedArguments.mode = RunMode::Comparative;
         }
         if (arg == argumentStrings.competitiveMode){
             if(parsedArguments.mode != RunMode::Invalid)
                 throw std::invalid_argument(errorMessages.multipleModesError);
+            LOG(LogLevel::INFO, "Simulator mode set to competition");
             parsedArguments.mode = RunMode::Competition;
         }
     }
@@ -26,11 +29,13 @@ void CommandLineParser::scanForMode(int argc, char* argv[]) {
 }
 
 void CommandLineParser::parseComparativeMode(int argc, char *argv[]) {
+    LOG(LogLevel::INFO, "Parsing comparative mode arguments");
     assert(parsedArguments.mode == RunMode::Comparative);
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
         if(arg == argumentStrings.verbose){
             parsedArguments.verbose = true;
+            LOG(LogLevel::INFO, "Found optional argument -verbose");
             continue;
         }
         if(arg == argumentStrings.comparativeMode)
@@ -78,6 +83,7 @@ void CommandLineParser::parseComparativeMode(int argc, char *argv[]) {
 
 
 void CommandLineParser::parseCompetitiveMode(int argc, char *argv[]) {
+    LOG(LogLevel::INFO, "Parsing competition mode arguments");
     assert(parsedArguments.mode == RunMode::Competition);
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
@@ -125,6 +131,7 @@ void CommandLineParser::parseCompetitiveMode(int argc, char *argv[]) {
 }
 
 void CommandLineParser::validateComparativeArguments() const {
+    LOG(LogLevel::INFO, "Validating comparative mode arguments");
     std::string missingArguments = {};
     if (!parsedArguments.mapFileName.has_value())
         missingArguments += "game_map=<game_map_filename>\n";
@@ -149,9 +156,11 @@ void CommandLineParser::validateComparativeArguments() const {
     if (!fileExists(parsedArguments.mapFileName.value())){
         throw std::invalid_argument(errorMessages.missingFile + parsedArguments.mapFileName.value() + "\n");
     }
+    LOG(LogLevel::INFO, "All comparative mode arguments validated");
 }
 
 void CommandLineParser::validateCompetitiveArguments() const {
+    LOG(LogLevel::INFO, "Validating competition mode arguments");
     std::string missingArguments = {};
     if (!parsedArguments.mapsFolder.has_value())
         missingArguments += "game_maps_folder=<game_maps_folder>\n";
@@ -171,9 +180,11 @@ void CommandLineParser::validateCompetitiveArguments() const {
     if (!fileExists(parsedArguments.managerFileName.value())){
         throw std::invalid_argument(errorMessages.missingFile + parsedArguments.managerFileName.value() + "\n");
     }
+    LOG(LogLevel::INFO, "All competition mode arguments validated");
 }
 
 void CommandLineParser::parse(int argc, char* argv[]) {
+    LOG(LogLevel::INFO, "Starting to parse arguments");
     scanForMode(argc, argv);
     if (parsedArguments.mode == RunMode::Comparative){
         parseComparativeMode(argc, argv);
@@ -198,11 +209,13 @@ std::optional<std::pair<std::string, std::string>> CommandLineParser::splitKeyVa
 
 
 bool CommandLineParser::fileExists(const std::string& path) {
+    LOG(LogLevel::INFO, std::string("Checking for existence of file: ") + path);
     std::ifstream f(path);
     return f.good();
 }
 
 bool CommandLineParser::validSOFolder(const std::string& path) {
+    LOG(LogLevel::INFO, std::string("Validating so folder: ") + path);
     try {
         if (!fs::is_directory(path)) return false;
 
@@ -210,13 +223,16 @@ bool CommandLineParser::validSOFolder(const std::string& path) {
             if (entry.is_regular_file()) {
                 const auto& filename = entry.path().filename().string();
                 if (filename.size() > 3 && filename.substr(filename.size() - 3) == ".so") {
+                    LOG(LogLevel::INFO, std::string("Found at least one so file in: ") + path);
                     return true;
                 }
             }
         }
     } catch (...) {
+        LOG(LogLevel::ERROR, std::string("Encountered error while validating: ") + path);
         return false;
     }
+    LOG(LogLevel::ERROR, std::string("No so file found in: ") + path);
     return false;
 }
 

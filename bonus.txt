@@ -1,23 +1,28 @@
 
 Extra work added to this project for which we're requesting a bonus:
 
-1) Extensive error recovery and documentation. Please see the README.md file for specific information on what types
-   of errors are recovered successfully. Any recovered error will appear in input_errors.txt inside the running directory.
+1) A toggleable logging option upon compilation for my simulator. We have not yet exhausted this bonus option
+   on previous assignments so the full 5 points would be greatly appreciated. To compile with logging on,
+   simply use "make log", without, just use "make" See the README for more information.
 
-2) Little/granular locking. With my threading model, threads are able to quickly fetch the information of the game they
-   need to run, with no collisions with other threads. See line 164 in Simulator/ComparativeSimulator.cpp
+2) Extensive error recovery and documentation.
+   Please see the "Error Documentation" section in the README.md file for specific information on what types of
+   errors are recovered successfully. All recovered errors will appear in input_errors.txt inside the running directory.
 
-3) Custom exceptions for different error types, as can be seen in Simulator/Exceptions.h
+3) Little/granular locking. With my threading model, threads are able to quickly fetch the information of the game they
+   need to run, with no collisions with other threads.
+   For more information see the "Threading Model" section in the README.md file.
+   Also, See line 164 in Simulator/ComparativeSimulator.cpp
+   And the method fetchIndicesToRun in Simulator/CompetitionSimulator.cpp
 
-4) With comparative mode, if a game manager crashed or returned an invalid game result, he is grouped with his kind
+4) Custom exceptions for different error types, as can be seen in Simulator/Exceptions.h
+
+5) With comparative mode, if a game manager crashed or returned an invalid game result, he is grouped with his kind
    and added to the list of results. This is in addition to the requested output format.
 
-5) Mostly clean code style, architecture and class design. I worked really hard for everything to be fairly intuitive
+6) Mostly clean code style, architecture and class design. We worked really hard for everything to be fairly intuitive
    and structured
 
-6) Helped a lot of my peers with their questions in the whatsapp group, I know you can't confirm this to be true,
-   and you probably don't really care, but I might as well ask for another point :)
-
-7) Not a bonus, but Amir mentioned that if we submit assignment 2 and 3 on time, he'll consider removing the point deduction
-   from the late submission on assignment 1. We hereby request a removal of that 2 point deduction, raising our grade
-   from 99 to 101.
+7) Not a bonus, but Amir mentioned that if we submit assignment 2 and 3 on time, he'll consider removing the point
+   deduction from the late submission on assignment 1. We hereby request a removal of that 2 point deduction,
+   raising our grade from 99 to 101 on assignment 1.

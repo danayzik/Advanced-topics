@@ -5,6 +5,7 @@
 #include <sstream>
 #include "Exceptions.h"
 #include <iostream>
+#include "Logger.h"
 class GameManagerRegistrar {
 private:
     class GameManagerEntry{
@@ -16,12 +17,15 @@ private:
         void setFactory(GameManagerFactory&& gameManagerFactory) {
             if(factory){
                 std::cout << "Duplicate registration attempted, ignoring\n";
+                LOG(LogLevel::WARN, std::string("Attempted Game manager registration for so: ") + so_name + "\nThis factory was already registered.");
                 return;
             }
+            LOG(LogLevel::INFO, "Registering game manager factory for so: " + so_name);
             factory = std::move(gameManagerFactory);
         }
         const std::string& name() const { return so_name; }
         std::unique_ptr<AbstractGameManager> createGameManager(bool verbose) const {
+            LOG(LogLevel::INFO, std::string("Creating game manager from so: ") + so_name);
             return factory(verbose);
         }
         bool hasFactory() const {
@@ -43,6 +47,7 @@ public:
     static GameManagerRegistrar& getGameManagerRegistrar(){return registrar;};
 
     void createGameManagerFactoryEntry(const std::string& name) {
+        LOG(LogLevel::INFO, std::string("Creating a spot for a factory from so: ") + name);
         managers.emplace_back(name);
     }
     void addFactoryToLastEntry(GameManagerFactory&& factory) {
@@ -53,11 +58,15 @@ public:
 
 
     void removeLast() {
+        LOG(LogLevel::INFO, "Removing last Game manager factory entry");
         managers.pop_back();
     }
 
     std::size_t count() const { return managers.size(); }
-    void clear() { managers.clear(); }
+    void clear() {
+        LOG(LogLevel::INFO, "Clearing Game manager registrar");
+        managers.clear();
+    }
 
     GameManagerEntry& operator[](size_t i){
         return managers[i];

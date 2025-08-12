@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cctype>
 #include "Exceptions.h"
+#include "Logger.h"
 
 using std::vector;
 using std::string;
@@ -13,14 +14,17 @@ namespace fs = std::filesystem;
 MapLoader MapLoader::mapLoaderInstance;
 
 bool MapLoader::openFile() {
+    LOG(LogLevel::INFO, std::string("Attempting to open map file: ") + mapFilePath);
     mapFile.open(mapFilePath);
     if (!mapFile) {
         return false;
     }
+    LOG(LogLevel::INFO, "Opened successfully");
     return true;
 }
 
 bool MapLoader::readSettings() {
+    LOG(LogLevel::INFO, std::string("Attempting to read settings from: ") + mapFilePath);
     size_t rows, cols, maxSteps, numShells;
     std::string line;
     size_t value;
@@ -60,10 +64,12 @@ bool MapLoader::readSettings() {
     map.rows = rows;
     map.cols = cols;
     gameMap = std::vector<std::vector<char>>(rows, std::vector<char>(cols, ' '));
+    LOG(LogLevel::INFO, "Settings read successfully");
     return true;
 }
 
 void MapLoader::processMapData() {
+    LOG(LogLevel::INFO, std::string("Processing map data of: ") + mapFilePath);
     string line;
     size_t y = 0;
     while (std::getline(mapFile, line) && y < map.rows) {
@@ -73,6 +79,7 @@ void MapLoader::processMapData() {
     for (size_t i = y; i < map.rows; ++i) {
         fillMissingRow(y);
     }
+    LOG(LogLevel::INFO, std::string("Finished processing map data of: ") + mapFilePath);
 
 }
 
@@ -111,7 +118,9 @@ void MapLoader::fillMissingRow(size_t y) {
 
 
 void MapLoader::buildView() {
+    LOG(LogLevel::INFO, std::string("Attempting to build map SatelliteView for file: ") + mapFilePath);
     map.view = std::make_unique<UserCommon_206038929_314620071::ConcreteSatelliteView>(map.rows, map.cols, std::move(gameMap));
+    LOG(LogLevel::INFO, "Finished building SatelliteView");
 }
 
 Map MapLoader::loadMap(const std::string &mapPath, std::stringstream& simulatorErrorBuffer) {
@@ -121,6 +130,7 @@ Map MapLoader::loadMap(const std::string &mapPath, std::stringstream& simulatorE
     errorBuffer = {};
     std::string titleString = map.mapFileName + " errors:\n";
     errorBuffer << titleString;
+    LOG(LogLevel::INFO, std::string("Attempting to load map file: ") + mapFilePath);
 
 
     if (!openFile()) {
@@ -137,6 +147,7 @@ Map MapLoader::loadMap(const std::string &mapPath, std::stringstream& simulatorE
     buildView();
 
     cleanUp(simulatorErrorBuffer, titleString);
+    LOG(LogLevel::INFO, std::string("Finished loading map: ") + mapFilePath);
     return std::move(map);
 
 }

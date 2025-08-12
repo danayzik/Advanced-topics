@@ -8,8 +8,7 @@ write about my threading model in readme
 Write in readme about recovered and unrecovered errors
 Write README
 Write known issues:
-Dlclose only at end and not when not needed
-GameManagers are not reused
+
 Chasing tank doesn't try to dodge
 My algo takes a fair amount of compute
 
@@ -17,9 +16,15 @@ My algo takes a fair amount of compute
 
 
 
+
+
 ./simulator_206038929_314620071 -comparative   game_map=Maps/input_a.txt  game_managers_folder=GameManager   algorithm1=Algorithm/Algorithm_206038929_314620071.so   algorithm2=Algorithm/Algorithm_206038929_314620071.so    -verbose
 ./simulator_206038929_314620071 -comparative   game_map=Maps/input_a.txt   game_managers_folder=Managers  algorithm1=Algos/Algorithm_206038929_314620071.so  algorithm2=Algos/Algorithm_322213836_212054837.so     -verbose
-./simulator_206038929_314620071 -comparative   game_map=Maps/input_i.txt   game_managers_folder=Managers algorithm1=Algos/Algorithm_206038929_314620071.so   algorithm2=Algos/Algorithm_209399021_208239152.so  -verbose num_threads=4
+./simulator_206038929_314620071 -comparative   game_map=Maps/input_a.txt   game_managers_folder=Managers algorithm1=Algos/Algorithm_206038929_314620071.so   algorithm2=Algos/Algorithm_209399021_208239152.so  num_threads=4
+
+./simulator_206038929_314620071 -comparative   game_map=Maps/zero_cols.txt   game_managers_folder=Managers algorithm1=Algos/Algorithm_206038929_314620071.so   algorithm2=Algos/Algorithm_209399021_208239152.so  -verbose num_threads=4
+
+
 
 ./simulator_206038929_314620071 -competition   game_maps_folder=Maps   game_manager=Managers/GameManager_206038929_314620071.so algorithms_folder=Algos num_threads=5
 
