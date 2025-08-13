@@ -128,7 +128,7 @@ void ComparativeSimulator::printOutput() {
     GameManagerRegistrar& gameManagerRegistrar = GameManagerRegistrar::getGameManagerRegistrar();
     std::stringstream buffer;
 
-    buffer << mapFileName << "\n";
+    buffer << "game_map=" << mapFileName << "\n";
     buffer << "algorithm1=" << algorithmRegistrar[0].name() << "\n";
     buffer << "algorithm2=" << algorithmRegistrar[1].name() << "\n";
     buffer << "\n";

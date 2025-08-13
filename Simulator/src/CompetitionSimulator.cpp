@@ -90,9 +90,14 @@ void CompetitionSimulator::loadArguments(const ParsedArguments &arguments) {
 std::pair<size_t, size_t> CompetitionSimulator::fetchIndicesToRun() {
     const size_t n = scores.size();
     std::lock_guard<std::mutex>lock(indexFetchingMutex);
+
     size_t mapToRun = mapIndexToRun;
     size_t algoToRun = firstAlgoIndexToRun++;
+
     if (firstAlgoIndexToRun >= n){
+        firstAlgoIndexToRun = 0;
+        mapIndexToRun++;
+    }else if(n % 2 == 0 && mapIndexToRun == n/2 - 1 && firstAlgoIndexToRun >= n/2){
         firstAlgoIndexToRun = 0;
         mapIndexToRun++;
     }

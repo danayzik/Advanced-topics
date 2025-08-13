@@ -13,12 +13,6 @@ To exit 'less'
 q
 ```
 
-## This project is submitted by
-
-
-Dan Ayzik 206038929
-
-Noam Barlin 314620071
 
 
 ## Requirements

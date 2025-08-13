@@ -1,18 +1,9 @@
 
 ToDo:
-
-
-write in readme about donothing when algo encounters error
-
-write about my threading model in readme
-Write in readme about recovered and unrecovered errors
-Write README
-Write known issues:
-
-Chasing tank doesn't try to dodge
-My algo takes a fair amount of compute
-
-
+Find problem with competition sim
+Find problem with comparative diff round sim
+Check with even num of algos
+Resubmit
 
 
 
@@ -25,8 +16,22 @@ My algo takes a fair amount of compute
 ./simulator_206038929_314620071 -comparative   game_map=Maps/zero_cols.txt   game_managers_folder=Managers algorithm1=Algos/Algorithm_206038929_314620071.so   algorithm2=Algos/Algorithm_209399021_208239152.so  -verbose num_threads=4
 
 
+hagai
+./simulator_322996059_211779582 -comparative   game_map=Maps/input_b.txt   game_managers_folder=Managers algorithm1=Algos/Algorithm_206038929_314620071.so   algorithm2=Algos/Algorithm_209399021_208239152.so
+./simulator_322996059_211779582 game_manager=Managers/GameManager_206038929_314620071.so -competition       algorithms_folder=Algos   game_maps_folder=Maps
 
-./simulator_206038929_314620071 -competition   game_maps_folder=Maps   game_manager=Managers/GameManager_206038929_314620071.so algorithms_folder=Algos num_threads=5
+me
+./simulator_206038929_314620071 -comparative   game_map=Maps/input_b.txt   game_managers_folder=Managers algorithm1=Algos/Algorithm_206038929_314620071.so   algorithm2=Algos/Algorithm_209399021_208239152.so  num_threads=4
+./simulator_206038929_314620071 game_manager=Managers/GameManager_206038929_314620071.so -competition       algorithms_folder=Algos   game_maps_folder=Maps num_threads=4
+
+ishay
+./simulator_322868852_340849710 -comparative   game_map=Maps/input_b.txt   game_managers_folder=Managers algorithm1=Algos/Algorithm_206038929_314620071.so   algorithm2=Algos/Algorithm_209399021_208239152.so  num_threads=4
+./simulator_322868852_340849710 game_manager=Managers/GameManager_206038929_314620071.so -competition       algorithms_folder=Algos   game_maps_folder=Maps num_threads=4
+
+sun guy
+./simulator_315634022 --comparative   game_map=Maps/input_b.txt   game_managers_folder=Managers algorithm1=Algos/Algorithm_206038929_314620071.so   algorithm2=Algos/Algorithm_209399021_208239152.so
+./simulator_315634022 game_manager=Managers/GameManager_206038929_314620071.so --competition       algorithms_folder=Algos   game_maps_folder=Maps
+
 
 cd /mnt/c/Users/danay/clionprojects/advanced-topics
 
