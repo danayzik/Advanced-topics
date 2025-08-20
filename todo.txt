@@ -21,8 +21,8 @@ hagai
 ./simulator_322996059_211779582 game_manager=Managers/GameManager_206038929_314620071.so -competition       algorithms_folder=Algos   game_maps_folder=Maps
 
 me
-./simulator_206038929_314620071 -comparative   game_map=Maps/input_b.txt   game_managers_folder=Managers algorithm1=Algos/Algorithm_206038929_314620071.so   algorithm2=Algos/Algorithm_209399021_208239152.so  num_threads=4
-./simulator_206038929_314620071 game_manager=Managers/GameManager_206038929_314620071.so -competition       algorithms_folder=Algos   game_maps_folder=Maps num_threads=4
+./simulator_206038929_314620071 -comparative   game_map=Maps/input_b.txt   game_managers_folder=Managers algorithm1=Algos/Algorithm_206038929_314620071.so   algorithm2=Algos/Algorithm_209399021_208239152.so  num_threads=4 -verbose
+./simulator_206038929_314620071 game_manager=Managers/GameManager_206038929_314620071.so -competition       algorithms_folder=Algos   game_maps_folder=Maps num_threads=4 -verbose
 
 ishay
 ./simulator_322868852_340849710 -comparative   game_map=Maps/input_b.txt   game_managers_folder=Managers algorithm1=Algos/Algorithm_206038929_314620071.so   algorithm2=Algos/Algorithm_209399021_208239152.so  num_threads=4
@@ -32,6 +32,8 @@ sun guy
 ./simulator_315634022 --comparative   game_map=Maps/input_b.txt   game_managers_folder=Managers algorithm1=Algos/Algorithm_206038929_314620071.so   algorithm2=Algos/Algorithm_209399021_208239152.so
 ./simulator_315634022 game_manager=Managers/GameManager_206038929_314620071.so --competition       algorithms_folder=Algos   game_maps_folder=Maps
 
+
+./simulator_206038929_314620071 -comparative   game_map=input_a.txt   game_managers_folder=GameManager algorithm1=Algorithm/Algorithm_206038929_314620071.so   algorithm2=Algorithm/Algorithm_206038929_314620071.so  num_threads=4
 
 cd /mnt/c/Users/danay/clionprojects/advanced-topics
 

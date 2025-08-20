@@ -3,7 +3,7 @@
 #include <utility>
 #include "GameManagerRegistration.h"
 #include <cassert>
-
+#include <filesystem>
 
 
 namespace GameManager_206038929_314620071 {
@@ -256,8 +256,10 @@ namespace GameManager_206038929_314620071 {
         gameResult = {};
         tankAlgorithmFactories[0] = std::move(player1_tank_algo_factory);
         tankAlgorithmFactories[1] = std::move(player2_tank_algo_factory);
-        playerNames[0] = std::move(name1);
-        playerNames[1] = std::move(name2);
+        std::filesystem::path p1(name1);
+        std::filesystem::path p2(name2);
+        playerNames[0] = p1.stem().string();
+        playerNames[1] = p2.stem().string();
         players[0] = &player1;
         players[1] = &player2;
         maxSteps = max_steps;
