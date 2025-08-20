@@ -85,11 +85,12 @@ namespace Algorithm_206038929_314620071{
 
     Coordinates getClosestCoordinates(const FullBattleInfo &battleInfo,
                                       const std::unordered_set<Coordinates, CoordinatesHash> &coordsSet) {
+        if(coordsSet.empty())
+            return Coordinates{0, 0};
         const Coordinates *closest = nullptr;
         size_t rows = battleInfo.getRows();
         size_t cols = battleInfo.getCols();
         Coordinates myTankCoords = battleInfo.getMyTankCoords();
-        assert(!coordsSet.empty());
         closest = &(*std::min_element(
                 coordsSet.begin(),
                 coordsSet.end(),
