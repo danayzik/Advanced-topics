@@ -188,9 +188,11 @@ void ComparativeSimulator::run() {
                                                   tankAlgorithmFactory1, tankAlgorithmFactory2);
                 LOG(LogLevel::INFO, std::string("Finished run with game manager: ") + entry.name());
                 if (validGameResult(result)) {
+                    LOG(LogLevel::INFO, std::string("Result with game manager ") + entry.name() + " is valid");
                     storeGameResult(std::move(result), i);
                 }
                 else{
+                    LOG(LogLevel::WARN, std::string("Result with game manager ") + entry.name() + " is invalid");
                     std::lock_guard<std::mutex> lock(errorMutex);
                     errorBuffer << "Game manager: " << entry.name() << " returned an invalid result\n";
                     crashedManagersIndices.insert(i);

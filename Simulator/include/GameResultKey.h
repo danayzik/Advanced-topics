@@ -9,7 +9,7 @@ struct GameResultKey {
     size_t rounds;
     std::vector<size_t> remainingTanks;
     bool crashed;
-    std::string finalView;
+    std::string finalView{};
     bool operator==(const GameResultKey& other) const {
         if (crashed && other.crashed)
             return true;
@@ -27,8 +27,12 @@ struct GameResultKey {
               reason(gameResult.reason),
               rounds(gameResult.rounds),
               remainingTanks(gameResult.remaining_tanks),
-              crashed(crashed),
-              finalView(Map::getStringFromView(*gameResult.gameState, mapRows, mapCols)) {}
+              crashed(crashed) {
+        if(!crashed){
+            finalView = Map::getStringFromView(*gameResult.gameState, mapRows, mapCols);
+        }
+
+    }
 };
 
 namespace std {

@@ -35,6 +35,25 @@ sun guy
 
 ./simulator_206038929_314620071 -comparative   game_map=input_a.txt   game_managers_folder=GameManager algorithm1=Algorithm/Algorithm_206038929_314620071.so   algorithm2=Algorithm/Algorithm_206038929_314620071.so  num_threads=4
 
+
+
+./simulator_206038929_314620071 -comparative   game_map=input_a.txt   game_managers_folder=test_manager algorithm1=Algos/Algorithm_206038929_314620071.so   algorithm2=test_algo/Algorithm_206480972_206899163.so  num_threads=1 -verbose
+./simulator_315634022 -comparative   game_map=input_a.txt   game_managers_folder=test_manager algorithm1=Algos/Algorithm_206038929_314620071.so   algorithm2=test_algo/Algorithm_206480972_206899163.so  num_threads=1 -verbose
+./simulator_322868852_340849710 -comparative   game_map=input_a.txt   game_managers_folder=test_manager algorithm1=Algos/Algorithm_206038929_314620071.so   algorithm2=test_algo/Algorithm_206480972_206899163.so  num_threads=1 -verbose
+./simulator_322996059_211779582 -comparative   game_map=input_a.txt   game_managers_folder=test_manager algorithm1=Algos/Algorithm_206038929_314620071.so   algorithm2=test_algo/Algorithm_206480972_206899163.so  num_threads=1 -verbose
+
+
+
+
+./simulator_206038929_314620071 -comparative   game_map=Maps/input_h.txt   game_managers_folder=Managers algorithm1=Algos/Algorithm_322573304_322647603.so   algorithm2=Algos/Algorithm_322213836_212054837.so  num_threads=3 > log.txt
+
+./simulator_206038929_314620071 game_manager=Managers/GameManager_206038929_314620071.so -competition       algorithms_folder=test_algo   game_maps_folder=Maps num_threads=4 > log.txt
+
+
+
+./simulator_322868852_340849710 -comparative   game_map=Maps/input_a.txt   game_managers_folder=Managers algorithm1=Algos/Algorithm_206038929_314620071.so   algorithm2=Algos/Algorithm_322213836_212054837.so  num_threads=3
+
+
 cd /mnt/c/Users/danay/clionprojects/advanced-topics
 
 cmake -S . -B build

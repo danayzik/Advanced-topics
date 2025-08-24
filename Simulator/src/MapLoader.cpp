@@ -100,6 +100,7 @@ void MapLoader::handleCell(char cell, size_t y, size_t x) {
         gameMap[y][x] = cell;
     }
     else{
+        gameMap[y][x] = ' ';
         handleBadCharacter(y, x);
     }
 }
